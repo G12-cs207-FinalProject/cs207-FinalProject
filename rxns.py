@@ -16,6 +16,12 @@ class Rxn():
 class ElemRxn(Rxn):
     pass
 
+class NonElemRxn(Rxn):
+    pass
+
+class RevElemRxn(ElemRxn):
+    pass
+
 class IrrevElemRxn(ElemRxn):
     
     def __init__(self,ki,xi,vi_p,vi_dp):
@@ -25,7 +31,17 @@ class IrrevElemRxn(ElemRxn):
         self.vi_dp = vi_dp
         self.wi = None
         self.rates = None
-        
+        self.name = None
+    """
+        #need to add a name for repr
+    def __repr__(self):
+        class_name = type(self).__name__
+        return "{0!s}({1.name!r})".format(class_name, self)
+    
+    def __len__(self):
+        return "number of reactlen(self.ki)
+    """
+    
     def progress_rate(self):
         """
         Returns the progress rate w for a system of irreversible elementary reaction of the form: 
@@ -149,9 +165,9 @@ class IrrevElemRxn(ElemRxn):
             self.rates = np.squeeze(np.array(np.dot(vi,w)))
             return self.rates
 
-        
-reac1 = IrrevElemRxn([10, 10], [1.0, 2.0, 1.0], [[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]],[[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]])
+#reac1 = IrrevElemRxn([10, 10], [1.0, 2.0, 1.0], [[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]],[[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]])
 #print(reac1.progress_rate())
-print(reac1.reaction_rate())
+#print(reac1.reaction_rate())
+#print(repr(reac1))
 #progress_rate_multi(ki=[10, 10], xi=[1.0, 2.0, 1.0], vi_p=[[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]], vi_dp=[[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]])
 
