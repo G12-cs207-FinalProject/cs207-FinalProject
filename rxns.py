@@ -143,14 +143,15 @@ class IrrevElemRxn(ElemRxn):
             ki = np.array(self.ki).reshape(-1,1)
         
             prodi = np.prod(np.power(xi, vi_p), axis=0) # calculate the product of xi^(vi_p) for each reaction
-            w = np.squeeze(ki* np.array(prodi).reshape(-1,1)).reshape(-1,1) # multiply ki by prodi
+            w=self.progress_rate()
+            #w = np.squeeze(ki* np.array(prodi).reshape(-1,1)).reshape(-1,1) # multiply ki by prodi
             vi = vi_dp - vi_p 
             self.rates = np.squeeze(np.array(np.dot(vi,w)))
             return self.rates
 
         
 reac1 = IrrevElemRxn([10, 10], [1.0, 2.0, 1.0], [[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]],[[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]])
-print(reac1.progress_rate())
+#print(reac1.progress_rate())
 print(reac1.reaction_rate())
 #progress_rate_multi(ki=[10, 10], xi=[1.0, 2.0, 1.0], vi_p=[[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]], vi_dp=[[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]])
 
