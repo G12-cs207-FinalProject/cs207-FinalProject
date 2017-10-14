@@ -32,15 +32,7 @@ class IrrevElemRxn(ElemRxn):
         self.wi = None
         self.rates = None
         self.name = None
-    """
-        #need to add a name for repr
-    def __repr__(self):
-        class_name = type(self).__name__
-        return "{0!s}({1.name!r})".format(class_name, self)
-    
-    def __len__(self):
-        return "number of reactlen(self.ki)
-    """
+
     
     def progress_rate(self):
         """
@@ -81,8 +73,7 @@ class IrrevElemRxn(ElemRxn):
         
         EXAMPLES
         =========
-        >>> reac1 = rx.IrrevElemRxn([10, 10], [1.0, 2.0, 1.0], [[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]],[[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]])
-        >>>reac1.progress_rate()
+        >>> reac1 = rx.IrrevElemRxn([10, 10], [1.0, 2.0, 1.0], [[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]],[[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]]).progress_rate()
         array([ 40.,  10.])
         """
         
@@ -143,8 +134,7 @@ class IrrevElemRxn(ElemRxn):
         
         EXAMPLES
         =========
-        >>> reac1 = rx.IrrevElemRxn([10, 10], [1.0, 2.0, 1.0], [[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]],[[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]])
-        >>> reac1.reaction_rate()
+        >>> reac1 = rx.IrrevElemRxn([10, 10], [1.0, 2.0, 1.0], [[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]],[[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]]).reaction_rate()
         array([-60., -70.,  70.])
         """
         import numpy as np
