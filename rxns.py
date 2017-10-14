@@ -81,7 +81,8 @@ class IrrevElemRxn(ElemRxn):
         
         EXAMPLES
         =========
-        >>> progress_rate(ki=[10, 10], xi=[1.0, 2.0, 1.0], vi_p=[[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]], vi_dp=[[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]])
+        >>> reac1 = rx.IrrevElemRxn([10, 10], [1.0, 2.0, 1.0], [[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]],[[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]])
+        >>>reac1.progress_rate()
         array([ 40.,  10.])
         """
         
@@ -142,8 +143,9 @@ class IrrevElemRxn(ElemRxn):
         
         EXAMPLES
         =========
-        >>> reaction_rate_multi(ki=[10, 10], xi=[1.0, 2.0, 1.0], vi_p=[[1.0, 2.0, 0.0], [0.0, 0.0, 2.0]], vi_dp=[[0.0, 0.0, 1.0], [1.0, 2.0, 0.0]])
-        array([-30., -60.,  20.])
+        >>> reac1 = rx.IrrevElemRxn([10, 10], [1.0, 2.0, 1.0], [[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]],[[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]])
+        >>> reac1.reaction_rate()
+        array([-60., -70.,  70.])
         """
         import numpy as np
         # check value conditions
