@@ -77,10 +77,7 @@ class ArrheniusCoef(RxnCoef):
 
 class ModArrheniusCoef(ArrheniusCoef):
 	def __init__(self, A, b, E, T, R=8.314):
-		super().__init__(A)
-		super().__init__(E)
-		super().__init__(T)
-		super().__init__(R)
+		super().__init__(A, E, T, R)
 		self.b = b
 
 	def get_coef(self):
@@ -89,12 +86,12 @@ class ModArrheniusCoef(ArrheniusCoef):
 		RETURNS:
 		========
 		k: float
-			Modified Arrhenius reaction rate coefficient
+		Modified Arrhenius reaction rate coefficient
 
 		EXAMPLES:
 		=========
 		>>> ModArrheniusCoef(2.0, -0.5, 3.0, 100.0).get_coef()
-    	0.19927962618542916
+		0.199279626185
 		"""
 		if self.A < 0.0:
 			raise ValueError("A = {0:18.16e}:  Negative Arrhenius prefactor is prohibited!".format(self.A))
@@ -116,4 +113,3 @@ class ModArrheniusCoef(ArrheniusCoef):
 
 			return self.k
 
-		#doctest.testmod(extraglobs={'test_coef_const': ConstCoef(10.0)}, verbose=True)
