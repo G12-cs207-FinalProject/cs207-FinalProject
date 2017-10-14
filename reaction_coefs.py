@@ -91,7 +91,7 @@ class ModArrheniusCoef(ArrheniusCoef):
 		EXAMPLES:
 		=========
 		>>> ModArrheniusCoef(2.0, -0.5, 3.0, 100.0).get_coef()
-		0.199279626185
+		0.19927962618542916
 		"""
 		if self.A < 0.0:
 			raise ValueError("A = {0:18.16e}:  Negative Arrhenius prefactor is prohibited!".format(self.A))
