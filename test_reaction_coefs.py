@@ -52,7 +52,7 @@ def test_arr_get_coef_overflow():
             assert(str(err) == "The result is too large/small.")
 
 
-# tests for ArrheniusCoef() class
+# tests for ModArrheniusCoef() class
 def test_modarr_get_coef_result():
     assert ModArrheniusCoef(A=np.power(10, 4), b=0.5, E=100, T=300, R=8.314).get_coef() == 166398.13402389048
 

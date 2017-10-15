@@ -54,6 +54,7 @@ class IrrevElemRxn(ElemRxn):
         self.name = None
 
     
+    
     def progress_rate(self):
         """
         Returns the progress rate w for a system of irreversible elementary reaction of the form: 
@@ -177,9 +178,10 @@ class IrrevElemRxn(ElemRxn):
             self.rates = np.squeeze(np.array(np.dot(vi,w)))
             return self.rates
 
-#reac1 = IrrevElemRxn([10, 10], [1.0, 2.0, 1.0], [[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]],[[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]])
+reac1 = IrrevElemRxn([10, 10], [1.0, 2.0, 1.0], [[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]],[[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]])
 #print(reac1.progress_rate())
 #print(reac1.reaction_rate())
 #print(repr(reac1))
 #progress_rate_multi(ki=[10, 10], xi=[1.0, 2.0, 1.0], vi_p=[[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]], vi_dp=[[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]])
 
+print(dir(reac1))

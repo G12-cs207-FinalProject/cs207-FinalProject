@@ -1,30 +1,76 @@
 import numpy as np
-import doctest
 
 class RxnCoef():
-	"""Base class for reaction coefficients"""
+	"""Base class of reaction rate coefficients
+
+	ATTRIBUTES:
+	========
+	self.k: float
+		Reaction rate coefficient
+		Initialized to None in base class and should be calculated and returned in its subclass.
+
+	METHODS:
+	========
+	get_coef(): Calculates and returns the reaction rate coefficient
+		This should be implemented in its subclass.
+	"""
 
 	def __init__(self):
 		self.k = None
 
 
+	def __repr__(self):
+		return 'RxnCoef()'
+
 	def get_coef(self):
-		"""Not-implemented method to return the rate coefficient at base class"""
+		""" Calculates and returns the reaction rate coefficient
+
+		Method is not implemented in this base class, but should be implemented in its subclasses.
+		"""
 		raise NotImplementedError('Subclass must implement this method')
 
 
 class ConstCoef(RxnCoef):
-	"""Subclass of RxnCoef for constant reaction coefficients"""
+	"""Class of constant reaction rate coefficients
+	Subclass of RxnCoef
+
+	ATTRIBUTES:
+	========
+	self.k: float, required
+		Reaction rate coefficient
+		Initialized with constructor argument k
+
+	METHODS:
+	========
+	get_coef(): Returns the constant rate coefficient
+	"""
 	def __init__(self, k):
+
+		"""
+		NOTES
+		=====
+		PRE:
+			- self.k have numeric type
+			- one input
+		"""
 		self.k = k
 
+	def __repr__(self):
+		return 'ConstCoef(k = {})'.format(self.k)
+
 	def get_coef(self):
-		"""Simply returns the constant rate coefficient
+		"""Returns the constant rate coefficient
 
 		RETURNS:
 		========
-		k: float
+		self.k: float
 			Constant reaction rate coefficient
+		NOTES
+		=====
+		POST:
+			 - self.k is not changed by this function
+			 - raises a ValueError exception if k <= 0
+			 - returns a float of self.k
 		
 		EXAMPLES:
 		=========
@@ -36,22 +82,64 @@ class ConstCoef(RxnCoef):
 		return self.k
 
 class ArrheniusCoef(RxnCoef):
-	"""Subclass of RxnCeof for Arrhenius reaction coefficients """
+	"""Class of Arrhenius reaction rate coefficient
+	Subclass of RxnCoef
+
+	ATTRIBUTES:
+	========
+	self.k: float
+		Reaction rate coefficient
+		Calculated by self.get_coef()
+	self.A: float, required
+		Arrhenius prefactor
+		Initialized with constructor argument A
+	self.E: float, required
+		Activation energy
+		Initialized with constructor argument E
+	self.T: float, required
+		Temperature (in Kelvin)
+		Initialized with constructor argument T
+	self.R: float, optional, default value = 8.314
+		Ideal gas constant
+		Initialized with constructor argument R
+		Default value of R should not be changed except for unit conversion
+
+	METHODS:
+	========
+	get_coef(): Calculates and returns the Arrhenius rate coefficient
+	"""
 	def __init__(self, A, E, T, R=8.314):
+
+		"""
+		NOTES
+		=====
+		PRE:
+			- self.A, self.E, self.T and self.R have numeric type
+			- four or fewer inputs
+		"""
+		super().__init__()
 		self.A = A
 		self.E = E
 		self.T = T
 		self.R = R
-		super().__init__()
 
+	def __repr__(self):
+		return 'ArrheniusCoef(A={}, E={}, T={}, R={})'.format(self.A, self.E, self.T, self.R)
 
 	def get_coef(self):
 		""" Method to calculate the Arrhenius reaction rate coefficient
 
 		RETURNS:
 		========
-		k: float
+		self.k: float
 			Arrhenius reaction rate coefficient
+
+		NOTES
+		=====
+		POST:
+			 - self.A, self.E, self.T and self.R are not changed by this function
+			 - raises a ValueError exception if A <= 0 or T <= 0
+			 - returns a float of self.k
 
 		EXAMPLES:
 		=========
@@ -76,17 +164,64 @@ class ArrheniusCoef(RxnCoef):
 
 
 class ModArrheniusCoef(ArrheniusCoef):
+	"""Class of Modified Arrhenius reaction rate coefficient
+		Subclass of ArrheniusCoef
+
+		ATTRIBUTES:
+		========
+		self.k: float
+			Reaction rate coefficient
+			Calculated by self.get_coef()
+		self.A: float, required
+			Arrhenius prefactor
+			Initialized with constructor argument A
+		self.b: float, required
+			Modified Arrhenius parameter
+			Initialized with constructor argument b
+		self.E: float, required
+			Activation energy
+			Initialized with constructor argument E
+		self.T: float, required
+			Temperature (in Kelvin)
+			Initialized with constructor argument T
+		self.R: float, optional, default value = 8.314
+			Ideal gas constant
+			Initialized with constructor argument R
+			Default value of R should not be changed except for unit conversion
+
+		METHODS:
+		========
+		get_coef(): Calculates and returns the Modified Arrhenius rate coefficient
+	"""
 	def __init__(self, A, b, E, T, R=8.314):
+
+		"""
+		NOTES
+		=====
+		PRE:
+			- self.A, self.b, self.E, self.T and self.R have numeric type
+			- five or fewer inputs
+		"""
 		super().__init__(A, E, T, R)
 		self.b = b
+
+	def __repr__(self):
+		return 'ModArrheniusCoef(A={}, b={}, E={}, T={}, R={})'.format(self.A, self.b, self.E, self.T, self.R)
 
 	def get_coef(self):
 		""" Method to calculate the Modified Arrhenius reaction rate coefficient
 
 		RETURNS:
 		========
-		k: float
+		self.k: float
 		Modified Arrhenius reaction rate coefficient
+
+		NOTES
+		=====
+		POST:
+			 - self.A, self.E, self.T and self.R are not changed by this function
+			 - raises a ValueError exception if A <= 0, T <= 0 or b is not a real number
+			 - returns a float of self.k
 
 		EXAMPLES:
 		=========
@@ -112,4 +247,3 @@ class ModArrheniusCoef(ArrheniusCoef):
 				raise OverflowError("The result is too large/small.")
 
 			return self.k
-
