@@ -53,7 +53,9 @@ class IrrevElemRxn(ElemRxn):
         self.rates = None
         self.name = None
 
-    
+    def __len__(self):
+        "Returns the number of species in the reaction"
+        return ("Number of species in this reaction is {}".format(len(self.xi)))
     
     def progress_rate(self):
         """
@@ -178,10 +180,12 @@ class IrrevElemRxn(ElemRxn):
             self.rates = np.squeeze(np.array(np.dot(vi,w)))
             return self.rates
 
-reac1 = IrrevElemRxn([10, 10], [1.0, 2.0, 1.0], [[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]],[[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]])
+#reac1 = IrrevElemRxn([10, 10], [1.0, 2.0, 1.0], [[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]],[[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]])
+
+#print(reac1.__len__())
 #print(reac1.progress_rate())
 #print(reac1.reaction_rate())
 #print(repr(reac1))
 #progress_rate_multi(ki=[10, 10], xi=[1.0, 2.0, 1.0], vi_p=[[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]], vi_dp=[[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]])
 
-print(dir(reac1))
+#print(dir(reac1))

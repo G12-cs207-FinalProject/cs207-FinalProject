@@ -27,7 +27,13 @@ def test_progress_rate_result_IrrevElem():
     reac1 = rx.IrrevElemRxn([10, 10], [1.0, 2.0, 1.0], [[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]],[[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]])
     assert (reac1.progress_rate() == [40.0, 10.0]).all()
 
-
+def test_len_function():
+    reac1 = rx.IrrevElemRxn([10, 10], [1.0, 2.0, 1.0], [[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]],[[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]])
+    try:
+        reac1.__len__()
+    except TypeError as err:
+        assert(type(err) == TypeError)
+    
 def test_progress_rate_neg_ki_IrrevElem():
     reac1 = rx.IrrevElemRxn([-10, 10], [1.0, 2.0, 1.0], [[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]],[[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]])
     try:
