@@ -70,7 +70,7 @@ class ArrheniusCoef(RxnCoef):
 		else:
 			try:
 				self.k = self.A * np.exp(-self.E / (self.R * self.T))
-			except OverflowError:
+			except Warning:
 				raise OverflowError("The result is too large/small.")
 			return self.k
 
@@ -108,7 +108,7 @@ class ModArrheniusCoef(ArrheniusCoef):
 		else:
 			try:
 				self.k = self.A * np.power(self.T, self.b) * np.exp(-self.E / (self.R * self.T))
-			except OverflowError:
+			except Warning:
 				raise OverflowError("The result is too large/small.")
 
 			return self.k

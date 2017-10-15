@@ -1,4 +1,5 @@
 import numpy as np
+import warnings
 from reaction_coefs import *
 
 # tests for RxnCoef() base class
@@ -42,6 +43,14 @@ def test_arr_get_coef_neg_R():
     except ValueError as err:
         assert (type(err) == ValueError)
 
+def test_arr_get_coef_overflow():
+    with warnings.catch_warnings():
+        warnings.filterwarnings('error')
+        try:
+            ArrheniusCoef(A=np.power(1, 256), E=-10000000., T=300, R=8.314).get_coef()
+        except OverflowError as err:
+            assert(str(err) == "The result is too large/small.")
+
 
 # tests for ArrheniusCoef() class
 def test_modarr_get_coef_result():
@@ -70,3 +79,11 @@ def test_modarr_get_coef_complex_b():
         ModArrheniusCoef(A=np.power(10, 4), b=(3+1j), E=100, T=300, R=8.314).get_coef()
     except ValueError as err:
         assert (type(err) == ValueError)
+
+def test_modarr_get_coef_overflow():
+    with warnings.catch_warnings():
+        warnings.filterwarnings('error')
+        try:
+            ModArrheniusCoef(A=np.power(10, 4), b=256.0, E=100, T=300, R=8.314).get_coef()
+        except OverflowError as err:
+            assert(str(err) == "The result is too large/small.")
