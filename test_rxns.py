@@ -1,24 +1,20 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Sat Oct 14 16:17:28 2017
-
-@author: filipmichalsky
-"""
 import rxns as rx
-
+import io
+import sys
 
 # tests for Rxn() base class
 def test_Rxn_progress_rate_not_implemented():
     try:
-        rx.Rxn().progress_rate()
+        reac1 = rx.Rxn([10, 10], [1.0, 2.0, 1.0], [[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]], [[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]])
+        reac1.progress_rate()
     except NotImplementedError as err:
         assert(type(err) == NotImplementedError)
 
 
 def test_Rxn_reaction_rate_not_implemented():
     try:
-        rx.Rxn().reaction_rate()
+        reac1 = rx.Rxn([10, 10], [1.0, 2.0, 1.0], [[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]], [[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]])
+        reac1.progress_rate()
     except NotImplementedError as err:
         assert(type(err) == NotImplementedError)
 
