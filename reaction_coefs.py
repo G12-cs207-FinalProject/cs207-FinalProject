@@ -19,6 +19,9 @@ class RxnCoef():
 		self.k = None
 
 
+	def __repr__(self):
+		return 'RxnCoef()'
+
 	def get_coef(self):
 		""" Calculates and returns the reaction rate coefficient
 
@@ -51,6 +54,9 @@ class ConstCoef(RxnCoef):
 			- one input
 		"""
 		self.k = k
+
+	def __repr__(self):
+		return 'ConstCoef(k = {})'.format(self.k)
 
 	def get_coef(self):
 		"""Returns the constant rate coefficient
@@ -111,12 +117,14 @@ class ArrheniusCoef(RxnCoef):
 			- self.A, self.E, self.T and self.R have numeric type
 			- four or fewer inputs
 		"""
+		super().__init__()
 		self.A = A
 		self.E = E
 		self.T = T
 		self.R = R
-		super().__init__()
 
+	def __repr__(self):
+		return 'ArrheniusCoef(A={}, E={}, T={}, R={})'.format(self.A, self.E, self.T, self.R)
 
 	def get_coef(self):
 		""" Method to calculate the Arrhenius reaction rate coefficient
@@ -197,6 +205,9 @@ class ModArrheniusCoef(ArrheniusCoef):
 		super().__init__(A, E, T, R)
 		self.b = b
 
+	def __repr__(self):
+		return 'ModArrheniusCoef(A={}, b={}, E={}, T={}, R={})'.format(self.A, self.b, self.E, self.T, self.R)
+
 	def get_coef(self):
 		""" Method to calculate the Modified Arrhenius reaction rate coefficient
 
@@ -236,4 +247,3 @@ class ModArrheniusCoef(ArrheniusCoef):
 				raise OverflowError("The result is too large/small.")
 
 			return self.k
-
