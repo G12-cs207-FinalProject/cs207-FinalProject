@@ -31,7 +31,7 @@ def test_Rxn_repr_result():
     reac1 = rx.Rxn([10, 10], [1.0, 2.0, 1.0], [[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]], [[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]])
     print(reac1)
     sys.stdout = old_stdout
-    assert capturedOutput.getvalue() == "Rxn([10, 10], [1.0, 2.0, 1.0], [[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]], [[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]]\n"
+    assert capturedOutput.getvalue() == "Rxn(ki=[10, 10], xi=[1.0, 2.0, 1.0], vi_p=[[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]], vi_dp=[[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]])\n"
 
 
 # tests for IrrevElemRxn() class
@@ -44,11 +44,11 @@ def test_IrrevElem_repr_result():
     old_stdout = sys.stdout
     capturedOutput = io.StringIO()
     sys.stdout = capturedOutput
-    reac1 = rx.IrrevElemRxn([10, 10], [1.0, 2.0, 1.0], [[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]],
-                            [[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]])
+    reac1 = rx.IrrevElemRxn(ki=[10, 10], xi=[1.0, 2.0, 1.0], vi_p=[[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]], vi_dp=[[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]])
+
     print(reac1)
     sys.stdout = old_stdout
-    assert capturedOutput.getvalue() == "IrrevElemRxn([10, 10], [1.0, 2.0, 1.0], [[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]], [[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]]\n"
+    assert capturedOutput.getvalue() == "IrrevElemRxn(ki=[10, 10], xi=[1.0, 2.0, 1.0], vi_p=[[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]], vi_dp=[[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]])\n"
 
 
 def test_IrrevElem_progress_rate_result():
