@@ -7,7 +7,7 @@ The module handles both reversible and irreversible reactions, as well as elemen
 
 The module contains classes to calculate reaction coefficients and reaction base classes (RxnCoef and
 Reaction) as well as subclasses of RxnCoeff class (ConstCoef,ArrheniusCoef,ModArrheniusCoef)
-and subclasses of Rxn class (ElemRxn and NonElemRxn). Each of the latter also has subclasses 
+and subclasses of Rxn class (ElemRxn and NonElemRxn). Each of the latter also has subclasses
 (IrrElemRxn,RevElemRxn,IrrNonElemRxn, and RevNonElemRxn)
 
 
@@ -20,6 +20,27 @@ Created by Michelle Ho, Jasmine Tong, Filip Michalsky and Nathaniel Stein
 
 
 import numpy as np
+from enum import Enum
+import xml.etree.ElementTree as ET
+
+
+class RxnType(Enum):
+    Elementary = 1
+
+
+class ChemKinError(Exception):
+    """ Encapsulates errors encountered in this module. """
+
+    def __init__ (self, method, info=None):
+        msg = 'Error encountered in chemkin.py method: {0}.'.format(method)
+        if info is not None:
+            msg = msg + ' ' + info
+        Exception.__init__(self, msg)
+
+        self.method = method
+        self.info = info
+
+
 
 class RxnCoef():
 	"""Base class of reaction rate coefficients
@@ -92,7 +113,7 @@ class ConstCoef(RxnCoef):
 			 - self.k is not changed by this function
 			 - raises a ValueError exception if k <= 0
 			 - returns a float of self.k
-		
+
 		EXAMPLES:
 		=========
 		>>> ConstCoef(10.0).get_coef()
@@ -301,7 +322,7 @@ class Rxn():
     reaction_rate(): Calculates and returns the reaction rate
         This should be implemented in its subclass.
     """
-    
+
     def __init__(self, ki, xi, vi_p, vi_dp):
         self.ki = ki
         self.xi = xi
@@ -334,8 +355,8 @@ class Rxn():
         Method is not implemented in this base class, but should be implemented in its subclasses.
         """
         raise NotImplementedError('Subclass must implement this method')
-        
-        
+
+
 class ElemRxn(Rxn):
     """Class of elementary reactions
     Subclass of Rxn
@@ -394,7 +415,7 @@ class IrrevElemRxn(ElemRxn):
     progress_rate(): Calculates and returns the progress rate
     reaction_rate(): Calculates and returns the reaction rate
     """
-    
+
     def __init__(self, ki=[10.0, 10.0], xi=[1.0, 1.0, 1.0], vi_p= [[1.0, 1.0, 0.0], [0.0, 0.0, 1.0]], vi_dp = [[0.0, 0.0, 1.0], [1.0, 1.0, 0.0]]):
         self.ki = ki
         self.xi = xi
@@ -414,7 +435,7 @@ class IrrevElemRxn(ElemRxn):
 
     def __repr__(self):
         return 'IrrevElemRxn(ki={}, xi={}, vi_p={}, vi_dp={})'.format(self.ki, self.xi, self.vi_p,  self.vi_dp)
-    
+
     def progress_rate(self):
         """
         Returns the progress rate w for a system of irreversible elementary reaction
@@ -438,10 +459,10 @@ class IrrevElemRxn(ElemRxn):
         >>> IrrevElemRxn([10, 10], [1.0, 2.0, 1.0], [[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]],[[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]]).progress_rate()
         array([ 40.,  10.])
         """
-        
-        
+
+
         # check value conditions
-        if (any(i <= 0 for i in self.ki)): # check reaction coefficients 
+        if (any(i <= 0 for i in self.ki)): # check reaction coefficients
             raise ValueError("reaction rate coefficients ki must be positive.")
         elif (any(i < 0 for i in self.xi)): # check concentration array
             raise ValueError("concentrations xi cannot be negative.")
@@ -450,13 +471,13 @@ class IrrevElemRxn(ElemRxn):
             xi = np.array(self.xi).reshape(-1,1)
             vi_p = np.matrix(self.vi_p).T
             ki = np.array(self.ki).reshape(-1,1)
-        
+
             prodi = np.prod(np.power(xi, vi_p), axis=0) # calculate the product of xi^(vi_p) for each reaction
             self.wi = np.squeeze(ki* np.array(prodi).reshape(-1,1)) # multiply ki by prodi
 
 
             return self.wi
-        
+
     def reaction_rate(self):
         """Returns the progress rate w for a system of irreversible elementary reaction
 
@@ -496,3 +517,164 @@ class IrrevElemRxn(ElemRxn):
             self.rates = np.squeeze(np.array(np.dot(vi, w)))  # calculate reaction rate
 
             return self.rates
+
+
+class RxnData():
+    """ Container for individual reaction data.
+
+    Attributes
+    ----------
+    rxn_id : str
+        id attribute of <reaction> element.
+    reversible : bool
+        True if reaction is reversible; False if irreversible.
+    reactants : Dict[str, int]
+        Mapping of species to concentrations for reactants in reaction.
+        Example: {'H2':1, 'O':1}
+    products : Dict[str, int]
+        Mapping of species to concentrations for products in reaction.
+    rate_coeff : List[float]
+        Contains following Arrhenius reaction coefficients: [A, b, E]
+    type : RxnType
+        Enum value for reaction type.
+    """
+
+    def __init__ (self, rxn_id=None, reversible=None, reactants=None,
+                  products=None, rate_coeff=None, type=None):
+        self.rxn_id = rxn_id
+        self.reversible = reversible
+        self.reactants = reactants
+        self.products = products
+        self.rate_coeff = rate_coeff
+        self.type = type
+
+    def equation (self):
+        """ Returns equation representation of reactants and products.
+
+        Species are listed in alphabetical order on both reactant and product
+        side.
+        """
+        reactant_side = self.__build_equation_side(self.reactants)
+        product_side = self.__build_equation_side(self.products)
+        return '{0} [=] {1}'.format(reactant_side, product_side)
+
+    @staticmethod
+    def __build_equation_side (species_dict):
+        result = ''
+        species_count = -1
+        for species, conc in sorted(species_dict.items()):
+            species_count += 1
+
+            # Handle first species differently than rest, then proceed to
+            # next species.
+            if species_count == 0:
+                if abs(conc) == 1:
+                    conc_part = ''
+                else:
+                    conc_part = conc
+                result += '{0}{1}'.format(conc_part, species)
+                continue
+
+            # Non-first species.
+            if conc < 0:
+                operator = ' - '
+            else:
+                operator = ' + '
+
+            if abs(conc) == 1:
+                conc_part = ''
+            else:
+                conc_part = abs(conc)
+
+            result += '{0}{1}{2}'.format(operator, conc_part, species)
+
+        return result
+
+
+class XmlParser():
+    """ Produces list of RxnData from XML file contents.
+
+    Notes
+    -----
+    ChemKinError raised when invalid values are encountered in the XML file.
+    """
+
+    def __init__ (self, path):
+        """ Ensures path contains .xml file extension. """
+        if path[-4:] != '.xml':
+            path += '.xml'
+        self.path = path
+
+    def load (self):
+        """ Parses XML file contents to create list of RxnData objects
+        containing the data.
+        """
+        tree = ET.parse(self.path)
+        root = tree.getroot()
+        species = []
+        for species_i in root.find('phase'):
+            new_species = species_i.text.strip().split()
+            species.extend(new_species)
+
+        results = []
+        for rxn in root.find('reactionData').findall('reaction'):
+            rxn_data = self.__extract_data_from_reaction_element(rxn)
+            results.append(rxn_data)
+        return results
+
+    def __extract_data_from_reaction_element (self, rxn):
+        """ Returns RxnData object containing data from <reaction> XML element.
+        Raises ChemKinError for invalid attribute/element values.
+        """
+        result = RxnData()
+        result.rxn_id = rxn.get('id')
+
+        # reversible
+        reversible = rxn.get('reversible').lower().strip()
+        if reversible in ['no', 'n', 'false', 'f']:
+            result.reversible = False
+        elif reversible in ['yes', 'y', 'true', 't']:
+            result.reversible = True
+        else:
+            raise ChemKinError(
+                  'Invalid reversible attribute encountered in reaction with '
+                  'id '
+                  '= {}'.format(result.rxn_id))
+
+        # type
+        rnx_type = rxn.get('type').lower().strip()
+        if rnx_type == 'elementary':
+            result.type = RxnType.Elementary
+        else:
+            raise ChemKinError(
+                  'Invalid type attribute in reaction with id = {}'.format(
+                        result.rxn_id))
+
+        # rate_coeff
+        arrhenius = rxn.find('rateCoeff').find('Arrhenius')
+        A = float(arrhenius.find('A').text.strip())
+        if A < 0:
+            raise ChemKinError('A coeff < 0 in reaction with id = {}'.format(
+                  result.rxn_id))
+        b = float(arrhenius.find('b').text.strip())
+        E = float(arrhenius.find('E').text.strip())
+        result.rate_coeff = [A, b, E]
+
+        # reactants / products
+        result.reactants = self.__map_conc_to_species(rxn.find('reactants'))
+        result.products = self.__map_conc_to_species(rxn.find('products'))
+
+        return result
+
+    @staticmethod
+    def __map_conc_to_species (tag):
+        """ Creates dict mapping the species to concentration where tag is
+        either a <reactants> or <products> XML tag.
+        """
+        result = {}
+        for item in tag.text.strip().split():
+            species, conc = item.strip().split(':')
+            conc = int(conc)
+            species = species.upper()
+            result[species] = conc
+        return result

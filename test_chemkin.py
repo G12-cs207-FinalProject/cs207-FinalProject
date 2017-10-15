@@ -3,8 +3,11 @@ Test suite for the chemkin.py module
 
 """
 import numpy as np
+import pytest
+from pytest import approx
 import warnings
 from reaction_coefs import *
+import chemkin as ck
 
 # tests for RxnCoef() base class
 def test_base_get_coef():
@@ -203,3 +206,99 @@ def test_IrrevElem_reaction_rate_dim_compat():
         reac1.reaction_rate()
     except ValueError as err:
         assert(type(err) == ValueError)
+
+
+###############################################################################
+# Tests for RxnData and XmlParser classes.
+
+# Class methods are used on different XML files located in xml-files directory.
+# Each version of the reactions XML file tests different features / cases:
+#   rxns_ideal: Contains data in correct manner (the "ideal" example file).
+#   rxns_neg_A: Same as rxns_ideal except for negative A rateCoeff in first
+#       reaction.
+###############################################################################
+
+def test_parse_basic_functionality ():
+    """ Ensures number of reactions returned is correct and that attributes
+    of the <reaction> element in the XML file are parsed correctly.
+    """
+    xml = ck.XmlParser('xml-files/rxns_ideal.xml')
+    rxns = xml.load()
+
+    # Correct number of reactions returned.
+    err_msg = 'Expected 2 reactions but received {}.'.format(len(rxns))
+    assert len(rxns) == 2, err_msg
+
+    # Attributes of <reaction> element parsed properly.
+    err_msg = 'reversible attribute not parsed properly.'
+    assert rxns[0].reversible == False, err_msg
+    assert rxns[1].reversible == False, err_msg
+
+    err_msg = 'rxn_id attribute not parsed properly.'
+    assert rxns[0].rxn_id == 'reaction01', err_msg
+    assert rxns[1].rxn_id == 'reaction02', err_msg
+
+    err_msg = 'type attribute not parsed properly.'
+    assert rxns[0].type == ck.RxnType.Elementary, err_msg
+    assert rxns[1].type == ck.RxnType.Elementary, err_msg
+
+
+def test_parse_reactants_products ():
+    """ Ensures reactants and products parsed correctly. """
+    xml = ck.XmlParser('xml-files/rxns_ideal.xml')
+    rxns = xml.load()
+
+    err_msg = 'reactants not parsed correctly.'
+    assert rxns[0].reactants == {'H':1, 'O2':1}, err_msg
+    assert rxns[1].reactants == {'H2':1, 'O':1}, err_msg
+
+    err_msg = 'products not parsed correctly.'
+    assert rxns[0].products == {'OH':1, 'O':1}, err_msg
+    assert rxns[1].products == {'OH':1, 'H':1}, err_msg
+
+
+def test_parse_rxn_coeff ():
+    """ Ensures reaction coefficients are what we expect them to be. """
+    xml = ck.XmlParser('xml-files/rxns_ideal.xml')
+    rxns = xml.load()
+
+    rxn1_coeff = rxns[0].rate_coeff
+    rxn2_coeff = rxns[1].rate_coeff
+
+    # A
+    assert rxn1_coeff[0] == approx(3.52e+10)
+    assert rxn2_coeff[0] == approx(5.06e-2)
+
+    # b
+    assert rxn1_coeff[1] == approx(-0.7)
+    assert rxn2_coeff[1] == approx(2.7)
+
+    # E
+    assert rxn1_coeff[2] == approx(7.14e+04)
+    assert rxn2_coeff[2] == approx(2.63e+04)
+
+
+def test_rxndata_equation ():
+    """ Ensures equation representation of RxnData is correct. """
+    xml = ck.XmlParser('xml-files/rxns_ideal.xml')
+    rxns = xml.load()
+
+    err_msg = 'equation() method result different than expected.'
+    expected_0 = 'H + O2 [=] O + OH'
+    print(rxns[0].equation())
+    assert rxns[0].equation() == expected_0, err_msg
+
+    err_msg = 'equation() method result different than expected.'
+    expected_1 = 'H2 + O [=] H + OH'
+    assert rxns[1].equation() == expected_1, err_msg
+
+
+def test_badparse_negative_A ():
+    """ Ensures ChemKinError raised when A coefficient for one of the
+    reactions is negative.
+    """
+    xml = ck.XmlParser('xml-files/rxns_neg_A.xml')
+
+    with pytest.raises(ck.ChemKinError, message='Expecting ChemKinError '
+                                                'because of negative A coeff.'):
+        rxns = xml.load()
