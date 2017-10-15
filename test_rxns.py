@@ -22,8 +22,6 @@ def test_base_reaction_rate():
         assert(type(err) == NotImplementedError)
 
 
-
-
 # tests for IrrevElemRxn() class    
 def test_progress_rate_result_IrrevElem():
     reac1 = rx.IrrevElemRxn([10, 10], [1.0, 2.0, 1.0], [[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]],[[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]])
