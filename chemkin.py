@@ -500,7 +500,6 @@ class IrrevElemRxn(ElemRxn):
         >>> IrrevElemRxn([10, 10], [1.0, 2.0, 1.0], [[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]],[[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]]).reaction_rate()
         array([-60., -70.,  70.])
         """
-        import numpy as np
         # check value conditions
         if any(i <= 0 for i in self.ki): # check reaction coefficients
             raise ValueError("reaction rates ki must be positive.")
@@ -620,7 +619,7 @@ class XmlParser():
         for rxn in root.find('reactionData').findall('reaction'):
             rxn_data = self.__extract_data_from_reaction_element(rxn)
             results.append(rxn_data)
-        return results
+        return (species, results)
 
     def __extract_data_from_reaction_element (self, rxn):
         """ Returns RxnData object containing data from <reaction> XML element.
@@ -652,13 +651,22 @@ class XmlParser():
 
         # rate_coeff
         arrhenius = rxn.find('rateCoeff').find('Arrhenius')
-        A = float(arrhenius.find('A').text.strip())
-        if A < 0:
-            raise ChemKinError('A coeff < 0 in reaction with id = {}'.format(
-                  result.rxn_id))
-        b = float(arrhenius.find('b').text.strip())
-        E = float(arrhenius.find('E').text.strip())
-        result.rate_coeff = [A, b, E]
+        if arrhenius != None: # Arrhenius / Modified Arrhenius
+            A = float(arrhenius.find('A').text.strip())
+            if A < 0:
+                raise ChemKinError('A coeff < 0 in reaction with id = {}'.format(
+                      result.rxn_id))
+            E = float(arrhenius.find('E').text.strip())
+            # b = float(arrhenius.find('b').text.strip())
+            if arrhenius.find('b') == None:
+                result.rate_coeff = [A, E] # Arrhenius
+            else:
+                b = float(arrhenius.find('b').text.strip())
+                result.rate_coeff = [A, b, E] # Modified Arrhenius
+            
+        else: # Const rate_coeff
+            const = rxn.find('rateCoeff').find('Const')
+            result.rate_coeff = float(const.find('k').text.strip())
 
         # reactants / products
         result.reactants = self.__map_conc_to_species(rxn.find('reactants'))
