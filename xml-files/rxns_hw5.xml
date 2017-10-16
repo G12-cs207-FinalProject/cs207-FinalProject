@@ -12,11 +12,11 @@
         <reaction reversible="no" type="Elementary" id="reaction01">
             <equation>2H2 + O2 [=] 2OH + H2</equation>
             <rateCoeff>
-                <Arrhenius>
+                <modifiedArrhenius>
                     <A units="m3/mol/s">1e+8</A>
                     <b>0.5</b>
                     <E units="J/mol">5e+04</E>
-                </Arrhenius>
+                </modifiedArrhenius>
             </rateCoeff>
             <reactants>H2:2 O2:1</reactants>
             <products>OH:2 H2:1</products>
@@ -26,9 +26,9 @@
         <reaction reversible="no" type="Elementary" id="reaction02">
             <equation>OH + HO2 [=] H2O + O2</equation>
             <rateCoeff>
-                <Const>
+                <Constant>
                     <k>1e+4</k>
-                </Const>
+                </Constant>
             </rateCoeff>
             <reactants>OH:1 HO2:1</reactants>
             <products>H2O:1 O2:1</products>

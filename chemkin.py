@@ -650,22 +650,26 @@ class XmlParser():
                         result.rxn_id))
 
         # rate_coeff
-        arrhenius = rxn.find('rateCoeff').find('Arrhenius')
-        if arrhenius != None: # Arrhenius / Modified Arrhenius
+        rate_coeff = rxn.find('rateCoeff')
+        if rate_coeff.find('Arrhenius') != None: # Arrhenius
+            arrhenius = rate_coeff.find('Arrhenius')
             A = float(arrhenius.find('A').text.strip())
             if A < 0:
                 raise ChemKinError('A coeff < 0 in reaction with id = {}'.format(
                       result.rxn_id))
             E = float(arrhenius.find('E').text.strip())
-            # b = float(arrhenius.find('b').text.strip())
-            if arrhenius.find('b') == None:
-                result.rate_coeff = [A, E] # Arrhenius
-            else:
-                b = float(arrhenius.find('b').text.strip())
-                result.rate_coeff = [A, b, E] # Modified Arrhenius
-            
-        else: # Const rate_coeff
-            const = rxn.find('rateCoeff').find('Const')
+            result.rate_coeff = [A, E]
+        elif rate_coeff.find('modifiedArrhenius') != None: # modifiedArrhenius
+            mod_arrhenius = rate_coeff.find('modifiedArrhenius')
+            A = float(mod_arrhenius.find('A').text.strip())
+            if A < 0:
+                raise ChemKinError('A coeff < 0 in reaction with id = {}'.format(
+                      result.rxn_id))
+            b = float(mod_arrhenius.find('b').text.strip())
+            E = float(mod_arrhenius.find('E').text.strip())
+            result.rate_coeff = [A, b, E]  
+        else: # Constant
+            const = rate_coeff.find('Constant')
             result.rate_coeff = float(const.find('k').text.strip())
 
         # reactants / products
