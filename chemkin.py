@@ -43,7 +43,7 @@ class ChemKinError(Exception):
 
 
 class RxnCoef():
-	"""Base class of reaction rate coefficients
+    """Base class of reaction rate coefficients
 
 	ATTRIBUTES:
 	========
@@ -57,23 +57,30 @@ class RxnCoef():
 		This should be implemented in its subclass.
 	"""
 
-	def __init__(self):
-		self.k = None
+    def __init__(self):
+        self.k = None
 
 
-	def __repr__(self):
-		return 'RxnCoef()'
+    def __repr__(self):
+        return 'RxnCoef()'
 
-	def get_coef(self):
-		""" Calculates and returns the reaction rate coefficient
+    def __eq__(self, other):
+        """ Returns the true if 2 coefficients have the same value"""
+        if self.get_coef() == other.get_coef():
+            return True
+        else:
+            return False
 
-		Method is not implemented in this base class, but should be implemented in its subclasses.
-		"""
-		raise NotImplementedError('Subclass must implement this method')
+    def get_coef(self):
+        """ Calculates and returns the reaction rate coefficient
+
+        Method is not implemented in this base class, but should be implemented in its subclasses.
+        """
+        raise NotImplementedError('Subclass must implement this method')
 
 
 class ConstCoef(RxnCoef):
-	"""Class of constant reaction rate coefficients
+    """Class of constant reaction rate coefficients
 	Subclass of RxnCoef
 
 	ATTRIBUTES:
@@ -86,45 +93,45 @@ class ConstCoef(RxnCoef):
 	========
 	get_coef(): Returns the constant rate coefficient
 	"""
-	def __init__(self, k):
+    def __init__(self, k):
 
-		"""
-		NOTES
-		=====
-		PRE:
-			- self.k have numeric type
-			- one input
-		"""
-		self.k = k
+        """
+        NOTES
+        =====
+        PRE:
+            - self.k have numeric type
+            - one input
+        """
+        self.k = k
 
-	def __repr__(self):
-		return 'ConstCoef(k = {})'.format(self.k)
+    def __repr__(self):
+        return 'ConstCoef(k = {})'.format(self.k)
 
-	def get_coef(self):
-		"""Returns the constant rate coefficient
+    def get_coef(self):
+        """Returns the constant rate coefficient
 
-		RETURNS:
-		========
-		self.k: float
-			Constant reaction rate coefficient
-		NOTES
-		=====
-		POST:
-			 - self.k is not changed by this function
-			 - raises a ValueError exception if k <= 0
-			 - returns a float of self.k
+        RETURNS:
+        ========
+        self.k: float
+            Constant reaction rate coefficient
+        NOTES
+        =====
+        POST:
+             - self.k is not changed by this function
+             - raises a ValueError exception if k <= 0
+             - returns a float of self.k
 
-		EXAMPLES:
-		=========
-		>>> ConstCoef(10.0).get_coef()
-		10.0
-		"""
-		if self.k < 0:
-			raise ValueError("Negative reaction rate coefficients are prohibited.")
-		return self.k
+        EXAMPLES:
+        =========
+        >>> ConstCoef(10.0).get_coef()
+        10.0
+        """
+        if self.k < 0:
+            raise ValueError("Negative reaction rate coefficients are prohibited.")
+        return self.k
 
 class ArrheniusCoef(RxnCoef):
-	"""Class of Arrhenius reaction rate coefficient
+    """Class of Arrhenius reaction rate coefficient
 	Subclass of RxnCoef
 
 	ATTRIBUTES:
@@ -150,63 +157,63 @@ class ArrheniusCoef(RxnCoef):
 	========
 	get_coef(): Calculates and returns the Arrhenius rate coefficient
 	"""
-	def __init__(self, A, E, T, R=8.314):
+    def __init__(self, A, E, T, R=8.314):
 
-		"""
-		NOTES
-		=====
-		PRE:
-			- self.A, self.E, self.T and self.R have numeric type
-			- four or fewer inputs
-		"""
-		super().__init__()
-		self.A = A
-		self.E = E
-		self.T = T
-		self.R = R
+        """
+        NOTES
+        =====
+        PRE:
+            - self.A, self.E, self.T and self.R have numeric type
+            - four or fewer inputs
+        """
+        super().__init__()
+        self.A = A
+        self.E = E
+        self.T = T
+        self.R = R
 
-	def __repr__(self):
-		return 'ArrheniusCoef(A={}, E={}, T={}, R={})'.format(self.A, self.E, self.T, self.R)
+    def __repr__(self):
+        return 'ArrheniusCoef(A={}, E={}, T={}, R={})'.format(self.A, self.E, self.T, self.R)
 
-	def get_coef(self):
-		""" Method to calculate the Arrhenius reaction rate coefficient
+    def get_coef(self):
+        """ Method to calculate the Arrhenius reaction rate coefficient
 
-		RETURNS:
-		========
-		self.k: float
-			Arrhenius reaction rate coefficient
+        RETURNS:
+        ========
+        self.k: float
+            Arrhenius reaction rate coefficient
 
-		NOTES
-		=====
-		POST:
-			 - self.A, self.E, self.T and self.R are not changed by this function
-			 - raises a ValueError exception if A <= 0 or T <= 0
-			 - returns a float of self.k
+        NOTES
+        =====
+        POST:
+             - self.A, self.E, self.T and self.R are not changed by this function
+             - raises a ValueError exception if A <= 0 or T <= 0
+             - returns a float of self.k
 
-		EXAMPLES:
-		=========
-		>>> ArrheniusCoef(2.0, 3.0, 100.0).get_coef()
-		1.9927962618542914
-		"""
-		if self.A < 0.0:
-			raise ValueError("A = {0:18.16e}:  Negative Arrhenius prefactor is prohibited!".format(self.A))
+        EXAMPLES:
+        =========
+        >>> ArrheniusCoef(2.0, 3.0, 100.0).get_coef()
+        1.9927962618542914
+        """
+        if self.A < 0.0:
+            raise ValueError("A = {0:18.16e}:  Negative Arrhenius prefactor is prohibited!".format(self.A))
 
-		if self.T < 0.0:
-			raise ValueError("T = {0:18.16e}:  Negative temperatures are prohibited!".format(self.T))
+        if self.T < 0.0:
+            raise ValueError("T = {0:18.16e}:  Negative temperatures are prohibited!".format(self.T))
 
-		if self.R < 0.0:
-			raise ValueError("R = {0:18.16e}:  Negative ideal gas constant is prohibited!".format(self.R))
+        if self.R < 0.0:
+            raise ValueError("R = {0:18.16e}:  Negative ideal gas constant is prohibited!".format(self.R))
 
-		else:
-			try:
-				self.k = self.A * np.exp(-self.E / (self.R * self.T))
-			except Warning:
-				raise OverflowError("The result is too large/small.")
-			return self.k
+        else:
+            try:
+                self.k = self.A * np.exp(-self.E / (self.R * self.T))
+            except Warning:
+                raise OverflowError("The result is too large/small.")
+            return self.k
 
 
 class ModArrheniusCoef(ArrheniusCoef):
-	"""Class of Modified Arrhenius reaction rate coefficient
+    """Class of Modified Arrhenius reaction rate coefficient
 		Subclass of ArrheniusCoef
 
 		ATTRIBUTES:
@@ -235,60 +242,60 @@ class ModArrheniusCoef(ArrheniusCoef):
 		========
 		get_coef(): Calculates and returns the Modified Arrhenius rate coefficient
 	"""
-	def __init__(self, A, b, E, T, R=8.314):
+    def __init__(self, A, b, E, T, R=8.314):
 
-		"""
+        """
 		NOTES
 		=====
 		PRE:
 			- self.A, self.b, self.E, self.T and self.R have numeric type
 			- five or fewer inputs
 		"""
-		super().__init__(A, E, T, R)
-		self.b = b
+        super().__init__(A, E, T, R)
+        self.b = b
 
-	def __repr__(self):
-		return 'ModArrheniusCoef(A={}, b={}, E={}, T={}, R={})'.format(self.A, self.b, self.E, self.T, self.R)
+    def __repr__(self):
+        return 'ModArrheniusCoef(A={}, b={}, E={}, T={}, R={})'.format(self.A, self.b, self.E, self.T, self.R)
 
-	def get_coef(self):
-		""" Method to calculate the Modified Arrhenius reaction rate coefficient
+    def get_coef(self):
+        """ Method to calculate the Modified Arrhenius reaction rate coefficient
 
-		RETURNS:
-		========
-		self.k: float
-		Modified Arrhenius reaction rate coefficient
+        RETURNS:
+        ========
+        self.k: float
+        Modified Arrhenius reaction rate coefficient
 
-		NOTES
-		=====
-		POST:
-			 - self.A, self.E, self.T and self.R are not changed by this function
-			 - raises a ValueError exception if A <= 0, T <= 0 or b is not a real number
-			 - returns a float of self.k
+        NOTES
+        =====
+        POST:
+             - self.A, self.E, self.T and self.R are not changed by this function
+             - raises a ValueError exception if A <= 0, T <= 0 or b is not a real number
+             - returns a float of self.k
 
-		EXAMPLES:
-		=========
-		>>> ModArrheniusCoef(2.0, -0.5, 3.0, 100.0).get_coef()
-		0.19927962618542916
-		"""
-		if self.A < 0.0:
-			raise ValueError("A = {0:18.16e}:  Negative Arrhenius prefactor is prohibited!".format(self.A))
+        EXAMPLES:
+        =========
+        >>> ModArrheniusCoef(2.0, -0.5, 3.0, 100.0).get_coef()
+        0.19927962618542916
+        """
+        if self.A < 0.0:
+            raise ValueError("A = {0:18.16e}:  Negative Arrhenius prefactor is prohibited!".format(self.A))
 
-		if self.T < 0.0:
-			raise ValueError("T = {0:18.16e}:  Negative temperatures are prohibited!".format(self.T))
+        if self.T < 0.0:
+            raise ValueError("T = {0:18.16e}:  Negative temperatures are prohibited!".format(self.T))
 
-		if self.R < 0.0:
-			raise ValueError("R = {0:18.16e}:  Negative ideal gas constant is prohibited!".format(self.R))
+        if self.R < 0.0:
+            raise ValueError("R = {0:18.16e}:  Negative ideal gas constant is prohibited!".format(self.R))
 
-		if not np.isreal(self.b):
-			raise ValueError('Modified Arrhenius parameter b must be real!')
+        if not np.isreal(self.b):
+            raise ValueError('Modified Arrhenius parameter b must be real!')
 
-		else:
-			try:
-				self.k = self.A * np.power(self.T, self.b) * np.exp(-self.E / (self.R * self.T))
-			except Warning:
-				raise OverflowError("The result is too large/small.")
+        else:
+            try:
+                self.k = self.A * np.power(self.T, self.b) * np.exp(-self.E / (self.R * self.T))
+            except Warning:
+                raise OverflowError("The result is too large/small.")
 
-			return self.k
+            return self.k
 
 class Rxn():
     """Base class of reactions
