@@ -223,7 +223,7 @@ def test_parse_basic_functionality ():
     of the <reaction> element in the XML file are parsed correctly.
     """
     xml = ck.XmlParser('xml-files/rxns_ideal.xml')
-    rxns = xml.load()
+    species, rxns = xml.load()
 
     # Correct number of reactions returned.
     err_msg = 'Expected 2 reactions but received {}.'.format(len(rxns))
@@ -246,7 +246,7 @@ def test_parse_basic_functionality ():
 def test_parse_reactants_products ():
     """ Ensures reactants and products parsed correctly. """
     xml = ck.XmlParser('xml-files/rxns_ideal.xml')
-    rxns = xml.load()
+    species, rxns = xml.load()
 
     err_msg = 'reactants not parsed correctly.'
     assert rxns[0].reactants == {'H':1, 'O2':1}, err_msg
@@ -260,7 +260,7 @@ def test_parse_reactants_products ():
 def test_parse_rxn_coeff ():
     """ Ensures reaction coefficients are what we expect them to be. """
     xml = ck.XmlParser('xml-files/rxns_ideal.xml')
-    rxns = xml.load()
+    species,rxns = xml.load()
 
     rxn1_coeff = rxns[0].rate_coeff
     rxn2_coeff = rxns[1].rate_coeff
@@ -281,7 +281,7 @@ def test_parse_rxn_coeff ():
 def test_rxndata_equation ():
     """ Ensures equation representation of RxnData is correct. """
     xml = ck.XmlParser('xml-files/rxns_ideal.xml')
-    rxns = xml.load()
+    species,rxns = xml.load()
 
     err_msg = 'equation() method result different than expected.'
     expected_0 = 'H + O2 [=] O + OH'
