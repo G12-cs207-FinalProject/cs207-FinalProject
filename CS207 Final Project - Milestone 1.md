@@ -143,7 +143,7 @@ Two related classes in the `chemkin` module allow you to work with reaction data
 - `XmlParser`
 - `RxnData`
 
-#### `XmlParser`
+#### 3.2.1 `XmlParser`
 
 The `XmlParser` class is responsible for pulling reaction data out of XML files with its single method: `load()`. `load` returns a `tuple` of two lists:
 
@@ -157,7 +157,7 @@ xml = XmlParser('path_to_xml_file.xml')
 species, reaction_data = xml.load()
 ```
 
-#### `RxnData`
+#### 3.2.2 `RxnData`
 
 The reaction data parsed by the `XmlParser` from XML files is returned as a list of `RxnData` objects. This class encapsulates relevant information from the XML file in a way that allows the caller to easily process reactions differently according to their features. For example,
 
@@ -201,7 +201,7 @@ Two families of classes in the `chemkin` module allow you to compute kinetic par
         - `IrrevElemRxn`
     - `NonElemRxn`
 
-#### `RxnCoef` base class and its subclasses
+#### 3.3.1. `RxnCoef` base class and its subclasses
 
 The `chemkin` module contains a base class `RxnCoef` from which then the three subclasses (`ConstCoef`,`ArrheniusCoef`, and `ModArrheniusCoef`) inherit its basic properties (such as `init`,`__repr__` and `__eq__`). When creating the instances of these classes, their parameters are based on inputs extracted during the file-reading step $3.2$ from `rate_coeff` list ((Temperature $T$, Arrhenius constant $A$ (where applicable), modified constant $b$ (where applicable), ideal gas constant $R$, and Activation energy $E$)).  The instances of these classes (e.g., an instance of `ConstCoef`) then calculate a reaction rate coefficients $ki$'s for each reaction `ConstCoef(coef_params).get_coeff()`. To decide what type of of class to use, we look at the length of the coefficients list.
 
@@ -222,15 +222,56 @@ coef_params = rxn_data.rate_coeff
 			ki.append(ConstCoef(coef_params).get_coef())
 
 ```
-#### `Rxn` base class and its subclasses
+#### 3.3.2 `Rxn` base class and its subclasses
 
-R
+The `Rxn` base class and its subclasses have methods to calculate the progress rates and reaction rates given data on a system of chemical reactions and associated parameters.
 
-##### IrrElemRxn
+So far, only the `IrrevElemRxn` class for a system of irreversible elementary reactions has been fully implemented. The implementation of the subclasses that handle other types of chemical reactions is TBD.
 
-To calculate reaction rate of an elementary, irreversible reaction, we use a class `IrrElemRn` from our
+`Rxn` objects have the following attributes:
 
+- `ki`: a list of reaction rate coefficients
+- `xi`: a list of concentrations of molecular species
+- `vi_p`: a list of stoichiometric coefficients of the reactants
+- `vi_dp`: a list of stoichiometric coefficients of the product
+- `wi`: a list of progress rates
+- `rates`: a list of reaction rates
 
+**Note** These attributes are initialized when `Rxn` objects are created. For example,
+~~~
+reaction1 = Rxn(ki=[10, 10], xi=[1.0, 2.0, 1.0], vi_p=[[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]], vi_dp=[[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]]
+~~~
+
+`Rxn` objects have the following methods:
+
+- `progress_rate()`: Returns a list of progress rates for the system (Not implemented in the base class)
+
+- `reaction_rate()`: Returns a list of reaction rates for the system (Not implemented in the base class)
+
+`IrrevElemRxn`
+
+The `IrrevElemRxn` handles a system  consisting of $N$ species undergoing $M$ **irreversible**, **elementary** reactions of the form:
+
+$$\sum_{i=1}^{N}{\nu_{ij}^{\prime}{S}_{i}} \longrightarrow 
+  \sum_{i=1}^{N}{\nu_{ij}^{\prime\prime}{S}_{i}}, \qquad \text{for } j = 1, \ldots, M$$
+
+The progress rate $\omega_{j}$ is given by 
+
+$$\begin{aligned}
+  \omega_{j} = k_{j}\prod_{i=1}^{N}{x_{i}^{\nu_{ij}^{\prime}}}, \qquad j = 1, \ldots, M
+\end{aligned}
+$$
+
+The reaction rate $f_{i} = \frac{d[i]}{dt}$ is given by
+  
+$$\begin{aligned}
+  f_{i} = \frac{d[i]}{dt} = \sum_{j=1}^{M}{\nu_{ij}\omega_{j}}, \qquad \text{for } i = 1, \ldots, N
+\end{aligned}$$
+
+`IrrevElemRxn` shares the same class attributes as the base class and implements the two methods in the following manner: 
+- `progress_rate()`: Returns a list of $k_{j}\prod_{i=1}^{N}{x_{i}^{\nu_{ij}^{\prime}}}$
+
+- `reaction_rate()`: Returns a list of $\sum_{j=1}^{M}{\nu_{ij}\omega_{j}}$
 
 ## 4. Examples
 
