@@ -70,7 +70,17 @@ Features of the **chemkin** module include:
 
 ## 2. Installation
 
-TBD
+The neccessary code can be found at and downloaded from [here](https://github.com/G12-cs207-FinalProject/cs207-FinalProject).
+
+Once you open the directory with the downloaded files, please note the following items:
+- The main module file name is called **chemkin.&#8203;py** 
+- The test suite is called **test_chemkin.py**. 
+- Additional files include execution code stored in **run_chemkin.py** and a set of demo *.xml* reaction files.
+
+You can run the test suite on your local machine by typing the following command in your command line when in the directory of the downloaded files.
+```sh
+$ pytest
+```
 
 ## 3. Basic Usage
 
@@ -170,9 +180,34 @@ The reaction rate coefficients are stored as a list in the `rate_coeff ` attribu
 
 ### 3.3. Calculating the reaction rate coefficient
 
+#### RxnCoef and its subclasses
 
+The `chemkin` module contains a base class `RxnCoef` from which then the three subclasses (`ConstCoef`,`ArrheniusCoef`, and `ModArrheniusCoef`) inherit its basic properties (such as `init`,`__repr__` and `__eq__`). When creating the instances of these classes, their parameters are based on inputs extracted during the file-reading step $3.2$ from `rate_coeff` list ((Temperature $T$, Arrhenius constant $A$ (where applicable), modified constant $b$ (where applicable), ideal gas constant $R$, and Activation energy $E$)).  The instances of these classes (e.g., an instance of `ConstCoef`) then calculate a reaction rate coefficients $ki$'s for each reaction `ConstCoef(coef_params).get_coeff()`. To decide what type of of class to use, we look at the length of the coefficients list.
+
+```python
+coef_params = rxn_data.rate_coeff
+        
+		if isinstance(coef_params, list):
+			if len(coef_params) == 3: # modified arrhenius coef
+				A = coef_params[0]
+				b = coef_params[1]
+				E = coef_params[2]
+				ki.append(ModArrheniusCoef(A, b, E, T).get_coef())
+			else: # arrhenius coef
+				A = coef_params[0]
+				E = coef_params[1]
+				ki.append(ArrheniusCoef(A, E, T).get_coef())
+		else: # const coef
+			ki.append(ConstCoef(coef_params).get_coef())
+
+```
 
 ### 3.4 Calculating the progress rate
+
+#### IrrElemRxn
+
+To calculate reaction rate of an elementary, irreversible reaction, we use a class `IrrElemRn` from our
+
 
 ### 3.5 Calculating the reaction rate
 
