@@ -86,8 +86,6 @@ $ pytest
 
 ### 3.1 Structure of the input file
 
-_**DESCRBIBE THE INPUT FILE**_
-
 Chemical reaction data should be stored in XML format with the following specifications:
 
 1. a \<phase> element with a \<speciesArray> child element which lists the molecular species invovled in the reaction
@@ -175,12 +173,35 @@ for rxn in reaction_data:
 
 ```
 
-The reaction rate coefficients are stored as a list in the `rate_coeff ` attribute.
+`RxnData` objects have the following attributes:
 
+- `rxn_id`: a string for reaction ID
 
-### 3.3. Calculating the reaction rate coefficient
+- `reversible`: a boolean indicating whether the reaction is reversible
 
-#### RxnCoef and its subclasses
+- `type`: a RxnType object from the Enum class indicating whether a reaction is elementary or  non-elementary
+
+- `rate_coef`: a list of parameters for reaction rate coefficient
+
+- `reactants`: a dictionary with molecular species of the reactants as keys and their respecitve stoicheometric coefficient as values
+
+- `products`: a dictionary with moelcular speicies of the products as keys and their respective stoichemotetric coefficient as values
+
+### 3.3. Calculating kinetic parameters of interest
+
+Two families of classes in the `chemkin` module allow you to compute kinetic paramters such as reaction rate coefficients, progress rates and reaction rates.
+
+- `RxnCoef` base class
+    - `ConstCoef`
+    - `ArrheniusCoef`
+    - `ModArrheniusCoef`
+- `Rxn` base class
+    - `ElemRxn`
+        - `RevElemRxn`
+        - `IrrevElemRxn`
+    - `NonElemRxn`
+
+#### `RxnCoef` base class and its subclasses
 
 The `chemkin` module contains a base class `RxnCoef` from which then the three subclasses (`ConstCoef`,`ArrheniusCoef`, and `ModArrheniusCoef`) inherit its basic properties (such as `init`,`__repr__` and `__eq__`). When creating the instances of these classes, their parameters are based on inputs extracted during the file-reading step $3.2$ from `rate_coeff` list ((Temperature $T$, Arrhenius constant $A$ (where applicable), modified constant $b$ (where applicable), ideal gas constant $R$, and Activation energy $E$)).  The instances of these classes (e.g., an instance of `ConstCoef`) then calculate a reaction rate coefficients $ki$'s for each reaction `ConstCoef(coef_params).get_coeff()`. To decide what type of of class to use, we look at the length of the coefficients list.
 
@@ -201,30 +222,17 @@ coef_params = rxn_data.rate_coeff
 			ki.append(ConstCoef(coef_params).get_coef())
 
 ```
+#### `Rxn` base class and its subclasses
 
-### 3.4 Calculating the progress rate
+R
 
-#### IrrElemRxn
+##### IrrElemRxn
 
 To calculate reaction rate of an elementary, irreversible reaction, we use a class `IrrElemRn` from our
 
 
-### 3.5 Calculating the reaction rate
 
 ## 4. Examples
-
-The neccessary code can be found at and downloaded from [here](https://github.com/G12-cs207-FinalProject/cs207-FinalProject).
-
-Once you open the directory with the downloaded files, please note the following items:
-
-- The main module file name is called **chemkin.&#8203;py**
-- The test suite is called **test_chemkin.py**.
-- Additional files include execution code stored in **run_chemkin.py** and a set of demo *.xml* reaction files.
-
-You can run the test suite on your local machine by typing the following command in your command line when in the directory of the downloaded files.
-```sh
-$ pytest
-```
 
 ### 4.1. A system of irreversible, elementary chemical reactions
 
