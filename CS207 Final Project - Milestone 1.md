@@ -82,11 +82,16 @@ Chemical reaction data should be stored in XML format with the following specifi
 
 1. a \<phase> element with a \<speciesArray> child element which lists the molecular species invovled in the reaction
 
-2. a \<reactionData> element that stores revelant parameters of the reaction:
+2. a \<reactionData> element that stores relevant parameters of the reaction:
     - \<reaction reversible> tag indicates whether a reaction is reversible or irreversible, possible values = ["yes", "no"]
     - \<type> tag indicates whether a reaction is elementary or non-elementary, possible values = ["Elementary", "Non-Elementary]
     - \<equation> tag specifies the chemical reaction
-    - \<rateCoeff> tag stores parameters relevant to calculate the rate coefficient. It has a child tag indicating the rate coefficient class, possible values = ["\<Constant>", "\<Arrhenius>", "\<modifiedArrhenius>"], and the associated parameters
+    - \<rateCoeff> tag stores parameters relevant to calculate the rate coefficient. It has a child tag indicating the rate coefficient class, which can be one of three acceptable types, each of which dictates what coefficient values are parsed by the `XmlParser` class:
+     	1. \<Arrhenius>: Coefficients [A, E] will be retrieved.
+		2. \<modifiedArrhenius>: [A, b, E] will be retrieved.\
+		3. \<Constant>: k will be retrieved.
+
+**Note** If no recognized child tag of \<rateCoeff> is encountered, then `XmlParser` will raise a `ChemKinError`. Also, its retrieval of elements is case-sensitive. So, for example, `<A>`, `<b>`, `<E>`, and `<k>` must be used to store the appropriate coefficients; elements named `<a>`, `<B>`, `<e>` or `<K>` would not be recognized and would lead to an error.
 
 **Example 3.1.** XML file for the following chemical reaction:
 
@@ -125,9 +130,43 @@ $$
 
 ### 3.2 Reading the input file
 
-- `XmlParser(xml_file)` produces a list of reaction data from XML file "xml_file" contents.
+Two related classes in the `chemkin` module allow you to work with reaction data stored in XML files:
 
-- `
+- `XmlParser`
+- `RxnData`
+
+#### `XmlParser`
+
+The `XmlParser` class is responsible for pulling reaction data out of XML files with its single method: `load()`. `load` returns a `tuple` of two lists:
+
+- the species involved in all the reactions in the file and 
+- list of `RxnData` objects, with each object containing the data for an individual reaction (discussed in next section).
+
+```python
+from chemkin import XmlParser
+xml = XmlParser('path_to_xml_file.xml')
+
+species, reaction_data = xml.load()
+```
+
+#### `RxnData`
+
+The reaction data parsed by the `XmlParser` from XML files is returned as a list of `RxnData` objects. This class encapsulates relevant information from the XML file in a way that allows the caller to easily process reactions differently according to their features. For example,
+
+```python
+from chemkin import XmlParser
+xml = XmlParser('path_to_xml_file')
+
+_, reaction_data = xml.load()
+
+for rxn in reaction_data:
+	if rxn.reversible:
+		# Handle special reversible reaction logic
+
+```
+
+The reaction rate coefficients are stored as a list in the `rate_coeff ` attribute.
+
 
 ### 3.3. Calculating the reaction rate coefficient
 

@@ -2,13 +2,16 @@
 Chemical Kinetics
 -----------------
 
-Module chemkin was created for calculating progress rates and reaction rates for a single reaction/set of reactions.
-The module handles both reversible and irreversible reactions, as well as elementary/nonelementary reactions.
+Module chemkin was created for calculating progress rates and reaction rates
+for a single reaction/set of reactions.
+The module handles both reversible and irreversible reactions, as well as
+elementary/nonelementary reactions.
 
-The module contains classes to calculate reaction coefficients and reaction base classes (RxnCoef and
-Reaction) as well as subclasses of RxnCoeff class (ConstCoef,ArrheniusCoef,ModArrheniusCoef)
-and subclasses of Rxn class (ElemRxn and NonElemRxn). Each of the latter also has subclasses
-(IrrElemRxn,RevElemRxn,IrrNonElemRxn, and RevNonElemRxn)
+The module contains classes to calculate reaction coefficients and reaction
+base classes (RxnCoef and Reaction) as well as subclasses of RxnCoeff class (
+ConstCoef,ArrheniusCoef, ModArrheniusCoef) and subclasses of Rxn class (
+ElemRxn and NonElemRxn). Each of the latter also has subclasses (IrrElemRxn,
+RevElemRxn,IrrNonElemRxn, and RevNonElemRxn)
 
 
 demo.py file serves as a demo of the code.
@@ -18,10 +21,10 @@ Created by Michelle Ho, Jasmine Tong, Filip Michalsky and Nathaniel Stein
 #to be added - RevNonElemRxn and IrrNonElemRxn classes
 """
 
-
-import numpy as np
 from enum import Enum
 import xml.etree.ElementTree as ET
+
+import numpy as np
 
 
 class RxnType(Enum):
@@ -41,7 +44,6 @@ class ChemKinError(Exception):
         self.info = info
 
 
-
 class RxnCoef():
     """Base class of reaction rate coefficients
 
@@ -49,7 +51,8 @@ class RxnCoef():
 	========
 	self.k: float
 		Reaction rate coefficient
-		Initialized to None in base class and should be calculated and returned in its subclass.
+		Initialized to None in base class and should be calculated and
+		returned in its subclass.
 
 	METHODS:
 	========
@@ -57,24 +60,24 @@ class RxnCoef():
 		This should be implemented in its subclass.
 	"""
 
-    def __init__(self):
+    def __init__ (self):
         self.k = None
 
-
-    def __repr__(self):
+    def __repr__ (self):
         return 'RxnCoef()'
 
-    def __eq__(self, other):
+    def __eq__ (self, other):
         """ Returns the true if 2 coefficients have the same value"""
         if self.get_coef() == other.get_coef():
             return True
         else:
             return False
 
-    def get_coef(self):
+    def get_coef (self):
         """ Calculates and returns the reaction rate coefficient
 
-        Method is not implemented in this base class, but should be implemented in its subclasses.
+        Method is not implemented in this base class, but should be
+        implemented in its subclasses.
         """
         raise NotImplementedError('Subclass must implement this method')
 
@@ -93,8 +96,8 @@ class ConstCoef(RxnCoef):
 	========
 	get_coef(): Returns the constant rate coefficient
 	"""
-    def __init__(self, k):
 
+    def __init__ (self, k):
         """
         NOTES
         =====
@@ -104,10 +107,10 @@ class ConstCoef(RxnCoef):
         """
         self.k = k
 
-    def __repr__(self):
+    def __repr__ (self):
         return 'ConstCoef(k = {})'.format(self.k)
 
-    def get_coef(self):
+    def get_coef (self):
         """Returns the constant rate coefficient
 
         RETURNS:
@@ -127,8 +130,10 @@ class ConstCoef(RxnCoef):
         10.0
         """
         if self.k < 0:
-            raise ValueError("Negative reaction rate coefficients are prohibited.")
+            raise ValueError(
+                  "Negative reaction rate coefficients are prohibited.")
         return self.k
+
 
 class ArrheniusCoef(RxnCoef):
     """Class of Arrhenius reaction rate coefficient
@@ -157,7 +162,8 @@ class ArrheniusCoef(RxnCoef):
 	========
 	get_coef(): Calculates and returns the Arrhenius rate coefficient
 	"""
-    def __init__(self, A, E, T, R=8.314):
+
+    def __init__ (self, A, E, T, R=8.314):
 
         """
         NOTES
@@ -172,10 +178,11 @@ class ArrheniusCoef(RxnCoef):
         self.T = T
         self.R = R
 
-    def __repr__(self):
-        return 'ArrheniusCoef(A={}, E={}, T={}, R={})'.format(self.A, self.E, self.T, self.R)
+    def __repr__ (self):
+        return 'ArrheniusCoef(A={}, E={}, T={}, R={})'.format(self.A, self.E,
+                                                              self.T, self.R)
 
-    def get_coef(self):
+    def get_coef (self):
         """ Method to calculate the Arrhenius reaction rate coefficient
 
         RETURNS:
@@ -186,7 +193,8 @@ class ArrheniusCoef(RxnCoef):
         NOTES
         =====
         POST:
-             - self.A, self.E, self.T and self.R are not changed by this function
+             - self.A, self.E, self.T and self.R are not changed by this
+             function
              - raises a ValueError exception if A <= 0 or T <= 0
              - returns a float of self.k
 
@@ -196,13 +204,22 @@ class ArrheniusCoef(RxnCoef):
         1.9927962618542914
         """
         if self.A < 0.0:
-            raise ValueError("A = {0:18.16e}:  Negative Arrhenius prefactor is prohibited!".format(self.A))
+            raise ValueError(
+                  "A = {0:18.16e}:  Negative Arrhenius prefactor is "
+                  "prohibited!".format(
+                        self.A))
 
         if self.T < 0.0:
-            raise ValueError("T = {0:18.16e}:  Negative temperatures are prohibited!".format(self.T))
+            raise ValueError(
+                  "T = {0:18.16e}:  Negative temperatures are "
+                  "prohibited!".format(
+                        self.T))
 
         if self.R < 0.0:
-            raise ValueError("R = {0:18.16e}:  Negative ideal gas constant is prohibited!".format(self.R))
+            raise ValueError(
+                  "R = {0:18.16e}:  Negative ideal gas constant is "
+                  "prohibited!".format(
+                        self.R))
 
         else:
             try:
@@ -240,9 +257,11 @@ class ModArrheniusCoef(ArrheniusCoef):
 
 		METHODS:
 		========
-		get_coef(): Calculates and returns the Modified Arrhenius rate coefficient
+		get_coef(): Calculates and returns the Modified Arrhenius rate
+		coefficient
 	"""
-    def __init__(self, A, b, E, T, R=8.314):
+
+    def __init__ (self, A, b, E, T, R=8.314):
 
         """
 		NOTES
@@ -254,10 +273,14 @@ class ModArrheniusCoef(ArrheniusCoef):
         super().__init__(A, E, T, R)
         self.b = b
 
-    def __repr__(self):
-        return 'ModArrheniusCoef(A={}, b={}, E={}, T={}, R={})'.format(self.A, self.b, self.E, self.T, self.R)
+    def __repr__ (self):
+        return 'ModArrheniusCoef(A={}, b={}, E={}, T={}, R={})'.format(self.A,
+                                                                       self.b,
+                                                                       self.E,
+                                                                       self.T,
+                                                                       self.R)
 
-    def get_coef(self):
+    def get_coef (self):
         """ Method to calculate the Modified Arrhenius reaction rate coefficient
 
         RETURNS:
@@ -268,8 +291,10 @@ class ModArrheniusCoef(ArrheniusCoef):
         NOTES
         =====
         POST:
-             - self.A, self.E, self.T and self.R are not changed by this function
-             - raises a ValueError exception if A <= 0, T <= 0 or b is not a real number
+             - self.A, self.E, self.T and self.R are not changed by this
+             function
+             - raises a ValueError exception if A <= 0, T <= 0 or b is not a
+             real number
              - returns a float of self.k
 
         EXAMPLES:
@@ -278,24 +303,35 @@ class ModArrheniusCoef(ArrheniusCoef):
         0.19927962618542916
         """
         if self.A < 0.0:
-            raise ValueError("A = {0:18.16e}:  Negative Arrhenius prefactor is prohibited!".format(self.A))
+            raise ValueError(
+                  "A = {0:18.16e}:  Negative Arrhenius prefactor is "
+                  "prohibited!".format(
+                        self.A))
 
         if self.T < 0.0:
-            raise ValueError("T = {0:18.16e}:  Negative temperatures are prohibited!".format(self.T))
+            raise ValueError(
+                  "T = {0:18.16e}:  Negative temperatures are "
+                  "prohibited!".format(
+                        self.T))
 
         if self.R < 0.0:
-            raise ValueError("R = {0:18.16e}:  Negative ideal gas constant is prohibited!".format(self.R))
+            raise ValueError(
+                  "R = {0:18.16e}:  Negative ideal gas constant is "
+                  "prohibited!".format(
+                        self.R))
 
         if not np.isreal(self.b):
             raise ValueError('Modified Arrhenius parameter b must be real!')
 
         else:
             try:
-                self.k = self.A * np.power(self.T, self.b) * np.exp(-self.E / (self.R * self.T))
+                self.k = self.A * np.power(self.T, self.b) * np.exp(
+                      -self.E / (self.R * self.T))
             except Warning:
                 raise OverflowError("The result is too large/small.")
 
             return self.k
+
 
 class Rxn():
     """Base class of reactions
@@ -330,7 +366,7 @@ class Rxn():
         This should be implemented in its subclass.
     """
 
-    def __init__(self, ki, xi, vi_p, vi_dp):
+    def __init__ (self, ki, xi, vi_p, vi_dp):
         self.ki = ki
         self.xi = xi
         self.vi_p = vi_p
@@ -342,24 +378,28 @@ class Rxn():
     #     """Returns the number of species in the reaction"""
     #     return len(self.xi)
 
-    def __len__(self):
+    def __len__ (self):
         """Returns the number of reactions"""
         return len(self.vi_p)
 
-    def __repr__(self):
-        return 'Rxn(ki={}, xi={}, vi_p={}, vi_dp={})'.format(self.ki, self.xi, self.vi_p,  self.vi_dp)
+    def __repr__ (self):
+        return 'Rxn(ki={}, xi={}, vi_p={}, vi_dp={})'.format(self.ki, self.xi,
+                                                             self.vi_p,
+                                                             self.vi_dp)
 
-    def progress_rate(self):
+    def progress_rate (self):
         """ Calculates and returns the progress rate
 
-        Method is not implemented in this base class, but should be implemented in its subclasses.
+        Method is not implemented in this base class, but should be
+        implemented in its subclasses.
         """
         raise NotImplementedError('Subclass must implement this method')
 
-    def reaction_rate(self):
+    def reaction_rate (self):
         """ Calculates and returns the reaction rate
 
-        Method is not implemented in this base class, but should be implemented in its subclasses.
+        Method is not implemented in this base class, but should be
+        implemented in its subclasses.
         """
         raise NotImplementedError('Subclass must implement this method')
 
@@ -370,17 +410,20 @@ class ElemRxn(Rxn):
     """
     pass
 
+
 class NonElemRxn(Rxn):
     """Class of non-elementary reactions
     Subclass of Rxn
     """
     pass
 
+
 class RevElemRxn(ElemRxn):
     """Class of reversible elementary reactions
     Subclass of ElemRxn
     """
     pass
+
 
 class IrrevElemRxn(ElemRxn):
     """Class of irreversible elementary reactions
@@ -399,11 +442,13 @@ class IrrevElemRxn(ElemRxn):
         Concentrations of molecular species
         Initialized with constructor argument xi
 
-    self.vi_p: a list of floats, optional, default value = [[1.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
+    self.vi_p: a list of floats, optional, default value = [[1.0, 1.0, 0.0],
+    [0.0, 0.0, 1.0]]
         Stoichiometric coefficients of the reactants
         Initialized with constructor argument vi_p
 
-    self.vi_dp: a list of floats, optional, default value = [[0.0, 0.0, 1.0], [1.0, 1.0, 0.0]]
+    self.vi_dp: a list of floats, optional, default value = [[0.0, 0.0, 1.0],
+    [1.0, 1.0, 0.0]]
         Stoichiometric coefficients of the products
         Initialized with constructor argument vi_dp
 
@@ -412,8 +457,10 @@ class IrrevElemRxn(ElemRxn):
     PRE:
         - ki, xi, vi_p, and vi_dp have list or np.array type
         - xi is ordered in the form [[A], [B], [C]]
-        - vi_p is ordered in the form [[v_11', v_21', v_31'], [v_12', v_22', v_32']]
-        - vi_dp is ordered in the form [[v_11", v_21", v_31"], [v_12", v_22", v_32"]]
+        - vi_p is ordered in the form [[v_11', v_21', v_31'], [v_12', v_22',
+        v_32']]
+        - vi_dp is ordered in the form [[v_11", v_21", v_31"], [v_12", v_22",
+        v_32"]]
         - four or fewer inputs
     METHODS:
     ========
@@ -423,7 +470,9 @@ class IrrevElemRxn(ElemRxn):
     reaction_rate(): Calculates and returns the reaction rate
     """
 
-    def __init__(self, ki=[10.0, 10.0], xi=[1.0, 1.0, 1.0], vi_p= [[1.0, 1.0, 0.0], [0.0, 0.0, 1.0]], vi_dp = [[0.0, 0.0, 1.0], [1.0, 1.0, 0.0]]):
+    def __init__ (self, ki=[10.0, 10.0], xi=[1.0, 1.0, 1.0],
+                  vi_p=[[1.0, 1.0, 0.0], [0.0, 0.0, 1.0]],
+                  vi_dp=[[0.0, 0.0, 1.0], [1.0, 1.0, 0.0]]):
         self.ki = ki
         self.xi = xi
         self.vi_p = vi_p
@@ -431,21 +480,24 @@ class IrrevElemRxn(ElemRxn):
         self.wi = None
         self.rates = None
 
-
     # def __len__(self):
     #     """Returns the number of species in the reaction"""
     #     return len(self.xi)
 
-    def __len__(self):
+    def __len__ (self):
         """Returns the number of reactions"""
         return len(self.vi_p)
 
-    def __repr__(self):
-        return 'IrrevElemRxn(ki={}, xi={}, vi_p={}, vi_dp={})'.format(self.ki, self.xi, self.vi_p,  self.vi_dp)
+    def __repr__ (self):
+        return 'IrrevElemRxn(ki={}, xi={}, vi_p={}, vi_dp={})'.format(self.ki,
+                                                                      self.xi,
+                                                                      self.vi_p,
+                                                                      self.vi_dp)
 
-    def progress_rate(self):
+    def progress_rate (self):
         """
-        Returns the progress rate w for a system of irreversible elementary reaction
+        Returns the progress rate w for a system of irreversible elementary
+        reaction
         
         RETURNS
         ========
@@ -456,37 +508,41 @@ class IrrevElemRxn(ElemRxn):
         NOTES
         =====
         POST:
-             - self.ki, self.xi, self.vi_p, and self.vi_dp are not changed by this function
+             - self.ki, self.xi, self.vi_p, and self.vi_dp are not changed by
+             this function
              - raises a ValueError exception if any(self.ki <= 0)
              - raises a ValueError exception if any(self.xi < 0)
              - returns a numpy array of floats of progress rate self.wi
         
         EXAMPLES
         =========
-        >>> IrrevElemRxn([10, 10], [1.0, 2.0, 1.0], [[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]],[[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]]).progress_rate()
+        >>> IrrevElemRxn([10, 10], [1.0, 2.0, 1.0], [[1.0, 2.0, 0.0], [2.0,
+        0.0, 2.0]],[[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]]).progress_rate()
         array([ 40.,  10.])
         """
 
-
         # check value conditions
-        if (any(i <= 0 for i in self.ki)): # check reaction coefficients
+        if (any(i <= 0 for i in self.ki)):  # check reaction coefficients
             raise ValueError("reaction rate coefficients ki must be positive.")
-        elif (any(i < 0 for i in self.xi)): # check concentration array
+        elif (any(i < 0 for i in self.xi)):  # check concentration array
             raise ValueError("concentrations xi cannot be negative.")
         else:
             # Convert inputs into numpy column vectors/matrices
-            xi = np.array(self.xi).reshape(-1,1)
+            xi = np.array(self.xi).reshape(-1, 1)
             vi_p = np.matrix(self.vi_p).T
-            ki = np.array(self.ki).reshape(-1,1)
+            ki = np.array(self.ki).reshape(-1, 1)
 
-            prodi = np.prod(np.power(xi, vi_p), axis=0) # calculate the product of xi^(vi_p) for each reaction
-            self.wi = np.squeeze(ki* np.array(prodi).reshape(-1,1)) # multiply ki by prodi
-
+            prodi = np.prod(np.power(xi, vi_p),
+                            axis=0)  # calculate the product of xi^(vi_p) for
+            #  each reaction
+            self.wi = np.squeeze(
+                  ki * np.array(prodi).reshape(-1, 1))  # multiply ki by prodi
 
             return self.wi
 
-    def reaction_rate(self):
-        """Returns the progress rate w for a system of irreversible elementary reaction
+    def reaction_rate (self):
+        """Returns the progress rate w for a system of irreversible
+        elementary reaction
 
         RETURNS
         ========
@@ -497,20 +553,22 @@ class IrrevElemRxn(ElemRxn):
         NOTES
         =====
         POST:
-             - self.ki, self.xi, self.vi_p, and self.vi_dp are not changed by this function
+             - self.ki, self.xi, self.vi_p, and self.vi_dp are not changed by
+             this function
              - raises a ValueError exception if any(self.ki <= 0)
              - raises a ValueError exception if any(self.xi < 0)
              - returns a numpy array of floats of reaction rates, self.rates
         
         EXAMPLES
         =========
-        >>> IrrevElemRxn([10, 10], [1.0, 2.0, 1.0], [[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]],[[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]]).reaction_rate()
+        >>> IrrevElemRxn([10, 10], [1.0, 2.0, 1.0], [[1.0, 2.0, 0.0], [2.0,
+        0.0, 2.0]],[[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]]).reaction_rate()
         array([-60., -70.,  70.])
         """
         # check value conditions
-        if any(i <= 0 for i in self.ki): # check reaction coefficients
+        if any(i <= 0 for i in self.ki):  # check reaction coefficients
             raise ValueError("reaction rates ki must be positive.")
-        elif any(i < 0 for i in self.xi): # check concentration array
+        elif any(i < 0 for i in self.xi):  # check concentration array
             raise ValueError("concentrations xi cannot be negative.")
         else:
             # Convert inputs into numpy column vectors/matrices
@@ -520,7 +578,8 @@ class IrrevElemRxn(ElemRxn):
             w = self.progress_rate()  # calculate progress rate
             vi = vi_dp - vi_p  # calculate overall stoicheometric coefficients
 
-            self.rates = np.squeeze(np.array(np.dot(vi, w)))  # calculate reaction rate
+            self.rates = np.squeeze(
+                  np.array(np.dot(vi, w)))  # calculate reaction rate
 
             return self.rates
 
@@ -535,12 +594,17 @@ class RxnData():
     reversible : bool
         True if reaction is reversible; False if irreversible.
     reactants : Dict[str, int]
-        Mapping of species to concentrations for reactants in reaction.
+        Mapping of species to stoichiometric coefficients for reactants.
         Example: {'H2':1, 'O':1}
     products : Dict[str, int]
-        Mapping of species to concentrations for products in reaction.
-    rate_coeff : List[float]
-        Contains following Arrhenius reaction coefficients: [A, b, E]
+        Mapping of species to stoichiometric coefficients for products.
+    rate_coeff : List[float] or float
+        Reaction rate coefficients contained depend on the type of rate
+        coefficients in the XML file, dictated by the child of the <rateCoeff>
+        element:
+            Arrhenius: [A, E]
+            modifiedArrhenius: [A, b, E]
+            Constant: k
     type : RxnType
         Enum value for reaction type.
     """
@@ -598,7 +662,7 @@ class RxnData():
 
 
 class XmlParser():
-    """ Produces list of RxnData from XML file contents.
+    """ Core method load() produces list of RxnData from XML file contents.
 
     Notes
     -----
@@ -613,7 +677,7 @@ class XmlParser():
 
     def load (self):
         """ Parses XML file contents to create list of RxnData objects
-        containing the data.
+        representing the reactions in the file.
         """
         tree = ET.parse(self.path)
         root = tree.getroot()
@@ -626,7 +690,7 @@ class XmlParser():
         for rxn in root.find('reactionData').findall('reaction'):
             rxn_data = self.__extract_data_from_reaction_element(rxn)
             results.append(rxn_data)
-        return (species, results)
+        return species, results
 
     def __extract_data_from_reaction_element (self, rxn):
         """ Returns RxnData object containing data from <reaction> XML element.
@@ -643,9 +707,9 @@ class XmlParser():
             result.reversible = True
         else:
             raise ChemKinError(
-                  'Invalid reversible attribute encountered in reaction with '
-                  'id '
-                  '= {}'.format(result.rxn_id))
+                  'XmlParser.load()',
+                  'Invalid reversible attribute in reaction {}'.format(
+                      result.rxn_id))
 
         # type
         rnx_type = rxn.get('type').lower().strip()
@@ -653,31 +717,43 @@ class XmlParser():
             result.type = RxnType.Elementary
         else:
             raise ChemKinError(
-                  'Invalid type attribute in reaction with id = {}'.format(
-                        result.rxn_id))
+                  'XmlParser.load()',
+                  'Invalid type attribute in reaction {}'.format(
+                      result.rxn_id))
 
         # rate_coeff
         rate_coeff = rxn.find('rateCoeff')
-        if rate_coeff.find('Arrhenius') != None: # Arrhenius
+        if rate_coeff is None:
+            raise ChemKinError('XmlParser.load()',
+                               'No <rateCoeff> element found in one of the '
+                               'reactions.')
+
+        if rate_coeff.find('Arrhenius') is not None:
             arrhenius = rate_coeff.find('Arrhenius')
             A = float(arrhenius.find('A').text.strip())
             if A < 0:
-                raise ChemKinError('A coeff < 0 in reaction with id = {}'.format(
-                      result.rxn_id))
+                raise ChemKinError('XmlParser.load()',
+                      'A coeff < 0 in reaction with id = {}'.format(
+                            result.rxn_id))
             E = float(arrhenius.find('E').text.strip())
             result.rate_coeff = [A, E]
-        elif rate_coeff.find('modifiedArrhenius') != None: # modifiedArrhenius
+        elif rate_coeff.find('modifiedArrhenius') is not None:
             mod_arrhenius = rate_coeff.find('modifiedArrhenius')
             A = float(mod_arrhenius.find('A').text.strip())
             if A < 0:
-                raise ChemKinError('A coeff < 0 in reaction with id = {}'.format(
-                      result.rxn_id))
+                raise ChemKinError(
+                      'A coeff < 0 in reaction with id = {}'.format(
+                            result.rxn_id))
             b = float(mod_arrhenius.find('b').text.strip())
             E = float(mod_arrhenius.find('E').text.strip())
-            result.rate_coeff = [A, b, E]  
-        else: # Constant
+            result.rate_coeff = [A, b, E]
+        elif rate_coeff.find('Constant') is not None:
             const = rate_coeff.find('Constant')
             result.rate_coeff = float(const.find('k').text.strip())
+        else:
+            raise ChemKinError('XmlParser.load()',
+                               'No recognized child of <rateCoeff> found '
+                               'from which to parse coefficients.')
 
         # reactants / products
         result.reactants = self.__map_conc_to_species(rxn.find('reactants'))
