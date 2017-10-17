@@ -1,9 +1,13 @@
 # Chemical Kinetics Module
 
-## Introduction
-Chemical kinetics is the study of rates of chemical processes such as reaction rates, reaction mechanisms, etc. as well as the construction of mathematical models that can describe the characteristics of a chemical reaction (https://en.wikipedia.org/wiki/Chemical_kinetics). 
+## 1. Introduction
+`chemkin` stands for chemical kinetics and is an objected-oriented library for modeling kinetics of chemical reactions.
 
-In general, chemical reactions can be categorized as elementary or non-elementary and reversible or irreversible. Each class of chemical reactions can be modeled by a set of ODEs (ordinary differential equations) or PDEs (partial differntial equations). 
+### 1.1 Key Chemical Kinetics Concepts
+
+Chemical kinetics is the study of rates of chemical processes such as reaction rates, reaction mechanisms, etc. as well as the construction of mathematical models that can describe the characteristics of a chemical reaction ([wikipedia](https://en.wikipedia.org/wiki/Chemical_kinetics)). Typically, amounts of molecular species reacted (consumed)/formed and the rates of their consumption/formation are of interest.
+
+Chemical reactions can be categorized as elementary or non-elementary and reversible or irreversible. Each class of chemical reactions can be modeled by ODEs (ordinary differential equations) or PDEs (partial differntial equations) using different strategies.
 
 For instance, for a system  consisting of $N$ species undergoing $M$ **irreversible**, **elementary** reactions of the form:
 
@@ -14,7 +18,6 @@ where\
 $S_{i}$ = Chemical symbol of specie $i$ \
 $\nu_{ij}^{\prime}$ = Stoichiometric coefficients of reactants \
 $\nu_{ij}^{\prime\prime}$ = Stoichiometric coefficients of products
-
 
 The rate of change of species $i$ (i.e. the reaction rate of species $i$) can be written as
   
@@ -51,5 +54,25 @@ Note: A complete table of notation
 | $x_{i}$                   | Concentration of specie $i$ |
 | $k_{j}$                   | Reaction rate coefficient for reaction $j$ |
 
+### 1.2 The `chemkin` Module
 
-The high level functionality of the chemkin module is to take an XML file with reaction data as input and outputs the RHS (right-hand-side) of the ODE describing the rate of change of all molecular species involved in the chemical reaction(s) of interest (i.e. $\sum_{j=1}^{M}{\nu_{ij}\omega_{j}}, \text{ for } i = 1, \ldots, N$).
+The high level functionality of the **chemkin** module is to take an XML file with reaction data as input and outputs the RHS (right-hand-side) of the ODE describing the rate of change of all molecular species involved in the chemical reaction(s) of interest (i.e. $\sum_{j=1}^{M}{\nu_{ij}\omega_{j}}, \text{ for } i = 1, \ldots, N$).
+
+Features of the **chemkin** module include:
+
+- Parsing XML file with reaction data
+
+- Handling the calculation of 3+ classes of reaction rate coefficients (e.g. constant, Arrhenius and modified Arrhenius) given the appropriate parameters
+
+- Handling the calculation of progress rates ($\omega_{j}$) and reaction rates ($f_{i}$)  for a system  consisting of $N$ species undergoing $M$ **irreversible**, **elementary** reactions of the above mentioned form
+
+- (Future feature) Handling more classes of reaction rate coefficients and more types of reactions (e.g. reversible and/or non-elementary reactions)
+
+## 2. Installation
+TBD
+
+## 3. Basic Usage and Examples
+
+### 3.1 Basic Usage
+
+### 3.2 Examples
