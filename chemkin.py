@@ -8,17 +8,20 @@ The module handles both reversible and irreversible reactions, as well as
 elementary/nonelementary reactions.
 
 The module contains classes to calculate reaction coefficients and reaction
-base classes (RxnCoef and Reaction) as well as subclasses of RxnCoeff class (
+base classes (RxnCoef and Rxn) as well as subclasses of RxnCoeff class (
 ConstCoef,ArrheniusCoef, ModArrheniusCoef) and subclasses of Rxn class (
-ElemRxn and NonElemRxn). Each of the latter also has subclasses (IrrElemRxn,
-RevElemRxn,IrrNonElemRxn, and RevNonElemRxn)
+ElemRxn and NonElemRxn). Each of the latter also has subclasses (IrrevElemRxn,
+RevElemRxn, IrrevNonElemRxn, and RevNonElemRxn)
+
+The module also contains 2 helper classes (XMLParser and RxnData) that allow
+you to work with reaction data stored in XML files.
 
 
-demo.py file serves as a demo of the code.
+run_chemkin.py file serves as a demo of the code.
 
 Created by Michelle Ho, Jasmine Tong, Filip Michalsky and Nathaniel Stein
 
-#to be added - RevNonElemRxn and IrrNonElemRxn classes
+#to be added - RevNonElemRxn, IrrNonElemRxn and RevNonElemRxn classes
 """
 
 from enum import Enum

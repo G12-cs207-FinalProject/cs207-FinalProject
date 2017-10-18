@@ -175,7 +175,6 @@ $(document).ready(function () {
 <h2>3. Basic Usage</h2>
 <div id="structure-of-the-input-file" class="section level3">
 <h3>3.1 Structure of the input file</h3>
-<p><em><strong>DESCRBIBE THE INPUT FILE</strong></em></p>
 <p>Chemical reaction data should be stored in XML format with the following specifications:</p>
 <ol style="list-style-type: decimal">
 <li><p>a &lt;phase&gt; element with a &lt;speciesArray&gt; child element which lists the molecular species invovled in the reaction</p></li>
@@ -232,7 +231,7 @@ $(document).ready(function () {
 <li><code>RxnData</code></li>
 </ul>
 <div id="xmlparser" class="section level4">
-<h4><code>XmlParser</code></h4>
+<h4>3.2.1 <code>XmlParser</code></h4>
 <p>The <code>XmlParser</code> class is responsible for pulling reaction data out of XML files with its single method: <code>load()</code>. <code>load</code> returns a <code>tuple</code> of two lists:</p>
 <ul>
 <li>the species involved in all the reactions in the file and</li>
@@ -244,7 +243,7 @@ xml = XmlParser('path_to_xml_file.xml')
 species, reaction_data = xml.load()</code></pre>
 </div>
 <div id="rxndata" class="section level4">
-<h4><code>RxnData</code></h4>
+<h4>3.2.2 <code>RxnData</code></h4>
 <p>The reaction data parsed by the <code>XmlParser</code> from XML files is returned as a list of <code>RxnData</code> objects. This class encapsulates relevant information from the XML file in a way that allows the caller to easily process reactions differently according to their features. For example,</p>
 <pre class="python"><code>from chemkin import XmlParser
 xml = XmlParser('path_to_xml_file')
@@ -255,13 +254,39 @@ for rxn in reaction_data:
     if rxn.reversible:
         # Handle special reversible reaction logic
 </code></pre>
-<p>The reaction rate coefficients are stored as a list in the <code>rate_coeff</code> attribute.</p>
+<p><code>RxnData</code> objects have the following attributes:</p>
+<ul>
+<li><p><code>rxn_id</code>: a string for reaction ID</p></li>
+<li><p><code>reversible</code>: a boolean indicating whether the reaction is reversible</p></li>
+<li><p><code>type</code>: a RxnType object from the Enum class indicating whether a reaction is elementary or non-elementary</p></li>
+<li><p><code>rate_coef</code>: a list of parameters for reaction rate coefficient</p></li>
+<li><p><code>reactants</code>: a dictionary with molecular species of the reactants as keys and their respecitve stoicheometric coefficient as values</p></li>
+<li><p><code>products</code>: a dictionary with moelcular speicies of the products as keys and their respective stoichemotetric coefficient as values</p></li>
+</ul>
 </div>
 </div>
-<div id="calculating-the-reaction-rate-coefficient" class="section level3">
-<h3>3.3. Calculating the reaction rate coefficient</h3>
-<div id="rxncoef-and-its-subclasses" class="section level4">
-<h4>RxnCoef and its subclasses</h4>
+<div id="calculating-kinetic-parameters-of-interest" class="section level3">
+<h3>3.3. Calculating kinetic parameters of interest</h3>
+<p>Two families of classes in the <code>chemkin</code> module allow you to compute kinetic paramters such as reaction rate coefficients, progress rates and reaction rates.</p>
+<ul>
+<li><code>RxnCoef</code> base class
+<ul>
+<li><code>ConstCoef</code></li>
+<li><code>ArrheniusCoef</code></li>
+<li><code>ModArrheniusCoef</code></li>
+</ul></li>
+<li><code>Rxn</code> base class
+<ul>
+<li><code>ElemRxn</code>
+<ul>
+<li><code>RevElemRxn</code></li>
+<li><code>IrrevElemRxn</code></li>
+</ul></li>
+<li><code>NonElemRxn</code></li>
+</ul></li>
+</ul>
+<div id="rxncoef-base-class-and-its-subclasses" class="section level4">
+<h4>3.3.1. <code>RxnCoef</code> base class and its subclasses</h4>
 <p>The <code>chemkin</code> module contains a base class <code>RxnCoef</code> from which then the three subclasses (<code>ConstCoef</code>,<code>ArrheniusCoef</code>, and <code>ModArrheniusCoef</code>) inherit its basic properties (such as <code>init</code>,<code>__repr__</code> and <code>__eq__</code>). When creating the instances of these classes, their parameters are based on inputs extracted during the file-reading step <span class="math inline">\(3.2\)</span> from <code>rate_coeff</code> list ((Temperature <span class="math inline">\(T\)</span>, Arrhenius constant <span class="math inline">\(A\)</span> (where applicable), modified constant <span class="math inline">\(b\)</span> (where applicable), ideal gas constant <span class="math inline">\(R\)</span>, and Activation energy <span class="math inline">\(E\)</span>)). The instances of these classes (e.g., an instance of <code>ConstCoef</code>) then calculate a reaction rate coefficients <span class="math inline">\(ki\)</span>’s for each reaction <code>ConstCoef(coef_params).get_coeff()</code>. To decide what type of of class to use, we look at the length of the coefficients list.</p>
 <pre class="python"><code>coef_params = rxn_data.rate_coeff
         
@@ -279,29 +304,47 @@ for rxn in reaction_data:
             ki.append(ConstCoef(coef_params).get_coef())
 </code></pre>
 </div>
+<div id="rxn-base-class-and-its-subclasses" class="section level4">
+<h4>3.3.2 <code>Rxn</code> base class and its subclasses</h4>
+<p>The <code>Rxn</code> base class and its subclasses have methods to calculate the progress rates and reaction rates given data on a system of chemical reactions and associated parameters.</p>
+<p>So far, only the <code>IrrevElemRxn</code> class for a system of irreversible elementary reactions has been fully implemented. The implementation of the subclasses that handle other types of chemical reactions is TBD.</p>
+<p><code>Rxn</code> objects have the following attributes:</p>
+<ul>
+<li><code>ki</code>: a list of reaction rate coefficients</li>
+<li><code>xi</code>: a list of concentrations of molecular species</li>
+<li><code>vi_p</code>: a list of stoichiometric coefficients of the reactants</li>
+<li><code>vi_dp</code>: a list of stoichiometric coefficients of the product</li>
+<li><code>wi</code>: a list of progress rates</li>
+<li><code>rates</code>: a list of reaction rates</li>
+</ul>
+<p><strong>Note</strong> These attributes are initialized when <code>Rxn</code> objects are created. For example, <sub>~</sub> reaction1 = Rxn(ki=[10, 10], xi=[1.0, 2.0, 1.0], vi_p=[[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]], vi_dp=[[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]] <sub>~</sub></p>
+<p><code>Rxn</code> objects have the following methods:</p>
+<ul>
+<li><p><code>progress_rate()</code>: Returns a list of progress rates for the system (Not implemented in the base class)</p></li>
+<li><p><code>reaction_rate()</code>: Returns a list of reaction rates for the system (Not implemented in the base class)</p></li>
+</ul>
+<p><code>IrrevElemRxn</code></p>
+<p>The <code>IrrevElemRxn</code> handles a system consisting of <span class="math inline">\(N\)</span> species undergoing <span class="math inline">\(M\)</span> <strong>irreversible</strong>, <strong>elementary</strong> reactions of the form:</p>
+<p><span class="math display">\[\sum_{i=1}^{N}{\nu_{ij}^{\prime}{S}_{i}} \longrightarrow 
+  \sum_{i=1}^{N}{\nu_{ij}^{\prime\prime}{S}_{i}}, \qquad \text{for } j = 1, \ldots, M\]</span></p>
+<p>The progress rate <span class="math inline">\(\omega_{j}\)</span> is given by</p>
+<p><span class="math display">\[\begin{aligned}
+  \omega_{j} = k_{j}\prod_{i=1}^{N}{x_{i}^{\nu_{ij}^{\prime}}}, \qquad j = 1, \ldots, M
+\end{aligned}
+\]</span></p>
+<p>The reaction rate <span class="math inline">\(f_{i} = \frac{d[i]}{dt}\)</span> is given by</p>
+<p><span class="math display">\[\begin{aligned}
+  f_{i} = \frac{d[i]}{dt} = \sum_{j=1}^{M}{\nu_{ij}\omega_{j}}, \qquad \text{for } i = 1, \ldots, N
+\end{aligned}\]</span></p>
+<p><code>IrrevElemRxn</code> shares the same class attributes as the base class and implements the two methods in the following manner: - <code>progress_rate()</code>: Returns a list of <span class="math inline">\(k_{j}\prod_{i=1}^{N}{x_{i}^{\nu_{ij}^{\prime}}}\)</span></p>
+<ul>
+<li><code>reaction_rate()</code>: Returns a list of <span class="math inline">\(\sum_{j=1}^{M}{\nu_{ij}\omega_{j}}\)</span></li>
+</ul>
 </div>
-<div id="calculating-the-progress-rate" class="section level3">
-<h3>3.4 Calculating the progress rate</h3>
-<div id="irrelemrxn" class="section level4">
-<h4>IrrElemRxn</h4>
-<p>To calculate reaction rate of an elementary, irreversible reaction, we use a class <code>IrrElemRn</code> from our</p>
-</div>
-</div>
-<div id="calculating-the-reaction-rate" class="section level3">
-<h3>3.5 Calculating the reaction rate</h3>
 </div>
 </div>
 <div id="examples" class="section level2">
 <h2>4. Examples</h2>
-<p>The neccessary code can be found at and downloaded from <a href="https://github.com/G12-cs207-FinalProject/cs207-FinalProject">here</a>.</p>
-<p>Once you open the directory with the downloaded files, please note the following items:</p>
-<ul>
-<li>The main module file name is called <strong>chemkin.​py</strong></li>
-<li>The test suite is called <strong>test_chemkin.py</strong>.</li>
-<li>Additional files include execution code stored in <strong>run_chemkin.py</strong> and a set of demo <em>.xml</em> reaction files.</li>
-</ul>
-<p>You can run the test suite on your local machine by typing the following command in your command line when in the directory of the downloaded files.</p>
-<pre class="sh"><code>$ pytest</code></pre>
 <div id="a-system-of-irreversible-elementary-chemical-reactions" class="section level3">
 <h3>4.1. A system of irreversible, elementary chemical reactions</h3>
 <ul>
