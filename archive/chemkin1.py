@@ -47,12 +47,12 @@ class ChemKinError(Exception):
         self.info = info
 
 
-class RxnCoef():
+class RxnCoefficientBase():
     """Base class of reaction rate coefficients
 
 	ATTRIBUTES:
 	========
-	self.k: float
+	k: float
 		Reaction rate coefficient
 		Initialized to None in base class and should be calculated and
 		returned in its subclass.
@@ -85,13 +85,13 @@ class RxnCoef():
         raise NotImplementedError('Subclass must implement this method')
 
 
-class ConstCoef(RxnCoef):
+class ConstantCoefficient(RxnCoefficientBase):
     """Class of constant reaction rate coefficients
-	Subclass of RxnCoef
+	Subclass of RxnCoefficientBase
 
 	ATTRIBUTES:
 	========
-	self.k: float, required
+	k: float, required
 		Reaction rate coefficient
 		Initialized with constructor argument k
 
@@ -105,13 +105,13 @@ class ConstCoef(RxnCoef):
         NOTES
         =====
         PRE:
-            - self.k have numeric type
+            - k have numeric type
             - one input
         """
         self.k = k
 
     def __repr__ (self):
-        return 'ConstCoef(k = {})'.format(self.k)
+        return 'ConstantCoefficient(k = {})'.format(self.k)
 
     def get_coef (self):
         """Returns the constant rate coefficient
@@ -129,7 +129,7 @@ class ConstCoef(RxnCoef):
 
         EXAMPLES:
         =========
-        >>> ConstCoef(10.0).get_coef()
+        >>> ConstantCoefficient(10.0).get_coef()
         10.0
         """
         if self.k < 0:
@@ -138,25 +138,25 @@ class ConstCoef(RxnCoef):
         return self.k
 
 
-class ArrheniusCoef(RxnCoef):
+class ArrheniusCoefficient(RxnCoefficientBase):
     """Class of Arrhenius reaction rate coefficient
-	Subclass of RxnCoef
+	Subclass of RxnCoefficientBase
 
 	ATTRIBUTES:
 	========
-	self.k: float
+	k: float
 		Reaction rate coefficient
 		Calculated by self.get_coef()
-	self.A: float, required
+	A: float, required
 		Arrhenius prefactor
 		Initialized with constructor argument A
-	self.E: float, required
+	E: float, required
 		Activation energy
 		Initialized with constructor argument E
-	self.T: float, required
+	T: float, required
 		Temperature (in Kelvin)
 		Initialized with constructor argument T
-	self.R: float, optional, default value = 8.314
+	R: float, optional, default value = 8.314
 		Ideal gas constant
 		Initialized with constructor argument R
 		Default value of R should not be changed except for unit conversion
@@ -172,7 +172,7 @@ class ArrheniusCoef(RxnCoef):
         NOTES
         =====
         PRE:
-            - self.A, self.E, self.T and self.R have numeric type
+            - A, E, T and R have numeric type
             - four or fewer inputs
         """
         super().__init__()
@@ -182,7 +182,7 @@ class ArrheniusCoef(RxnCoef):
         self.R = R
 
     def __repr__ (self):
-        return 'ArrheniusCoef(A={}, E={}, T={}, R={})'.format(self.A, self.E,
+        return 'ArrheniusCoefficient(A={}, E={}, T={}, R={})'.format(self.A, self.E,
                                                               self.T, self.R)
 
     def get_coef (self):
@@ -203,7 +203,7 @@ class ArrheniusCoef(RxnCoef):
 
         EXAMPLES:
         =========
-        >>> ArrheniusCoef(2.0, 3.0, 100.0).get_coef()
+        >>> ArrheniusCoefficient(2.0, 3.0, 100.0).get_coef()
         1.9927962618542914
         """
         if self.A < 0.0:
@@ -232,28 +232,28 @@ class ArrheniusCoef(RxnCoef):
             return self.k
 
 
-class ModArrheniusCoef(ArrheniusCoef):
+class ModifiedArrheniusCoefficient(ArrheniusCoefficient):
     """Class of Modified Arrhenius reaction rate coefficient
-		Subclass of ArrheniusCoef
+		Subclass of ArrheniusCoefficient
 
 		ATTRIBUTES:
 		========
-		self.k: float
+		k: float
 			Reaction rate coefficient
 			Calculated by self.get_coef()
-		self.A: float, required
+		A: float, required
 			Arrhenius prefactor
 			Initialized with constructor argument A
-		self.b: float, required
+		b: float, required
 			Modified Arrhenius parameter
 			Initialized with constructor argument b
-		self.E: float, required
+		E: float, required
 			Activation energy
 			Initialized with constructor argument E
-		self.T: float, required
+		T: float, required
 			Temperature (in Kelvin)
 			Initialized with constructor argument T
-		self.R: float, optional, default value = 8.314
+		R: float, optional, default value = 8.314
 			Ideal gas constant
 			Initialized with constructor argument R
 			Default value of R should not be changed except for unit conversion
@@ -270,14 +270,14 @@ class ModArrheniusCoef(ArrheniusCoef):
 		NOTES
 		=====
 		PRE:
-			- self.A, self.b, self.E, self.T and self.R have numeric type
+			- A, b, E, T and R have numeric type
 			- five or fewer inputs
 		"""
         super().__init__(A, E, T, R)
         self.b = b
 
     def __repr__ (self):
-        return 'ModArrheniusCoef(A={}, b={}, E={}, T={}, R={})'.format(self.A,
+        return 'ModifiedArrheniusCoefficient(A={}, b={}, E={}, T={}, R={})'.format(self.A,
                                                                        self.b,
                                                                        self.E,
                                                                        self.T,
@@ -302,7 +302,7 @@ class ModArrheniusCoef(ArrheniusCoef):
 
         EXAMPLES:
         =========
-        >>> ModArrheniusCoef(2.0, -0.5, 3.0, 100.0).get_coef()
+        >>> ModifiedArrheniusCoefficient(2.0, -0.5, 3.0, 100.0).get_coef()
         0.19927962618542916
         """
         if self.A < 0.0:
@@ -336,7 +336,7 @@ class ModArrheniusCoef(ArrheniusCoef):
             return self.k
 
 
-class Rxn():
+class RxnBase():
     """Base class of reactions
 
     ATTRIBUTES:
@@ -407,14 +407,14 @@ class Rxn():
         raise NotImplementedError('Subclass must implement this method')
 
 
-class ElemRxn(Rxn):
+class ElemRxn(RxnBase):
     """Class of elementary reactions
     Subclass of Rxn
     """
     pass
 
 
-class NonElemRxn(Rxn):
+class NonElemRxn(RxnBase):
     """Class of non-elementary reactions
     Subclass of Rxn
     """
@@ -428,7 +428,7 @@ class RevElemRxn(ElemRxn):
     pass
 
 
-class IrrevElemRxn(ElemRxn):
+class IrreversibleElementaryRxn(ElemRxn):
     """Class of irreversible elementary reactions
     Subclass of ElemRxn
     Default form of
