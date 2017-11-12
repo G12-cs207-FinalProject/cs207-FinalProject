@@ -4,12 +4,19 @@ irreversible elementary reactions by reading reaction data stored in XML
 files.
 
 """
+import sys
+sys.path.append('../')
+
+from reaction.reaction_coefficients import *
+from reaction.elementary_rxn import *
 
 import numpy as np
 from enum import Enum
 import xml.etree.ElementTree as ET
 
-from chemkin import *
+from preprocessing.parse_xml import *
+#import preprocessing.tests.test_parse_xml
+
 
 
 xml_file = './xml-files/rxns_hw5.xml'
@@ -59,20 +66,20 @@ for T in Ti:
 				A = coef_params[0]
 				b = coef_params[1]
 				E = coef_params[2]
-				ki.append(ModArrheniusCoef(A, b, E, T).get_coef())
+				ki.append(ModifiedArrheniusCoefficient(A, b, E, T).get_coef())
 			else: # arrhenius coef
 				A = coef_params[0]
 				E = coef_params[1]
-				ki.append(ArrheniusCoef(A, E, T).get_coef())
+				ki.append(ArrheniusCoefficient(A, E, T).get_coef())
 		else: # const coef
-			ki.append(ConstCoef(coef_params).get_coef())
+			ki.append(ConstantCoefficient(coef_params).get_coef())
 
 	# print(sys_vi_p)
 	# print(sys_vi_dp)
 	# print(ki)
 	# print(IrrevElemRxn(ki, xi, sys_vi_p, sys_vi_dp))
 
-	rxn_rates = IrrevElemRxn(ki, xi, sys_vi_p, sys_vi_dp).reaction_rate()
+	rxn_rates = IrreversibleElementaryRxn(ki, xi, sys_vi_p, sys_vi_dp).reaction_rate()
 	
 
 	print('------At Temperature', T, 'K------')

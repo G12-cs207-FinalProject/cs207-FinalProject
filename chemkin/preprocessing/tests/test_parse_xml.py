@@ -7,8 +7,12 @@
 #   rxns_neg_A: Same as rxns_ideal except for negative A rateCoeff in first
 #       reaction.
 ###############################################################################
+#Users/filipmichalsky/cs207-final-project/
+import sys
+sys.path.append('../')
 
-import chemikin.preprocessing.parse_xml as px
+import parse_xml as px
+
 
 
 def test_parse_xml_no_suffix():
