@@ -1,3 +1,10 @@
+"""
+A demo of using chemkin.py to calculate the reaction rates of a system of 
+irreversible elementary reactions by reading reaction data stored in XML
+files.
+
+"""
+
 import numpy as np
 from enum import Enum
 import xml.etree.ElementTree as ET
