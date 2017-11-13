@@ -422,10 +422,171 @@ class NonElemRxn(Rxn):
 
 
 class RevElemRxn(ElemRxn):
-    """Class of reversible elementary reactions
+    """Class of Reversible elementary reactions
     Subclass of ElemRxn
+    Default form of
+            v_11' A + v_21' B <-> v_31" C
+            v_32' C <-> v_12' A + v_22' B
+
+    ATTRIBUTES:
+    ========
+    self.ki: float or a list of floats, optional, default value = [10.0, 10.0]
+        Forward reaction rate coefficient
+        Initialized with constructor argument ki
+
+    self.b_ki: float or a list of floats, optional, default value = [20.0, 20.0]
+        Backward reaction rate coefficient
+        Initialized with constructor argument b_ki
+
+    self.xi: a list of floats, optional, default value = [1.0, 1.0, 1.0]
+        Concentrations of molecular species
+        Initialized with constructor argument xi
+
+    self.vi_p: a list of floats, optional, default value = [[1.0, 1.0, 0.0],
+    [0.0, 0.0, 1.0]]
+        Stoichiometric coefficients of the reactants
+        Initialized with constructor argument vi_p
+
+    self.vi_dp: a list of floats, optional, default value = [[0.0, 0.0, 1.0],
+    [1.0, 1.0, 0.0]]
+        Stoichiometric coefficients of the products
+        Initialized with constructor argument vi_dp
+
+
+    NOTES
+    =====
+    PRE:
+        - ki, b_ki, xi, vi_p, and vi_dp have list or np.array type
+        - xi is ordered in the form [[A], [B], [C]]
+        - vi_p is ordered in the form [[v_11', v_21', v_31'], [v_12', v_22', v_32']]
+        - vi_dp is ordered in the form [[v_11", v_21", v_31"], [v_12", v_22", v_32"]]
+        - four or fewer inputs
+    METHODS:
+    ========
+    __len__(): Returns the number of reactions
+    __repr__(): Prints the class name with its attributes
+    progress_rate(): Calculates and returns the total progress rate (forward progress rate - backward progress rate)
+    reaction_rate(): Calculates and returns the reaction rate
     """
-    pass
+    def __init__ (self, ki=[10.0, 10.0], b_ki=[20.0, 20.0], xi=[1.0, 1.0, 1.0],
+                  vi_p=[[1.0, 1.0, 0.0], [0.0, 0.0, 1.0]],
+                  vi_dp=[[0.0, 0.0, 1.0], [1.0, 1.0, 0.0]]):
+        self.ki = ki
+        self.b_ki = b_ki
+        self.xi = xi
+        self.vi_p = vi_p
+        self.vi_dp = vi_dp
+        self.wi = None
+        self.rates = None
+
+    def __len__ (self):
+        """Returns the number of reactions"""
+        return len(self.vi_p)
+
+    def __repr__ (self):
+        return 'RevElemRxn(ki={}, b_ki={}, xi={}, vi_p={}, vi_dp={})'.format(self.ki,
+                                                                            self.b_ki,
+                                                                            self.xi,
+                                                                            self.vi_p,
+                                                                            self.vi_dp)
+
+    def progress_rate (self):
+        """
+        Returns the progress rate w for a system of reversible elementary
+        reaction
+        
+        RETURNS
+        ========
+        self.wi: a numpy array of floats,
+           Has the form self.w unless self.ki <= 0 or self.b_ki <= 0 or self.xi < 0
+           in which cases a ValueError exception is raised
+        
+        NOTES
+        =====
+        POST:
+             - self.ki, self.xi, self.vi_p, and self.vi_dp are not changed by
+             this function
+             - raises a ValueError exception if any(self.ki <= 0)
+             - raises a ValueError exception if any(self.b_ki <= 0)
+             - raises a ValueError exception if any(self.xi < 0)
+             - returns a numpy array of floats of progress rate self.wi
+        
+        EXAMPLES
+        =========
+
+        MAKE EXAMPLE DOC TEST !!!!!! 
+
+
+        """
+
+        # check value conditions
+        if (any(i <= 0 for i in self.ki)):  # check forward reaction coefficients
+            raise ValueError("forward reaction rate coefficients ki must be positive.")
+        elif (any(i <= 0 for i in self.b_ki)):  # check backward reaction coefficients
+            raise ValueError("backward reaction rate coefficients b_ki must be positive.")
+        elif (any(i < 0 for i in self.xi)):  # check concentration array
+            raise ValueError("concentrations xi cannot be negative.")
+        else:
+            # Convert inputs into numpy column vectors/matrices
+            xi = np.array(self.xi).reshape(-1, 1)
+            vi_p = np.matrix(self.vi_p).T
+            vi_dp = np.matrix(self.vi_dp).T
+            ki = np.array(self.ki).reshape(-1, 1)
+            b_ki = np.array(self.b_ki).reshape(-1, 1)
+
+            f_prod = np.prod(np.power(xi, vi_p), axis=0)  # calculate the product of xi^(vi_p) for each reaction
+            b_prod = np.prod(np.power(xi, vi_dp), axis=0)  # calculate the product of xi^(vi_p) for each reaction
+            
+            f_wi = np.squeeze(ki * np.array(f_prod).reshape(-1, 1)) # forward progress rate
+            b_wi = np.squeeze(b_ki * np.array(b_prod).reshape(-1, 1)) # backward progress rate
+            self.wi = f_wi - b_wi  # set total progress rate 
+
+            return self.wi
+
+    def reaction_rate (self):
+        """Returns the progress rate w for a system of reversible elementary reaction
+
+        RETURNS
+        ========
+        self.rates: a numpy array of floats,
+           Has the form self.rates unless self.ki <= 0 or self.b_ki <= 0 or self.xi < 0
+           in which cases a ValueError exception is raised
+    
+        NOTES
+        =====
+        POST:
+             - self.ki, self.b_ki, self.xi, self.vi_p, and self.vi_dp are not changed by this function
+             - raises a ValueError exception if any(self.ki <= 0)
+             - raises a ValueError exception if any(self.b_ki <= 0)
+             - raises a ValueError exception if any(self.xi < 0)
+             - returns a numpy array of floats of reaction rates, self.rates
+        
+        EXAMPLES
+        =========
+
+        MAKE EXAMPLE DOC TEST !!!!!! 
+
+        """
+        # check value conditions
+        if any(i <= 0 for i in self.ki):  # check forward reaction coefficients
+            raise ValueError("forward reaction rates ki must be positive.")
+        elif any(i <= 0 for i in self.b_ki):  # check backward reaction coefficients
+            raise ValueError("backward reaction rates ki must be positive.")
+        elif any(i < 0 for i in self.xi):  # check concentration array
+            raise ValueError("concentrations xi cannot be negative.")
+        else:
+            # Convert inputs into numpy column vectors/matrices
+            vi_p = np.matrix(self.vi_p).T
+            vi_dp = np.matrix(self.vi_dp).T
+            vi = vi_dp - vi_p  # calculate overall stoicheometric coefficients
+
+            if self.wi == None:
+                self.progress_rate()
+            w = self.wi  # get progress rate
+
+            self.rates = np.squeeze(np.array(np.dot(vi, w)))  # calculate reaction rate
+
+            return self.rates
 
 
 class IrrevElemRxn(ElemRxn):
@@ -537,8 +698,7 @@ class IrrevElemRxn(ElemRxn):
             prodi = np.prod(np.power(xi, vi_p),
                             axis=0)  # calculate the product of xi^(vi_p) for
             #  each reaction
-            self.wi = np.squeeze(
-                  ki * np.array(prodi).reshape(-1, 1))  # multiply ki by prodi
+            self.wi = np.squeeze(ki * np.array(prodi).reshape(-1, 1))  # multiply ki by prodi
 
             return self.wi
 
@@ -575,12 +735,15 @@ class IrrevElemRxn(ElemRxn):
             # Convert inputs into numpy column vectors/matrices
             vi_p = np.matrix(self.vi_p).T
             vi_dp = np.matrix(self.vi_dp).T
-
-            w = self.progress_rate()  # calculate progress rate
             vi = vi_dp - vi_p  # calculate overall stoicheometric coefficients
 
-            self.rates = np.squeeze(
-                  np.array(np.dot(vi, w)))  # calculate reaction rate
+            # w = self.progress_rate()  # calculate progress rate
+
+            if self.wi == None:
+                self.progress_rate()
+            w = self.wi  # get progress rate
+
+            self.rates = np.squeeze(np.array(np.dot(vi, w)))  # calculate reaction rate
 
             return self.rates
 
@@ -774,3 +937,78 @@ class XmlParser():
             species = species.upper()
             result[species] = conc
         return result
+
+
+
+import sqlite3
+class Thermo():
+    """ Class of thermodynanmics
+    """
+
+    def __init__ (self, species, T, ki, vi_p, vi_dp, db_name='NASA_coef.sqlite'):
+        self.species = species
+        self.T = T
+        self.ki = ki
+        self.b_ki = None
+        self.vi_p = vi_p
+        self.vi_dp = vi_dp
+        self.dao = ThermoDAO(db_name)
+        
+    def get_backward_coefs (self):
+        vi_p = np.matrix(self.vi_p).T
+        vi_dp = np.matrix(self.vi_dp).T
+        vi = vi_dp - vi_p  # calculate overall stoicheometric coefficients
+
+        H_species = []
+        S_species = []
+        for s in self.species:
+            if self.T >= 1000: # high temperature range
+                NASA_coefs = self.dao.get_coeffs(s, 'high')
+            else: # low temperature range
+                NASA_coefs = self.dao.get_coeffs(s, 'low')
+
+            # Compute enthalpy/(RT) of a specie
+            H_T_arr = np.array([1, 1/2*self.T, 1/3*(self.T**2), 1/4*(self.T**3), 1/5*(self.T**4), 1/self.T])
+            H_coef_arr = np.array([NASA_coefs[0], NASA_coefs[1], NASA_coefs[2], NASA_coefs[3], NASA_coefs[4], NASA_coefs[5]])
+            H_species.append(np.dot(H_T_arr, H_coef_arr))
+
+            # Compute entropy/R of a specie
+            S_T_arr = np.array([np.log(self.T), self.T, 1/2*(self.T**2), 1/3*(self.T**3), 1/4*(self.T**4), 1])
+            S_coef_arr = np.array([NASA_coefs[0], NASA_coefs[1], NASA_coefs[2], NASA_coefs[3], NASA_coefs[4], NASA_coefs[6]])
+            S_species.append(np.dot(S_T_arr, S_coef_arr))
+
+        delta_H = np.squeeze(np.asarray(np.dot(H_species, vi))) # delta enthalpy of a reaction
+        delta_S = np.squeeze(np.asarray(np.dot(S_species, vi))) # delta entropy of a reaction
+
+        gamma = np.sum(vi, axis=0)
+        
+        p0 = 10e5
+        R = 8.314
+        ke = np.squeeze(np.asarray(np.multiply(np.power(p0/(R*self.T), gamma), np.exp(delta_S-delta_H))))
+
+        self.b_ki = self.ki/ke
+
+        return self.b_ki
+
+
+class ThermoDAO():
+    """ Database Access Object for thermodynanmics
+    """
+
+    def __init__ (self, db_name='NASA_coef.sqlite'):
+        self.db = sqlite3.connect(db_name)
+        self.cursor = self.db.cursor()
+
+
+    def get_coeffs (self, species_name, temp_range):
+        query = '''SELECT COEFF_1, COEFF_2, COEFF_3, COEFF_4, COEFF_5, COEFF_6, COEFF_7
+                    FROM {} 
+                    WHERE SPECIES_NAME = "{}"'''.format(temp_range.upper(), species_name)
+        coeffs = list(self.cursor.execute(query).fetchall()[0])
+        return coeffs
+
+
+
+
+
+

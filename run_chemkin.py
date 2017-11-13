@@ -12,7 +12,7 @@ import xml.etree.ElementTree as ET
 from chemkin import *
 
 
-xml_file = './xml-files/rxns_hw5.xml'
+xml_file = './xml-files/rxns_rev.xml'
 xml_parser = XmlParser(xml_file)
 
 
@@ -32,12 +32,17 @@ for T in Ti:
 	sys_vi_p = [] # list of reactant Stoichiometric coefficients in each rxn
 	sys_vi_dp = [] # list of product Stoichiometric coefficients in each rxn
 	ki = [] # list of reation rate coefficients in each rxn
+	is_reversible = None # indicator of the system of reactions being irreversible/reversible
 
 	for rxn_data in rxn_data_list: # 1 rxn per rxn_data
-		if rxn_data.type != RxnType.Elementary: # skip non-elementary reactions for now
-			continue
-		if rxn_data.reversible != False: # skip reversible reactions for now
-			continue
+		if rxn_data.type != RxnType.Elementary: 
+			raise TypeError('Non-elementary reactions not implemented yet.')
+
+		if is_reversible == None:
+			is_reversible = rxn_data.reversible # set the indicator of the system of reactions to be irreversible/reversible
+
+		if rxn_data.reversible != is_reversible: # the system of reactions in the XML file must be all irreversible/reversible
+			raise TypeError('The system of reactions are inconsistent in reversibility.')
 		
 		rxn_id = rxn_data.rxn_id # save id
 
@@ -71,8 +76,12 @@ for T in Ti:
 	# print(sys_vi_dp)
 	# print(ki)
 	# print(IrrevElemRxn(ki, xi, sys_vi_p, sys_vi_dp))
+	if is_reversible == False:
+		rxn_rates = IrrevElemRxn(ki, xi, sys_vi_p, sys_vi_dp).reaction_rate()
+	else:
+		b_ki = Thermo(species, T, ki, sys_vi_p, sys_vi_dp).get_backward_coefs()
+		rxn_rates = RevElemRxn(ki, b_ki, xi, sys_vi_p, sys_vi_dp).reaction_rate()
 
-	rxn_rates = IrrevElemRxn(ki, xi, sys_vi_p, sys_vi_dp).reaction_rate()
 	
 
 	print('------At Temperature', T, 'K------')
