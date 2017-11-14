@@ -6,7 +6,6 @@ files.
 """
 
 from chemkin.reaction.reaction_coefficients import ModifiedArrheniusCoefficient
-from chemkin.reaction.non_elementary_rxn import
 
 from chemkin.preprocessing.parse_xml import XmlParser
 
