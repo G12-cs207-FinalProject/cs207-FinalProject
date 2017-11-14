@@ -7,23 +7,17 @@
 #   rxns_neg_A: Same as rxns_ideal except for negative A rateCoeff in first
 #       reaction.
 ###############################################################################
-#Users/filipmichalsky/cs207-final-project/
-import sys
-sys.path.append('../')
+# Users/filipmichalsky/cs207-final-project/
 
-from chemkin.preprocessing.parse_xml import XmlParser
-
-
-def test_parse_xml_no_suffix():
-    xml = XmlParser('xml-files/rxns_ideal')
-    assert xml.path == 'xml-files/rxns_ideal.xml'
+from pytest import approx
+from chemkin.preprocessing.parse_xml import *
 
 
-def test_parse_basic_functionality():
+def test_parse_basic_functionality ():
     """ Ensures number of reactions returned is correct and that attributes
     of the <reaction> element in the XML file are parsed correctly.
     """
-    xml = XmlParser('xml-files/rxns_ideal.xml')
+    xml = XmlParser('../../xml-files/rxns_ideal.xml')
     species, rxns = xml.load()
 
     # Correct number of reactions returned.
@@ -44,23 +38,23 @@ def test_parse_basic_functionality():
     assert rxns[1].type == RxnType.Elementary, err_msg
 
 
-def test_parse_reactants_products():
+def test_parse_reactants_products ():
     """ Ensures reactants and products parsed correctly. """
-    xml = px.XmlParser('xml-files/rxns_ideal.xml')
+    xml = XmlParser('../../xml-files/rxns_ideal.xml')
     species, rxns = xml.load()
 
     err_msg = 'reactants not parsed correctly.'
-    assert rxns[0].reactants == {'H': 1, 'O2': 1}, err_msg
-    assert rxns[1].reactants == {'H2': 1, 'O': 1}, err_msg
+    assert rxns[0].reactants == {'H':1, 'O2':1}, err_msg
+    assert rxns[1].reactants == {'H2':1, 'O':1}, err_msg
 
     err_msg = 'products not parsed correctly.'
-    assert rxns[0].products == {'OH': 1, 'O': 1}, err_msg
-    assert rxns[1].products == {'OH': 1, 'H': 1}, err_msg
+    assert rxns[0].products == {'OH':1, 'O':1}, err_msg
+    assert rxns[1].products == {'OH':1, 'H':1}, err_msg
 
 
-def test_parse_rxn_coeff():
+def test_parse_rxn_coeff ():
     """ Ensures reaction coefficients are what we expect them to be. """
-    xml = px.XmlParser('xml-files/rxns.xml')
+    xml = XmlParser('../../xml-files/rxns.xml')
     species, rxns = xml.load()
 
     rxn1_coeff = rxns[0].rate_coeff
@@ -80,9 +74,9 @@ def test_parse_rxn_coeff():
     assert rxn3_coeff == approx(1.0e+03)
 
 
-def test_rxndata_equation():
+def test_rxndata_equation ():
     """ Ensures equation representation of RxnData is correct. """
-    xml = px.XmlParser('xml-files/rxns_ideal.xml')
+    xml = XmlParser('../../xml-files/rxns_ideal.xml')
     species, rxns = xml.load()
 
     err_msg = 'equation() method result different than expected.'
@@ -95,28 +89,30 @@ def test_rxndata_equation():
     assert rxns[1].equation() == expected_1, err_msg
 
 
-def test_badparse_negative_A_arr():
+def test_badparse_negative_A_arr ():
     """ Ensures ChemKinError raised when A coefficient for one of the
     reactions is negative.
     """
-    xml = px.XmlParser('xml-files/rxns_neg_A_2.xml')
+    xml = XmlParser('../../xml-files/rxns_neg_A_2.xml')
     try:
         rxns = xml.load()
     except ChemKinError as err:
         assert type(err) == ChemKinError
-        assert str(err).find('A coeff < 0 in reaction with id = reaction02') != -1
+        assert str(err).find(
+            'A coeff < 0 in reaction with id = reaction02') != -1
 
 
-def test_badparse_negative_A_modarr():
+def test_badparse_negative_A_modarr ():
     """ Ensures ChemKinError raised when A coefficient for one of the
     reactions is negative.
     """
-    xml = px.XmlParser('xml-files/rxns_neg_A.xml')
+    xml = XmlParser('../../xml-files/rxns_neg_A.xml')
     try:
         rxns = xml.load()
     except ChemKinError as err:
         assert type(err) == ChemKinError
-        assert str(err).find('A coeff < 0 in reaction with id = reaction01') != -1
+        assert str(err).find(
+            'A coeff < 0 in reaction with id = reaction01') != -1
 
         # with pytest.raises(ChemKinError, message='Expecting ChemKinError '
         #                                             'because of negative A coeff.'):

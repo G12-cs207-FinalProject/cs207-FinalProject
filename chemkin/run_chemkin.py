@@ -5,14 +5,14 @@ files.
 
 """
 
-from chemkin.reaction.reaction_coefficients import ModifiedArrheniusCoefficient
-
+from chemkin.reaction.reaction_coefficients import *
+from chemkin.reaction.elementary_rxn import *
+from chemkin.thermodynamics.thermo import  *
 from chemkin.preprocessing.parse_xml import XmlParser
 
 from chemkin.thermodynamics.thermo import *
 
 #import preprocessing.tests.test_parse_xml
-
 
 xml_file = './xml-files/rxns_rev.xml'
 xml_parser = XmlParser(xml_file)
