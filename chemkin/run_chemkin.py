@@ -33,7 +33,7 @@ for i, s in enumerate(species):
 	species_idx_dict[s] = i
 
 
-Ti = [750, 1500, 2500]
+Ti = [750, 1500, 2500]  
 
 for T in Ti:
 	sys_vi_p = [] # list of reactant Stoichiometric coefficients in each rxn

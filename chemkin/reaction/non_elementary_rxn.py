@@ -1,5 +1,5 @@
 
-from .base_rxn import RxnBase
+from chemkin.reaction.base_rxn import RxnBase
 
 
 class NonElementaryRxn(RxnBase):
