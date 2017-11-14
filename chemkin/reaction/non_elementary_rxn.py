@@ -1,4 +1,3 @@
-
 from chemkin.reaction.base_rxn import RxnBase
 
 

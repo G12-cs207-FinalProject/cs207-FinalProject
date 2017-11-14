@@ -1,8 +1,5 @@
-import sys
-sys.path.append('../')
 import numpy as np
-from reaction.base_rxn import RxnBase
-
+from chemkin.reaction.base_rxn import RxnBase
 
 class ElementaryRxn(RxnBase):
     """Class of elementary reactions

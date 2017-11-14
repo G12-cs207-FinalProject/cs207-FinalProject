@@ -11,12 +11,11 @@
 import sys
 sys.path.append('../')
 
-import parse_xml as px
-
+from chemkin.preprocessing.parse_xml import XmlParser
 
 
 def test_parse_xml_no_suffix():
-    xml = px.XmlParser('xml-files/rxns_ideal')
+    xml = XmlParser('xml-files/rxns_ideal')
     assert xml.path == 'xml-files/rxns_ideal.xml'
 
 
@@ -24,7 +23,7 @@ def test_parse_basic_functionality():
     """ Ensures number of reactions returned is correct and that attributes
     of the <reaction> element in the XML file are parsed correctly.
     """
-    xml = px.XmlParser('xml-files/rxns_ideal.xml')
+    xml = XmlParser('xml-files/rxns_ideal.xml')
     species, rxns = xml.load()
 
     # Correct number of reactions returned.

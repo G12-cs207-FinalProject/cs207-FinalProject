@@ -1,16 +1,15 @@
 from enum import Enum
 import xml.etree.ElementTree as ET
-import sys
-sys.path.append('../')
 
-from chemkin_errors import *
+from chemkin import ChemKinError
 
 
 class RxnType(Enum):
     Elementary = 1
 
+
 class XmlParser():
-    """ Core method load() produces list of RxnData from XML file contents.
+    """Core method load() produces list of RxnData from XML file contents.
 
     Notes
     -----
@@ -41,7 +40,7 @@ class XmlParser():
         return species, results
 
     def __extract_data_from_reaction_element (self, rxn):
-        """ Returns RxnData object containing data from <reaction> XML element.
+        """Returns RxnData object containing data from <reaction> XML element.
         Raises ChemKinError for invalid attribute/element values.
         """
         result = RxnData()
@@ -57,7 +56,7 @@ class XmlParser():
             raise ChemKinError(
                   'XmlParser.load()',
                   'Invalid reversible attribute in reaction {}'.format(
-                      result.rxn_id))
+                        result.rxn_id))
 
         # type
         rnx_type = rxn.get('type').lower().strip()
@@ -67,7 +66,7 @@ class XmlParser():
             raise ChemKinError(
                   'XmlParser.load()',
                   'Invalid type attribute in reaction {}'.format(
-                      result.rxn_id))
+                        result.rxn_id))
 
         # rate_coeff
         rate_coeff = rxn.find('rateCoeff')
@@ -81,8 +80,8 @@ class XmlParser():
             A = float(arrhenius.find('A').text.strip())
             if A < 0:
                 raise ChemKinError('XmlParser.load()',
-                      'A coeff < 0 in reaction with id = {}'.format(
-                            result.rxn_id))
+                                   'A coeff < 0 in reaction with ' \
+                                   'id = {}'.format(result.rxn_id))
             E = float(arrhenius.find('E').text.strip())
             result.rate_coeff = [A, E]
         elif rate_coeff.find('modifiedArrhenius') is not None:
@@ -121,6 +120,7 @@ class XmlParser():
             species = species.upper()
             result[species] = conc
         return result
+
 
 class RxnData():
     """ Container for individual reaction data.

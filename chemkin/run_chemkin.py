@@ -4,15 +4,13 @@ irreversible elementary reactions by reading reaction data stored in XML
 files.
 
 """
-import sys
-sys.path.append('../')
 
-from reaction.reaction_coefficients import *
-from reaction.elementary_rxn import *
+from chemkin.reaction.reaction_coefficients import *
+from chemkin.reaction.elementary_rxn import *
 
 import numpy as np
 
-from preprocessing.parse_xml import *
+from chemkin.preprocessing.parse_xml import XmlParser
 
 from thermodynamics.thermo import *
 #import preprocessing.tests.test_parse_xml
