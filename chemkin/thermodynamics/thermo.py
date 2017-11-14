@@ -5,6 +5,8 @@ Created on Mon Nov 13 21:33:30 2017
 
 @author: filipmichalsky
 """
+import sys
+sys.path.append('../')
 
 import sqlite3
 import numpy as np

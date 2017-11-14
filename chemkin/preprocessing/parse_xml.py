@@ -1,5 +1,9 @@
 from enum import Enum
 import xml.etree.ElementTree as ET
+import sys
+sys.path.append('../')
+
+from chemkin_errors import *
 
 
 class RxnType(Enum):
