@@ -2,10 +2,9 @@
 Test suite for the base_rxn.py module
 
 """
-
-import warnings
-
-import chemikin.reaction.base_rxn as rxn
+import chemkin.reaction.base_rxn as rxn
+import sys
+import io
 
 # tests for RxnBase() base class
 def test_RxnBase_progress_rate_not_implemented():

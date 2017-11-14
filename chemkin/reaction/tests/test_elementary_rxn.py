@@ -3,7 +3,7 @@ Test suite for the elementary_rxn.py module
 
 """
 
-import chemikin.reaction.elementary_rxn as er
+import chemkin.reaction.elementary_rxn as er
 import io
 import sys
 

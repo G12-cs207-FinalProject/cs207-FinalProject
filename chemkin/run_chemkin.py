@@ -5,16 +5,14 @@ files.
 
 """
 
-from chemkin.reaction.reaction_coefficients import *
-from chemkin.reaction.elementary_rxn import *
-
-import numpy as np
+from chemkin.reaction.reaction_coefficients import ModifiedArrheniusCoefficient
+from chemkin.reaction.non_elementary_rxn import
 
 from chemkin.preprocessing.parse_xml import XmlParser
 
-from thermodynamics.thermo import *
-#import preprocessing.tests.test_parse_xml
+from chemkin.thermodynamics.thermo import *
 
+#import preprocessing.tests.test_parse_xml
 
 
 xml_file = './xml-files/rxns_rev.xml'
@@ -31,7 +29,7 @@ for i, s in enumerate(species):
 	species_idx_dict[s] = i
 
 
-Ti = [750, 1500, 2500]  
+Ti = [750, 1500, 2500]
 
 for T in Ti:
 	sys_vi_p = [] # list of reactant Stoichiometric coefficients in each rxn

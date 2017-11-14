@@ -6,12 +6,13 @@ Test suite for the reaction_coefficients.py module
 import numpy as np
 import warnings
 
-import chemkin.reaction.reaction_coefficients as rc
+from chemkin.reaction.reaction_coefficients import ConstantCoefficient, \
+    ArrheniusCoefficient, RxnCoefficientBase, ModifiedArrheniusCoefficient
 
 # tests for RxnCoefficientBase() base class
 def test_base_get_coef():
     try:
-        rc.RxnCoefficientBase().get_coef()
+        RxnCoefficientBase().get_coef()
     except NotImplementedError as err:
         assert(type(err) == NotImplementedError)
 
