@@ -1,0 +1,9 @@
+setup.cfg
+setup.py
+chemkin/__init__.py
+chemkin/chemkin_errors.py
+chemkin/run_chemkin.py
+chemkin.egg-info/PKG-INFO
+chemkin.egg-info/SOURCES.txt
+chemkin.egg-info/dependency_links.txt
+chemkin.egg-info/top_level.txt

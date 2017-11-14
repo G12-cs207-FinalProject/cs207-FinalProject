@@ -5,11 +5,16 @@ files.
 
 """
 
-import numpy as np
-from enum import Enum
-import xml.etree.ElementTree as ET
+from chemkin.reaction.reaction_coefficients import *
+from chemkin.reaction.elementary_rxn import *
 
-from chemkin import *
+import numpy as np
+
+from chemkin.preprocessing.parse_xml import XmlParser
+
+from thermodynamics.thermo import *
+#import preprocessing.tests.test_parse_xml
+
 
 
 xml_file = './xml-files/rxns_rev.xml'
@@ -26,7 +31,7 @@ for i, s in enumerate(species):
 	species_idx_dict[s] = i
 
 
-Ti = [750, 1500, 2500]
+Ti = [750, 1500, 2500]  
 
 for T in Ti:
 	sys_vi_p = [] # list of reactant Stoichiometric coefficients in each rxn
@@ -88,8 +93,3 @@ for T in Ti:
 	for s, rate in zip(species, rxn_rates):
 		print('    ', s, ':', rate)
 	print('--------------------------------')
-
-
-
-
-
