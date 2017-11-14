@@ -11,9 +11,6 @@ from reaction.reaction_coefficients import *
 from reaction.elementary_rxn import *
 
 import numpy as np
-from enum import Enum
-import xml.etree.ElementTree as ET
-
 
 from preprocessing.parse_xml import *
 
