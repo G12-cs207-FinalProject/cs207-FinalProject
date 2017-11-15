@@ -2,7 +2,7 @@ from enum import Enum
 import numpy as np
 import xml.etree.ElementTree as ET
 
-from chemkin import ChemKinError
+from chemkin.chemkin_errors import ChemKinError
 from chemkin.reaction.reaction_coefficients import ConstantCoefficient
 from chemkin.reaction.reaction_coefficients import ArrheniusCoefficient
 from chemkin.reaction.reaction_coefficients import ModifiedArrheniusCoefficient
