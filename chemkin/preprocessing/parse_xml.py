@@ -1,7 +1,12 @@
 from enum import Enum
+import numpy as np
 import xml.etree.ElementTree as ET
 
 from chemkin import ChemKinError
+from chemkin.reaction.reaction_coefficients import ConstantCoefficient
+from chemkin.reaction.reaction_coefficients import ArrheniusCoefficient
+from chemkin.reaction.reaction_coefficients import ModifiedArrheniusCoefficient
+from chemkin.thermodynamics.thermo import Thermo
 
 
 class RxnType(Enum):
@@ -120,6 +125,76 @@ class XmlParser():
             species = species.upper()
             result[species] = conc
         return result
+
+    def parsed_data(self, Ti):
+        species, rxn_data_list = self.load()
+        n_species = len(species)
+
+        species_idx_dict = {} # build the dictionary of key = species_name, value = species_index
+        for i, s in enumerate(species):
+            species_idx_dict[s] = i
+
+        # parsed_data_dic = {'species': [],'ki': [], 'sys_vi_p':[], 'sys_vi_dp':[], 'is_reversible': [], 'Ti': []}
+        for T in Ti:
+            sys_vi_p = [] # list of reactant Stoichiometric coefficients in each rxn
+            sys_vi_dp = [] # list of product Stoichiometric coefficients in each rxn
+            ki = [] # list of reation rate coefficients in each rxn
+            is_reversible = None # indicator of the system of reactions being irreversible/reversible
+
+            for rxn_data in rxn_data_list: # 1 rxn per rxn_data
+                if rxn_data.type != RxnType.Elementary: 
+                    raise TypeError('Non-elementary reactions not implemented yet.')
+
+                if is_reversible == None:
+                    is_reversible = rxn_data.reversible # set the indicator of the system of reactions to be irreversible/reversible
+
+                if rxn_data.reversible != is_reversible: # the system of reactions in the XML file must be all irreversible/reversible
+                    raise TypeError('The system of reactions are inconsistent in reversibility.')
+                
+                rxn_id = rxn_data.rxn_id # save id
+
+                rxn_vi_p = np.zeros((n_species,)) # save the Stoichiometric coefficients of the reactants in this rxn
+                for s, vi in rxn_data.reactants.items():
+                    idx = species_idx_dict[s] # get index of the specii
+                    rxn_vi_p[idx] = vi
+                sys_vi_p.append(list(rxn_vi_p))
+
+                rxn_vi_dp = np.zeros((n_species,)) # save the Stoichiometric coefficients of the products in this rxn
+                for s, vi in rxn_data.products.items():
+                    idx = species_idx_dict[s] # get index of the specii
+                    rxn_vi_dp[idx] = vi
+                sys_vi_dp.append(list(rxn_vi_dp))
+                
+                coef_params = rxn_data.rate_coeff
+                if isinstance(coef_params, list):
+                    if len(coef_params) == 3: # modified arrhenius coef
+                        A = coef_params[0]
+                        b = coef_params[1]
+                        E = coef_params[2]
+                        ki.append(ModifiedArrheniusCoefficient(A, b, E, T).get_coef())
+                    else: # arrhenius coef
+                        A = coef_params[0]
+                        E = coef_params[1]
+                        ki.append(ArrheniusCoefficient(A, E, T).get_coef())
+                else: # const coef
+                    ki.append(ConstantCoefficient(coef_params).get_coef())
+
+            parsed_data_dic = {}
+            parsed_data_dic['species'] = species
+            parsed_data_dic['ki'] = ki
+            parsed_data_dic['sys_vi_p'] = sys_vi_p
+            parsed_data_dic['sys_vi_dp'] = sys_vi_dp
+            parsed_data_dic['is_reversible'] = is_reversible
+            parsed_data_dic['Ti'] = Ti
+        
+        if is_reversible == True:
+            b_ki = Thermo(species, T, ki, sys_vi_p, sys_vi_dp).get_backward_coefs()
+            parsed_data_dic['b_ki'] = b_ki
+        
+        return parsed_data_dic
+
+        
+            
 
 
 class RxnData():
