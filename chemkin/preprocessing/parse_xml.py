@@ -2,7 +2,7 @@ from enum import Enum
 import numpy as np
 import xml.etree.ElementTree as ET
 
-from chemkin import ChemKinError
+from chemkin.chemkin_errors import ChemKinError
 from chemkin.reaction.reaction_coefficients import ConstantCoefficient
 from chemkin.reaction.reaction_coefficients import ArrheniusCoefficient
 from chemkin.reaction.reaction_coefficients import ModifiedArrheniusCoefficient
@@ -143,13 +143,15 @@ class XmlParser():
 
             for rxn_data in rxn_data_list: # 1 rxn per rxn_data
                 if rxn_data.type != RxnType.Elementary: 
-                    raise TypeError('Non-elementary reactions not implemented yet.')
+                    raise ChemKinError('XmlParser.parsed_data_list(Ti)',
+                        'Non-elementary reactions cannot be parsed now.')
 
                 if is_reversible == None:
                     is_reversible = rxn_data.reversible # set the indicator of the system of reactions to be irreversible/reversible
 
                 if rxn_data.reversible != is_reversible: # the system of reactions in the XML file must be all irreversible/reversible
-                    raise TypeError('The system of reactions are inconsistent in reversibility.')
+                    raise ChemKinError('XmlParser.parsed_data_list(Ti)',
+                        'The system of reactions in the XML file {} are inconsistent in reversibility.'.format(self.path))
                 
                 rxn_id = rxn_data.rxn_id # save id
 
@@ -188,10 +190,15 @@ class XmlParser():
                 parsed_data_dic['T'] = T
         
             if is_reversible == True:
-                b_ki = Thermo(species, T, ki, sys_vi_p, sys_vi_dp).get_backward_coefs()
-                parsed_data_dic['b_ki'] = b_ki
-        
+                try:
+                    b_ki = Thermo(species, T, ki, sys_vi_p, sys_vi_dp).get_backward_coefs()
+                    parsed_data_dic['b_ki'] = b_ki
+                except ChemKinError as err:
+                    print(str(err))
+                    parsed_data_dic['b_ki'] = 'Not Defined'
+                
             parsed_data_dic_list.append(parsed_data_dic)
+
         return parsed_data_dic_list
 
 

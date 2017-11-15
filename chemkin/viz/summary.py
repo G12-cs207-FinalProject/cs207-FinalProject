@@ -13,10 +13,18 @@ def print_reaction_rate(parsed_data_list, xi):
 	
 		if is_reversible == False:
 			rxn_rates = IrreversibleElementaryRxn(ki, xi, sys_vi_p, sys_vi_dp).reaction_rate()
+		
 		else:
 			b_ki = parsed_data['b_ki']
+			if str(b_ki) == 'Not Defined':
+				print('------At Temperature', T, 'K------')
+				print('Backward reaction coefficients not defined: T={} is not in some specie\'s temperature range.'.format(T))
+				print('--------------------------------')
+				continue
+			
 			rxn_rates = ReversibleElementaryRxn(ki, b_ki, xi, sys_vi_p, sys_vi_dp).reaction_rate()
 
+		
 		print('------At Temperature', T, 'K------')
 		for s, rate in zip(species, rxn_rates):
 			print('    ', s, ':', rate)

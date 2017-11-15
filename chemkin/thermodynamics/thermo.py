@@ -11,6 +11,7 @@ sys.path.append('../')
 import os.path
 import sqlite3
 import numpy as np
+from chemkin.chemkin_errors import ChemKinError
 
 class Thermo():
     """ Class of thermodynanmics
@@ -28,15 +29,24 @@ class Thermo():
         self.vi = np.matrix(self.vi_dp).T - np.matrix(self.vi_p).T  # calculate overall stoicheometric coefficients
         self.gamma = np.sum(self.vi, axis=0)
         self.dao = ThermoDAO(db_name)
-        
+
+
     def get_backward_coefs (self):
+        species_high = self.dao.get_species(self.T, 'high')
+        species_low = self.dao.get_species(self.T, 'low')
 
         H_over_RT_species = []
         S_over_R_species = []
         for s in self.species:
             if self.T >= 1000: # high temperature range
+                if s not in species_high:
+                    raise ChemKinError('Thermo.get_backward_coefs()',
+                        'The specie {}\'s high temperature bound is not higher than the current T={}.'.format(s, self.T))
                 NASA_coefs = self.dao.get_coeffs(s, 'high')
             else: # low temperature range
+                if s not in species_low:
+                    raise ChemKinError('Thermo.get_backward_coefs()',
+                        'The specie {}\'s low temperature bound is not lower than the current T={}.'.format(s, self.T))
                 NASA_coefs = self.dao.get_coeffs(s, 'low')
 
             # Compute enthalpy/(RT) of a specie
@@ -76,4 +86,18 @@ class ThermoDAO():
         db.commit()
         db.close()
         return coeffs
+
+    def get_species(self, temp, temp_range):
+        db = sqlite3.connect(self.db_path)
+        cursor = db.cursor()
+        if temp_range == 'low': # temp_range == 'low'
+            query = '''SELECT SPECIES_NAME FROM {} WHERE TLOW < {}'''.format(temp_range.upper(), temp)
+        else: # temp_range == 'high'
+            query = '''SELECT SPECIES_NAME FROM {} WHERE THIGH > {}'''.format(temp_range.upper(), temp)
+        species = []
+        for s in cursor.execute(query).fetchall():
+            species.append(s[0])
+        db.commit()
+        db.close()
+        return species
 
