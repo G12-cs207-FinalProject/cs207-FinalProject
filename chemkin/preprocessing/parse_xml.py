@@ -126,7 +126,7 @@ class XmlParser():
             result[species] = conc
         return result
 
-    def parsed_data(self, Ti):
+    def parsed_data_list(self, Ti):
         species, rxn_data_list = self.load()
         n_species = len(species)
 
@@ -134,7 +134,7 @@ class XmlParser():
         for i, s in enumerate(species):
             species_idx_dict[s] = i
 
-        # parsed_data_dic = {'species': [],'ki': [], 'sys_vi_p':[], 'sys_vi_dp':[], 'is_reversible': [], 'Ti': []}
+        parsed_data_dic_list = [] # list of dicts, one for each 1 set of rxns (1 xml file) under one temperature
         for T in Ti:
             sys_vi_p = [] # list of reactant Stoichiometric coefficients in each rxn
             sys_vi_dp = [] # list of product Stoichiometric coefficients in each rxn
@@ -179,22 +179,21 @@ class XmlParser():
                 else: # const coef
                     ki.append(ConstantCoefficient(coef_params).get_coef())
 
-            parsed_data_dic = {}
-            parsed_data_dic['species'] = species
-            parsed_data_dic['ki'] = ki
-            parsed_data_dic['sys_vi_p'] = sys_vi_p
-            parsed_data_dic['sys_vi_dp'] = sys_vi_dp
-            parsed_data_dic['is_reversible'] = is_reversible
-            parsed_data_dic['Ti'] = Ti
+                parsed_data_dic = {}
+                parsed_data_dic['species'] = species
+                parsed_data_dic['ki'] = ki
+                parsed_data_dic['sys_vi_p'] = sys_vi_p
+                parsed_data_dic['sys_vi_dp'] = sys_vi_dp
+                parsed_data_dic['is_reversible'] = is_reversible
+                parsed_data_dic['T'] = T
         
-        if is_reversible == True:
-            b_ki = Thermo(species, T, ki, sys_vi_p, sys_vi_dp).get_backward_coefs()
-            parsed_data_dic['b_ki'] = b_ki
+            if is_reversible == True:
+                b_ki = Thermo(species, T, ki, sys_vi_p, sys_vi_dp).get_backward_coefs()
+                parsed_data_dic['b_ki'] = b_ki
         
-        return parsed_data_dic
+            parsed_data_dic_list.append(parsed_data_dic)
+        return parsed_data_dic_list
 
-        
-            
 
 
 class RxnData():
