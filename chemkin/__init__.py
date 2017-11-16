@@ -1,3 +1,4 @@
+# Import all module attributes into chemkin namespace.
 from chemkin.preprocessing.parse_xml import *
 from chemkin.reaction.base_rxn import *
 from chemkin.reaction.elementary_rxn import *

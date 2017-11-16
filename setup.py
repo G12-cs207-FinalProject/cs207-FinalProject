@@ -1,10 +1,11 @@
 from setuptools import setup
 
 setup(name='chemkin',
-      version='1.3',
+      version='2.1',
       description='The best chemkin package',
       url='https://github.com/G12-cs207-FinalProject/cs207-FinalProject.git',
-      author='Parser',
+      author='Monsieur Package du Parser',
+      author_email='nathaniel_stein@g.harvard.edu',
       license='Harvard',
       packages=['chemkin',
                 'chemkin.preprocessing',
