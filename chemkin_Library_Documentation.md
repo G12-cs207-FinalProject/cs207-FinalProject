@@ -13,9 +13,15 @@ Chemical reactions can be categorized as elementary or non-elementary and revers
 
 For a system  consisting of $N$ species undergoing $M$ **irreversible**, **elementary** reactions of the form:
 
+<<<<<<< HEAD
 <!-- $$\sum_{i=1}^{N}{\nu_{ij}^{\prime}{S}_{i}} \longrightarrow 
   \sum_{i=1}^{N}{\nu_{ij}^{\prime\prime}{S}_{i}}, \qquad \text{for } j = 1, \ldots, M$$ -->
   ![](http://latex.codecogs.com/svg.latex?%5Csum_%7Bi%3D1%7D%5E%7BN%7D%7B%5Cnu_%7Bij%7D%5E%7B%5Cprime%7D%7BS%7D_%7Bi%7D%7D%20%5Clongrightarrow%20%5Csum_%7Bi%3D1%7D%5E%7BN%7D%7B%5Cnu_%7Bij%7D%5E%7B%5Cprime%5Cprime%7D%7BS%7D_%7Bi%7D%7D%2C%20%5Cqquad%20%5Ctext%7Bfor%20%7D%20j%20%3D%201%2C%20%5Cldots%2C%20M)
+=======
+<!--$$\sum_{i=1}^{N}{\nu_{ij}^{\prime}{S}_{i}} \longrightarrow 
+  \sum_{i=1}^{N}{\nu_{ij}^{\prime\prime}{S}_{i}}, \qquad \text{for } j = 1, \ldots, M$$--> ![](../../../../Desktop/images/LaTeX/a9204e5d733eb293e2e8448889465458.svg)
+  \sum_{i=1}^{N}{\nu_{ij}^{\prime\prime}{S}_{i}}, \qquad \text{for } j = 1, \ldots, M$$
+>>>>>>> 10b483dade2cb96ab544c29db73056bb916d0fdb
 
 where\
 $S_{i}$ = Chemical symbol of specie $i$ \
@@ -24,7 +30,13 @@ $\nu_{ij}^{\prime\prime}$ = Stoichiometric coefficients of products
 
 The **rate of change of species $i$** (i.e. the **reaction rate of species $i$**) can be written as
   
+<<<<<<< HEAD
 $$\begin{aligned}
+=======
+<!--$$\begin{aligned}
+  f_{i} = \frac{d[i]}{dt} = \sum_{j=1}^{M}{\nu_{ij}\omega_{j}} \qquad i = 1, \ldots, N
+\end{aligned}$$--> ![](../../../../Desktop/images/LaTeX/097f319db66ed262bdf5aab87c724364.svg)
+>>>>>>> 10b483dade2cb96ab544c29db73056bb916d0fdb
   f_{i} = \frac{d[i]}{dt} = \sum_{j=1}^{M}{\nu_{ij}\omega_{j}} \qquad i = 1, \ldots, N
 \end{aligned}$$
 
@@ -35,7 +47,14 @@ $\omega_{j}$ = Progress rate of reaction $j$
 
 The **progress rate $\omega_{j}$** for reaction $j$ is given by 
 
+<<<<<<< HEAD
 $$\begin{aligned}
+=======
+<!--$$\begin{aligned}
+  \omega_{j} = k_{j}\prod_{i=1}^{N}{x_{i}^{\nu_{ij}^{\prime}}} \qquad j = 1, \ldots, M
+\end{aligned}
+$$--> ![](../../../../Desktop/images/LaTeX/96e1c135f26e8bad38118211e2037760.svg)
+>>>>>>> 10b483dade2cb96ab544c29db73056bb916d0fdb
   \omega_{j} = k_{j}\prod_{i=1}^{N}{x_{i}^{\nu_{ij}^{\prime}}} \qquad j = 1, \ldots, M
 \end{aligned}
 $$
@@ -48,11 +67,19 @@ There are several types of **forward reaction rate coefficient $k_{j}$**, includ
 
 **Constant coefficient**: coefficient  is constant for all reaction temperatures
 
+<<<<<<< HEAD
 $$k_{j} = k_{j}$$
 
 **Arrhenius coefficient**:
 
 $$k_{j} = A \cdot exp^{-E_a/(RT)}$$
+=======
+<!--$$k_{j} = k_{j}$$--> ![](../../../../Desktop/images/LaTeX/27087107aca4f24d0081e2b9161b1bf8.svg)
+
+**Arrhenius coefficient**:
+
+<!--$$k_{j} = A \cdot exp^{-E_a/(RT)}$$--> ![](../../../../Desktop/images/LaTeX/0852f0e6359f5321d77276b35d3114d9.svg)
+>>>>>>> 10b483dade2cb96ab544c29db73056bb916d0fdb
 
 where\
 $A$ = Arrhenius prefactor\
@@ -63,7 +90,11 @@ $T$ = Temperature
 
 **Modified Arrhenius coefficient**:
 
+<<<<<<< HEAD
 $$k_{j} = AT^{b}exp^{-E_a/(RT)}$$
+=======
+<!--$$k_{j} = AT^{b}exp^{-E_a/(RT)}$$--> ![](../../../../Desktop/images/LaTeX/dc5ce79608c9e58b669face4f8caf50d.svg)
+>>>>>>> 10b483dade2cb96ab544c29db73056bb916d0fdb
 
 where\
 $A$ = Arrhenius prefactor\
@@ -94,7 +125,11 @@ Note: A complete table of notation of **irreversible elementary** reacion
 
 For a system  consisting of $N$ species undergoing $M$ **reversible**, **elementary** reactions of the form:
 
+<<<<<<< HEAD
 $$\sum_{i=1}^{N}{\nu_{ij}^{\prime}\mathcal{S}_{i}}  \rightleftharpoons \sum_{i=1}^{N}{\nu_{ij}^{\prime\prime}\mathcal{S}_{i}} \qquad j = 1, \ldots, M$$
+=======
+<!--$$\sum_{i=1}^{N}{\nu_{ij}^{\prime}\mathcal{S}_{i}}  \rightleftharpoons \sum_{i=1}^{N}{\nu_{ij}^{\prime\prime}\mathcal{S}_{i}} \qquad j = 1, \ldots, M$$--> ![](../../../../Desktop/images/LaTeX/147465619e7b975262fc8958e08f5567.svg)
+>>>>>>> 10b483dade2cb96ab544c29db73056bb916d0fdb
 
 where\
 $S_{i}$ = Chemical symbol of specie $i$ \
@@ -103,7 +138,13 @@ $\nu_{ij}^{\prime\prime}$ = Stoichiometric coefficients of products
 
 The **rate of change of species $i$** (i.e. the **reaction rate of species $i$**) can be written as
   
+<<<<<<< HEAD
 $$\begin{aligned}
+=======
+<!--$$\begin{aligned}
+  f_{i} = \frac{d[i]}{dt} = \sum_{j=1}^{M}{\nu_{ij}r_{j}} \qquad i = 1, \ldots, N
+\end{aligned}$$--> ![](../../../../Desktop/images/LaTeX/3faf3882522f2009aa59e581bee1f9a0.svg)
+>>>>>>> 10b483dade2cb96ab544c29db73056bb916d0fdb
   f_{i} = \frac{d[i]}{dt} = \sum_{j=1}^{M}{\nu_{ij}r_{j}} \qquad i = 1, \ldots, N
 \end{aligned}$$
 
@@ -113,7 +154,11 @@ $r_{j}$ = Total progress rate of reaction $j$
 
 The **total progress rate $r_{j}$** of reaction $j$ is given by
 
+<<<<<<< HEAD
 $$r_{j} = k_{j}^{\left(f\right)}\prod_{i=1}^{N}{x_{i}^{\nu_{ij}^{\prime}}} - k_{j}^{\left(b\right)}\prod_{i=1}^{N}{x_{i}^{\nu_{ij}^{\prime\prime}}}, \qquad j = 1,\ldots, M$$
+=======
+<!--$$r_{j} = k_{j}^{\left(f\right)}\prod_{i=1}^{N}{x_{i}^{\nu_{ij}^{\prime}}} - k_{j}^{\left(b\right)}\prod_{i=1}^{N}{x_{i}^{\nu_{ij}^{\prime\prime}}}, \qquad j = 1,\ldots, M$$--> ![](../../../../Desktop/images/LaTeX/757e6fcb4196d17d2ecf8b2eba990a79.svg)
+>>>>>>> 10b483dade2cb96ab544c29db73056bb916d0fdb
 
 where\
 $k_{j}^{\left(f\right)}$ = Forward reaction rate coefficient for reaction $j$\
@@ -122,14 +167,22 @@ $x_{i}$ = Concentration of specie $i$
 
 The **backward reaction rate $k_{j}^{\left(b\right)}$** is given by
 
+<<<<<<< HEAD
 $$k_{j}^{\left(b\right)} = \frac{k_{j}^{\left(f\right)}}{k_{j}^{e}}, \qquad j =1, \ldots, M$$
+=======
+<!--$$k_{j}^{\left(b\right)} = \frac{k_{j}^{\left(f\right)}}{k_{j}^{e}}, \qquad j =1, \ldots, M$$--> ![](../../../../Desktop/images/LaTeX/ab147fd4ad95ca062cbc65f94a3fc30f.svg)
+>>>>>>> 10b483dade2cb96ab544c29db73056bb916d0fdb
 
 where\
 $k_{j}^{e}$ = Equilibrium constant for reaction $j$
 
 The **equilibrium constant  $k_{j}^{e}$** is related to the equilibrium thermochemistry of the elementary reactions, and it is given by
 
+<<<<<<< HEAD
 $$k_{j}^{e} = \left(\frac{p_{0}}{RT}\right)^{\gamma_{j}}\exp\left(\frac{\Delta S_{j}}{R} - \frac{\Delta H_{j}}{RT}\right), \qquad j =1, \ldots, M$$
+=======
+<!--$$k_{j}^{e} = \left(\frac{p_{0}}{RT}\right)^{\gamma_{j}}\exp\left(\frac{\Delta S_{j}}{R} - \frac{\Delta H_{j}}{RT}\right), \qquad j =1, \ldots, M$$--> ![](../../../../Desktop/images/LaTeX/fdc24c3c5cd3ba78faa4692c85b5fcc6.svg)
+>>>>>>> 10b483dade2cb96ab544c29db73056bb916d0fdb
 
 where\
 $\gamma_{j} = \sum_{i=1}^{N}{\nu_{ij}}$\
@@ -141,16 +194,26 @@ Read more about [Equilibrium constant](https://en.wikipedia.org/wiki/Equilibrium
 
 The **entropy change $\Delta S_{j}$** and the **enthalpy change $\Delta H_{j}$** of reaction $j$ is given by 
 
+<<<<<<< HEAD
 $$\Delta S_{j} = \sum_{i=1}^{N}{\nu_{ij}S_{i}} = \sum_{i=1}^{N}{\nu_{ij}\int_{T_{0}}^{T}{\frac{C_{p,i}\left(T\right)}{T} \ \mathrm{d}T}} \qquad j =1, \ldots, M$$
 
 $$\Delta H_{j} = \sum_{i=1}^{N}{\nu_{ij}H_{i}} = \sum_{i=1}^{N}{\nu_{ij}\int_{T_{0}}^{T}{C_{p,i}\left(T\right) \ \mathrm{d}T}} \qquad j =1, \ldots, M$$
+=======
+<!--$$\Delta S_{j} = \sum_{i=1}^{N}{\nu_{ij}S_{i}} = \sum_{i=1}^{N}{\nu_{ij}\int_{T_{0}}^{T}{\frac{C_{p,i}\left(T\right)}{T} \ \mathrm{d}T}} \qquad j =1, \ldots, M$$--> ![](../../../../Desktop/images/LaTeX/4bd894b46a29b7d951d3060f125c255c.svg)
+
+<!--$$\Delta H_{j} = \sum_{i=1}^{N}{\nu_{ij}H_{i}} = \sum_{i=1}^{N}{\nu_{ij}\int_{T_{0}}^{T}{C_{p,i}\left(T\right) \ \mathrm{d}T}} \qquad j =1, \ldots, M$$--> ![](../../../../Desktop/images/LaTeX/59448074953fb4e73672d5d09c863ebb.svg)
+>>>>>>> 10b483dade2cb96ab544c29db73056bb916d0fdb
 
 where\
 $C_{p,i}$ = Specific heat at constant pressure of species $i$
 
 The **specific heat at constant pressure $C_{p,i}$** is given by a polynomial in $T$ (called the NASA polynomial),
 
+<<<<<<< HEAD
 $$C_{p,i} = \left(\sum_{k=1}^{5}{a_{ik}T^{k-1}}\right)R, \qquad i = 1, \ldots, N.$$
+=======
+<!--$$C_{p,i} = \left(\sum_{k=1}^{5}{a_{ik}T^{k-1}}\right)R, \qquad i = 1, \ldots, N.$$--> ![](../../../../Desktop/images/LaTeX/fcd42feaf4b885a2c06091eed98bd00d.svg)
+>>>>>>> 10b483dade2cb96ab544c29db73056bb916d0fdb
 
 where\
 $T$ = Temperature\
@@ -158,6 +221,7 @@ $R$ = Ideal gas constant
 
 The integrated forms of $\Delta S_{j}$,  $\Delta H_{j}$, $C_{p,i}$, using $7^{th}$ order NASA polynomials are:
 
+<<<<<<< HEAD
 $$\frac{C_{p,i}}{R} = a_{i1} + a_{i2}T + a_{i3}T^{2} + a_{i4}T^{3} + a_{i5}T^{4}$$
 
 <br>
@@ -167,6 +231,17 @@ $$\frac{H_{i}}{RT} = a_{i1} + \frac{1}{2}a_{i2}T + \frac{1}{3}a_{i3}T^{2} + \fra
 <br>
 
 $$\frac{S_{i}}{R} = a_{i1}\ln\left(T\right) + a_{i2}T + \frac{1}{2}a_{i3}T^{2} + \frac{1}{3}a_{i4}T^{3} + \frac{1}{4}a_{i5}T^{4} + a_{i7}$$
+=======
+<!--$$\frac{C_{p,i}}{R} = a_{i1} + a_{i2}T + a_{i3}T^{2} + a_{i4}T^{3} + a_{i5}T^{4}$$--> ![](../../../../Desktop/images/LaTeX/48a79fe31743cdcd963d227f50e24deb.svg)
+
+<br>
+
+<!--$$\frac{H_{i}}{RT} = a_{i1} + \frac{1}{2}a_{i2}T + \frac{1}{3}a_{i3}T^{2} + \frac{1}{4}a_{i4}T^{3} + \frac{1}{5}a_{i5}T^{4} + \frac{a_{i6}}{T}$$--> ![](../../../../Desktop/images/LaTeX/59b66b2a8497252c7b6475e11c9ac779.svg)
+
+<br>
+
+<!--$$\frac{S_{i}}{R} = a_{i1}\ln\left(T\right) + a_{i2}T + \frac{1}{2}a_{i3}T^{2} + \frac{1}{3}a_{i4}T^{3} + \frac{1}{4}a_{i5}T^{4} + a_{i7}$$--> ![](../../../../Desktop/images/LaTeX/aab9310ca1ecbbd7515249a5c8fb4ed0.svg)
+>>>>>>> 10b483dade2cb96ab544c29db73056bb916d0fdb
 <br>
 
 for $i = 1, \ldots, N$.
@@ -302,12 +377,23 @@ Chemical reaction data should be stored in XML format with the following specifi
 
 **Example 3.1.** XML file for the following chemical reaction:
 
+<<<<<<< HEAD
 $$
+=======
+<!--$$
+\begin{aligned}
+2H_2 + O_2 \quad \longrightarrow \quad 2OH + H_2
+\end{aligned}
+$$--> ![](../../../../Desktop/images/LaTeX/02bf8eb08d510f12c806251ccee28b08.svg)
+>>>>>>> 10b483dade2cb96ab544c29db73056bb916d0fdb
 \begin{aligned}
 2H_2 + O_2 \quad \longrightarrow \quad 2OH + H_2
 \end{aligned}
 $$
+<<<<<<< HEAD
 
+=======
+>>>>>>> 10b483dade2cb96ab544c29db73056bb916d0fdb
 ~~~~
 <?xml version="1.0"?>
 <ctml>
@@ -499,19 +585,37 @@ The `elementary_rxn` module deals with elementary chemical reactions. It contain
 
 This class handles a system  consisting of $N$ species undergoing $M$ **irreversible**, **elementary** reactions of the form:
 
+<<<<<<< HEAD
 $$\sum_{i=1}^{N}{\nu_{ij}^{\prime}{S}_{i}} \longrightarrow 
+=======
+<!--$$\sum_{i=1}^{N}{\nu_{ij}^{\prime}{S}_{i}} \longrightarrow 
+  \sum_{i=1}^{N}{\nu_{ij}^{\prime\prime}{S}_{i}}, \qquad \text{for } j = 1, \ldots, M$$--> ![](../../../../Desktop/images/LaTeX/a9204e5d733eb293e2e8448889465458.svg)
+>>>>>>> 10b483dade2cb96ab544c29db73056bb916d0fdb
   \sum_{i=1}^{N}{\nu_{ij}^{\prime\prime}{S}_{i}}, \qquad \text{for } j = 1, \ldots, M$$
 
 The progress rate $\omega_{j}$ is given by 
 
+<<<<<<< HEAD
 $$\begin{aligned}
+=======
+<!--$$\begin{aligned}
+  \omega_{j} = k_{j}\prod_{i=1}^{N}{x_{i}^{\nu_{ij}^{\prime}}}, \qquad j = 1, \ldots, M
+\end{aligned}
+$$--> ![](../../../../Desktop/images/LaTeX/dffb902d6008c93a88d172fd2e769f7f.svg)
+>>>>>>> 10b483dade2cb96ab544c29db73056bb916d0fdb
   \omega_{j} = k_{j}\prod_{i=1}^{N}{x_{i}^{\nu_{ij}^{\prime}}}, \qquad j = 1, \ldots, M
 \end{aligned}
 $$
 
 The reaction rate $f_{i} = \frac{d[i]}{dt}$ is given by
   
+<<<<<<< HEAD
 $$\begin{aligned}
+=======
+<!--$$\begin{aligned}
+  f_{i} = \frac{d[i]}{dt} = \sum_{j=1}^{M}{\nu_{ij}\omega_{j}}, \qquad \text{for } i = 1, \ldots, N
+\end{aligned}$$--> ![](../../../../Desktop/images/LaTeX/9df89b7d69add10535e978f8619edb44.svg)
+>>>>>>> 10b483dade2cb96ab544c29db73056bb916d0fdb
   f_{i} = \frac{d[i]}{dt} = \sum_{j=1}^{M}{\nu_{ij}\omega_{j}}, \qquad \text{for } i = 1, \ldots, N
 \end{aligned}$$
 
@@ -525,6 +629,7 @@ $$\begin{aligned}
 
 This class handles a system  consisting of $N$ species undergoing $M$ **reversible**, **elementary** reactions of the form:
 
+<<<<<<< HEAD
 $$\sum_{i=1}^{N}{\nu_{ij}^{\prime}\mathcal{S}_{i}}  \rightleftharpoons \sum_{i=1}^{N}{\nu_{ij}^{\prime\prime}\mathcal{S}_{i}} \qquad j = 1, \ldots, M$$
 
 The total progress rate $r_{j}$ is given by 
@@ -534,6 +639,19 @@ $$r_{j} = k_{j}^{\left(f\right)}\prod_{i=1}^{N}{x_{i}^{\nu_{ij}^{\prime}}} - k_{
 The reaction rate $f_{i} = \frac{d[i]}{dt}$ is given by
   
 $$\begin{aligned}
+=======
+<!--$$\sum_{i=1}^{N}{\nu_{ij}^{\prime}\mathcal{S}_{i}}  \rightleftharpoons \sum_{i=1}^{N}{\nu_{ij}^{\prime\prime}\mathcal{S}_{i}} \qquad j = 1, \ldots, M$$--> ![](../../../../Desktop/images/LaTeX/147465619e7b975262fc8958e08f5567.svg)
+
+The total progress rate $r_{j}$ is given by 
+
+<!--$$r_{j} = k_{j}^{\left(f\right)}\prod_{i=1}^{N}{x_{i}^{\nu_{ij}^{\prime}}} - k_{j}^{\left(b\right)}\prod_{i=1}^{N}{x_{i}^{\nu_{ij}^{\prime\prime}}}, \qquad j = 1,\ldots, M$$--> ![](../../../../Desktop/images/LaTeX/757e6fcb4196d17d2ecf8b2eba990a79.svg)
+
+The reaction rate $f_{i} = \frac{d[i]}{dt}$ is given by
+  
+<!--$$\begin{aligned}
+  f_{i} = \frac{d[i]}{dt} = \sum_{j=1}^{M}{\nu_{ij}r_{j}}, \qquad \text{for } i = 1, \ldots, N
+\end{aligned}$$--> ![](../../../../Desktop/images/LaTeX/bca7d39cea2642b16a9445cc3b92f0b9.svg)
+>>>>>>> 10b483dade2cb96ab544c29db73056bb916d0fdb
   f_{i} = \frac{d[i]}{dt} = \sum_{j=1}^{M}{\nu_{ij}r_{j}}, \qquad \text{for } i = 1, \ldots, N
 \end{aligned}$$
 
@@ -570,7 +688,17 @@ summary.print_reaction_rate(parsed_data_list, xi)
 
 - The system of chemical reactions of interest:
 
+<<<<<<< HEAD
 $$
+=======
+<!--$$
+\begin{aligned}
+2H_2 + O_2 &\longrightarrow 2OH + H_2 \\
+OH + HO_2 &\longrightarrow H_2O + O_2 \\
+H_2O + O_2 &\longrightarrow HO_2 + OH
+\end{aligned}
+$$--> ![](../../../../Desktop/images/LaTeX/e576ad4884e6fc8d0906b0381f8205bf.svg)
+>>>>>>> 10b483dade2cb96ab544c29db73056bb916d0fdb
 \begin{aligned}
 2H_2 + O_2 &\longrightarrow 2OH + H_2 \\
 OH + HO_2 &\longrightarrow H_2O + O_2 \\
