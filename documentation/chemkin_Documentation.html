@@ -1,0 +1,856 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>chemkin_Documentation</title>
+<link rel="stylesheet" href="https://stackedit.io/res-min/themes/base.css" />
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body><div class="container"><h1 id="chemical-kinetics-library">Chemical Kinetics Library</h1>
+
+
+
+<h2 id="1-introduction">1. Introduction</h2>
+
+<p><code>chemkin</code> stands for chemical kinetics and is an objected-oriented library for modeling kinetics of chemical reactions.</p>
+
+
+
+<h3 id="11-key-chemical-kinetics-concepts">1.1 Key Chemical Kinetics Concepts</h3>
+
+<p>Chemical kinetics is the study of rates of chemical processes such as reaction rates, reaction mechanisms, etc. as well as the construction of mathematical models that can describe the characteristics of a chemical reaction (<a href="https://en.wikipedia.org/wiki/Chemical_kinetics">wikipedia</a>). Typically, amounts of molecular species reacted (consumed)/formed and the rates of their consumption/formation are of interest.</p>
+
+<p>Chemical reactions can be categorized as elementary or non-elementary and reversible or irreversible. Each class of chemical reactions can be modeled by ODEs (ordinary differential equations) or PDEs (partial differntial equations) using different strategies.</p>
+
+
+
+<h4 id="irreversible-elementary-reaction"><em>Irreversible Elementary Reaction</em></h4>
+
+<p>For a system  consisting of <script type="math/tex" id="MathJax-Element-1">N</script> species undergoing <script type="math/tex" id="MathJax-Element-2">M</script> <strong>irreversible</strong>, <strong>elementary</strong> reactions of the form:</p>
+
+
+
+<p><script type="math/tex; mode=display" id="MathJax-Element-217">\sum_{i=1}^{N}{\nu_{ij}^{\prime}{s}_{i}} \longrightarrow 
+  \sum_{i=1}^{N}{\nu_{ij}^{\prime\prime}{s}_{i}}, \qquad \text{for } j = 1, \ldots, M</script></p>
+
+<p>where <br>
+<script type="math/tex" id="MathJax-Element-218">s_{i}</script> = Chemical symbol of specie <script type="math/tex" id="MathJax-Element-219">i</script>  <br>
+<script type="math/tex" id="MathJax-Element-220">\nu_{ij}^{\prime}</script> = Stoichiometric coefficients of reactants  <br>
+<script type="math/tex" id="MathJax-Element-221">\nu_{ij}^{\prime\prime}</script> = Stoichiometric coefficients of products</p>
+
+<p>The <strong>rate of change of species <script type="math/tex" id="MathJax-Element-222">i</script></strong> (i.e. the <strong>reaction rate of species <script type="math/tex" id="MathJax-Element-223">i</script></strong>) can be written as</p>
+
+<p><script type="math/tex; mode=display" id="MathJax-Element-10">\begin{aligned}
+  f_{i} = \frac{d[i]}{dt} = \sum_{j=1}^{M}{\nu_{ij}\omega_{j}} \qquad i = 1, \ldots, N
+\end{aligned}</script></p>
+
+<p>where <br>
+<script type="math/tex" id="MathJax-Element-11">\nu_{ij}</script> = <script type="math/tex" id="MathJax-Element-12">\nu_{ij}^{\prime\prime}</script> - <script type="math/tex" id="MathJax-Element-13">\nu_{ij}^{\prime}</script>  <br>
+<script type="math/tex" id="MathJax-Element-14">\omega_{j}</script> = Progress rate of reaction <script type="math/tex" id="MathJax-Element-15">j</script></p>
+
+<p>The <strong>progress rate <script type="math/tex" id="MathJax-Element-16">\omega_{j}</script></strong> for reaction <script type="math/tex" id="MathJax-Element-17">j</script> is given by </p>
+
+
+
+<p><script type="math/tex; mode=display" id="MathJax-Element-18">\begin{aligned}
+  \omega_{j} = k_{j}\prod_{i=1}^{N}{x_{i}^{\nu_{ij}^{\prime}}} \qquad j = 1, \ldots, M
+\end{aligned}
+</script></p>
+
+<p>where  <br>
+<script type="math/tex" id="MathJax-Element-19">k_{j}</script> = Forward reaction rate coefficient for reaction <script type="math/tex" id="MathJax-Element-20">j</script> <br>
+<script type="math/tex" id="MathJax-Element-21">x_{i}</script> = Concentration of specie <script type="math/tex" id="MathJax-Element-22">i</script></p>
+
+<p>There are several types of <strong>forward reaction rate coefficient <script type="math/tex" id="MathJax-Element-23">k_{j}</script></strong>, including - </p>
+
+<p><strong>Constant coefficient</strong>: coefficient  is constant for all reaction temperatures</p>
+
+
+
+<p><script type="math/tex; mode=display" id="MathJax-Element-24">k_{j} = k_{j}</script></p>
+
+<p><strong>Arrhenius coefficient</strong>:</p>
+
+
+
+<p><script type="math/tex; mode=display" id="MathJax-Element-226">k_{j} = A \cdot exp^{-E_a/(RT)}</script></p>
+
+<p><strong>Modified Arrhenius coefficient</strong>:</p>
+
+<p><script type="math/tex; mode=display" id="MathJax-Element-227">k_{j} = AT^{b}exp^{-E_a/(RT)}</script></p>
+
+<p>where <br>
+<script type="math/tex" id="MathJax-Element-228">A</script> = Arrhenius prefactor <br>
+<script type="math/tex" id="MathJax-Element-229">b</script> = Modified Arrhenius paramter <br>
+<script type="math/tex" id="MathJax-Element-230">E_a</script> = Activation energy <br>
+<script type="math/tex" id="MathJax-Element-231">R</script> = Ideal gas constant <br>
+<script type="math/tex" id="MathJax-Element-232">T</script> = Temperature</p>
+
+<p>Note: A complete table of notation of <strong>irreversible elementary</strong> reacion</p>
+
+<table>
+<thead>
+<tr>
+  <th align="center">Symbol</th>
+  <th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+  <td align="center"><script type="math/tex" id="MathJax-Element-233">\mathcal{s}_{i}</script></td>
+  <td>Chemical symbol of specie <script type="math/tex" id="MathJax-Element-234">i</script></td>
+</tr>
+<tr>
+  <td align="center"><script type="math/tex" id="MathJax-Element-235">\nu_{ij}^{\prime}</script></td>
+  <td>Stoichiometric coefficients of reactants</td>
+</tr>
+<tr>
+  <td align="center"><script type="math/tex" id="MathJax-Element-236">\nu_{ij}^{\prime\prime}</script></td>
+  <td>Stoichiometric coefficients of products</td>
+</tr>
+<tr>
+  <td align="center"><script type="math/tex" id="MathJax-Element-237">N</script></td>
+  <td>Number of species in system</td>
+</tr>
+<tr>
+  <td align="center"><script type="math/tex" id="MathJax-Element-238">M</script></td>
+  <td>Number of elementary reactions</td>
+</tr>
+<tr>
+  <td align="center"><script type="math/tex" id="MathJax-Element-239">f_{i}</script></td>
+  <td>Rate of consumption or formation of specie <script type="math/tex" id="MathJax-Element-240">i</script> (reaction rate)</td>
+</tr>
+<tr>
+  <td align="center"><script type="math/tex" id="MathJax-Element-241">\omega_{j}</script></td>
+  <td>Progress rate of reaction <script type="math/tex" id="MathJax-Element-242">j</script></td>
+</tr>
+<tr>
+  <td align="center"><script type="math/tex" id="MathJax-Element-243">x_{i}</script></td>
+  <td>Concentration of specie <script type="math/tex" id="MathJax-Element-244">i</script></td>
+</tr>
+<tr>
+  <td align="center"><script type="math/tex" id="MathJax-Element-245">k_{j}</script></td>
+  <td>Reaction rate coefficient for reaction <script type="math/tex" id="MathJax-Element-246">j</script></td>
+</tr>
+<tr>
+  <td align="center"><script type="math/tex" id="MathJax-Element-247">A</script></td>
+  <td>Arrhenius prefactor</td>
+</tr>
+<tr>
+  <td align="center"><script type="math/tex" id="MathJax-Element-248">b</script></td>
+  <td>Modified Arrhenius paramter</td>
+</tr>
+<tr>
+  <td align="center"><script type="math/tex" id="MathJax-Element-249">R</script></td>
+  <td>Ideal gas constant</td>
+</tr>
+<tr>
+  <td align="center"><script type="math/tex" id="MathJax-Element-250">E_a</script></td>
+  <td>Activation energy</td>
+</tr>
+<tr>
+  <td align="center"><script type="math/tex" id="MathJax-Element-251">T</script></td>
+  <td>Temperature</td>
+</tr>
+</tbody></table>
+
+
+<h4 id="reversible-elementary-reaction"><em>Reversible Elementary Reaction</em></h4>
+
+<p>For a system  consisting of <script type="math/tex" id="MathJax-Element-55">N</script> species undergoing <script type="math/tex" id="MathJax-Element-56">M</script> <strong>reversible</strong>, <strong>elementary</strong> reactions of the form:</p>
+
+
+
+<p><script type="math/tex; mode=display" id="MathJax-Element-266">\sum_{i=1}^{N}{\nu_{ij}^{\prime}\mathcal{s}_{i}}  \rightleftharpoons \sum_{i=1}^{N}{\nu_{ij}^{\prime\prime}\mathcal{s}_{i}} \qquad j = 1, \ldots, M</script></p>
+
+<p>where <br>
+<script type="math/tex" id="MathJax-Element-267">\mathcal{s}_{i}</script> = Chemical symbol of specie <script type="math/tex" id="MathJax-Element-268">i</script>  <br>
+<script type="math/tex" id="MathJax-Element-269">\nu_{ij}^{\prime}</script> = Stoichiometric coefficients of reactants  <br>
+<script type="math/tex" id="MathJax-Element-270">\nu_{ij}^{\prime\prime}</script> = Stoichiometric coefficients of products</p>
+
+<p>The <strong>rate of change of species <script type="math/tex" id="MathJax-Element-271">i</script></strong> (i.e. the <strong>reaction rate of species <script type="math/tex" id="MathJax-Element-272">i</script></strong>) can be written as</p>
+
+<p><script type="math/tex; mode=display" id="MathJax-Element-64">\begin{aligned}
+  f_{i} = \frac{d[i]}{dt} = \sum_{j=1}^{M}{\nu_{ij}r_{j}} \qquad i = 1, \ldots, N
+\end{aligned}</script></p>
+
+<p>where <br>
+<script type="math/tex" id="MathJax-Element-65">\nu_{ij}</script> = <script type="math/tex" id="MathJax-Element-66">\nu_{ij}^{\prime\prime}</script> - <script type="math/tex" id="MathJax-Element-67">\nu_{ij}^{\prime}</script>  <br>
+<script type="math/tex" id="MathJax-Element-68">r_{j}</script> = Total progress rate of reaction <script type="math/tex" id="MathJax-Element-69">j</script></p>
+
+<p>The <strong>total progress rate <script type="math/tex" id="MathJax-Element-70">r_{j}</script></strong> of reaction <script type="math/tex" id="MathJax-Element-71">j</script> is given by</p>
+
+
+
+<p><script type="math/tex; mode=display" id="MathJax-Element-191">r_{j} = k_{j}^{\left(f\right)}\prod_{i=1}^{N}{x_{i}^{\nu_{ij}^{\prime}}} - k_{j}^{\left(b\right)}\prod_{i=1}^{N}{x_{i}^{\nu_{ij}^{\prime\prime}}}, \qquad j = 1,\ldots, M</script></p>
+
+<p>where <br>
+<script type="math/tex" id="MathJax-Element-192">k_{j}^{\left(f\right)}</script> = Forward reaction rate coefficient for reaction <script type="math/tex" id="MathJax-Element-193">j</script> <br>
+<script type="math/tex" id="MathJax-Element-194">k_{j}^{\left(b\right)}</script> = Backward reaction rate coefficient for reaction <script type="math/tex" id="MathJax-Element-195">j</script> <br>
+<script type="math/tex" id="MathJax-Element-196">x_{i}</script> = Concentration of specie <script type="math/tex" id="MathJax-Element-197">i</script></p>
+
+<p>The <strong>backward reaction rate coefficient <script type="math/tex" id="MathJax-Element-198">k_{j}^{\left(b\right)}</script></strong> is given by</p>
+
+<p><script type="math/tex; mode=display" id="MathJax-Element-199">k_{j}^{\left(b\right)} = \frac{k_{j}^{\left(f\right)}}{k_{j}^{e}}, \qquad j =1, \ldots, M</script></p>
+
+<p>where <br>
+<script type="math/tex" id="MathJax-Element-200">k_{j}^{e}</script> = Equilibrium constant for reaction <script type="math/tex" id="MathJax-Element-201">j</script></p>
+
+<p>The <strong>equilibrium constant  <script type="math/tex" id="MathJax-Element-202">k_{j}^{e}</script></strong> is related to the equilibrium thermochemistry of the elementary reactions, and it is given by</p>
+
+<p><script type="math/tex; mode=display" id="MathJax-Element-84">k_{j}^{e} = \left(\frac{p_{0}}{RT}\right)^{\gamma_{j}}\exp\left(\frac{\Delta S_{j}}{R} - \frac{\Delta H_{j}}{RT}\right), \qquad j =1, \ldots, M</script></p>
+
+<p>where <br>
+<script type="math/tex" id="MathJax-Element-85">\gamma_{j} = \sum_{i=1}^{N}{\nu_{ij}}</script> <br>
+<script type="math/tex" id="MathJax-Element-86">p_{0}</script> = Pressure of the reactor (e.g. <script type="math/tex" id="MathJax-Element-87">10^{5}</script> Pa) <br>
+<script type="math/tex" id="MathJax-Element-88">\Delta S_{j}</script> = Entropy change of reaction <script type="math/tex" id="MathJax-Element-89">j</script> <br>
+<script type="math/tex" id="MathJax-Element-90">\Delta H_{j}</script> = Enthalpy change of reaction <script type="math/tex" id="MathJax-Element-91">j</script></p>
+
+<p>Read more about <a href="https://en.wikipedia.org/wiki/Equilibrium_constant">Equilibrium constant</a></p>
+
+<p>The <strong>entropy change <script type="math/tex" id="MathJax-Element-92">\Delta S_{j}</script></strong> and the <strong>enthalpy change <script type="math/tex" id="MathJax-Element-93">\Delta H_{j}</script></strong> of reaction <script type="math/tex" id="MathJax-Element-94">j</script> is given by </p>
+
+
+
+<p><script type="math/tex; mode=display" id="MathJax-Element-95">\Delta S_{j} = \sum_{i=1}^{N}{\nu_{ij}S_{i}} = \sum_{i=1}^{N}{\nu_{ij}\int_{T_{0}}^{T}{\frac{C_{p,i}\left(T\right)}{T} \ \mathrm{d}T}} \qquad j =1, \ldots, M</script></p>
+
+
+
+<p><script type="math/tex; mode=display" id="MathJax-Element-96">\Delta H_{j} = \sum_{i=1}^{N}{\nu_{ij}H_{i}} = \sum_{i=1}^{N}{\nu_{ij}\int_{T_{0}}^{T}{C_{p,i}\left(T\right) \ \mathrm{d}T}} \qquad j =1, \ldots, M</script></p>
+
+<p>where <br>
+<script type="math/tex" id="MathJax-Element-97">C_{p,i}</script> = Specific heat at constant pressure of species <script type="math/tex" id="MathJax-Element-98">i</script></p>
+
+<p>The <strong>specific heat at constant pressure <script type="math/tex" id="MathJax-Element-99">C_{p,i}</script></strong> is given by a polynomial in <script type="math/tex" id="MathJax-Element-100">T</script> (called the NASA polynomial),</p>
+
+
+
+<p><script type="math/tex; mode=display" id="MathJax-Element-101">C_{p,i} = \left(\sum_{k=1}^{5}{a_{ik}T^{k-1}}\right)R, \qquad i = 1, \ldots, N.</script></p>
+
+<p>where <br>
+<script type="math/tex" id="MathJax-Element-102">T</script> = Temperature <br>
+<script type="math/tex" id="MathJax-Element-103">R</script> = Ideal gas constant</p>
+
+<p>The integrated forms of <script type="math/tex" id="MathJax-Element-104">\Delta S_{j}</script>,  <script type="math/tex" id="MathJax-Element-105">\Delta H_{j}</script>, <script type="math/tex" id="MathJax-Element-106">C_{p,i}</script>, using <script type="math/tex" id="MathJax-Element-107">7^{th}</script> order NASA polynomials are:</p>
+
+
+
+<p><script type="math/tex; mode=display" id="MathJax-Element-108">\frac{C_{p,i}}{R} = a_{i1} + a_{i2}T + a_{i3}T^{2} + a_{i4}T^{3} + a_{i5}T^{4}</script></p>
+
+<p><br></p>
+
+
+
+<p><script type="math/tex; mode=display" id="MathJax-Element-109">\frac{H_{i}}{RT} = a_{i1} + \frac{1}{2}a_{i2}T + \frac{1}{3}a_{i3}T^{2} + \frac{1}{4}a_{i4}T^{3} + \frac{1}{5}a_{i5}T^{4} + \frac{a_{i6}}{T}</script></p>
+
+<p><br></p>
+
+
+
+<p><script type="math/tex; mode=display" id="MathJax-Element-273">\frac{S_{i}}{R} = a_{i1}\ln\left(T\right) + a_{i2}T + \frac{1}{2}a_{i3}T^{2} + \frac{1}{3}a_{i4}T^{3} + \frac{1}{4}a_{i5}T^{4} + a_{i7}</script></p>
+
+<p><br></p>
+
+<p>for <script type="math/tex" id="MathJax-Element-274">i = 1, \ldots, N</script>.</p>
+
+<p>Note: A complete table of notation of <strong>reversible elementary</strong> reacion</p>
+
+<table>
+<thead>
+<tr>
+  <th align="center">Symbol</th>
+  <th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+  <td align="center"><script type="math/tex" id="MathJax-Element-275">\mathcal{s}_{i}</script></td>
+  <td>Chemical symbol of specie <script type="math/tex" id="MathJax-Element-276">i</script></td>
+</tr>
+<tr>
+  <td align="center"><script type="math/tex" id="MathJax-Element-277">\nu_{ij}^{\prime}</script></td>
+  <td>Stoichiometric coefficients of reactants</td>
+</tr>
+<tr>
+  <td align="center"><script type="math/tex" id="MathJax-Element-278">\nu_{ij}^{\prime\prime}</script></td>
+  <td>Stoichiometric coefficients of products</td>
+</tr>
+<tr>
+  <td align="center"><script type="math/tex" id="MathJax-Element-279">N</script></td>
+  <td>Number of species in system</td>
+</tr>
+<tr>
+  <td align="center"><script type="math/tex" id="MathJax-Element-280">M</script></td>
+  <td>Number of elementary reactions</td>
+</tr>
+<tr>
+  <td align="center"><script type="math/tex" id="MathJax-Element-281">f_{i}</script></td>
+  <td>Rate of consumption or formation of specie <script type="math/tex" id="MathJax-Element-282">i</script> (reaction rate)</td>
+</tr>
+<tr>
+  <td align="center"><script type="math/tex" id="MathJax-Element-283">r_{j}</script></td>
+  <td>Total progress rate of reaction <script type="math/tex" id="MathJax-Element-284">j</script></td>
+</tr>
+<tr>
+  <td align="center"><script type="math/tex" id="MathJax-Element-285">x_{i}</script></td>
+  <td>Concentration of specie <script type="math/tex" id="MathJax-Element-286">i</script></td>
+</tr>
+<tr>
+  <td align="center"><script type="math/tex" id="MathJax-Element-287">k_{j}^{\left(f\right)}</script></td>
+  <td>Forward reaction rate coefficient for reaction <script type="math/tex" id="MathJax-Element-288">j</script></td>
+</tr>
+<tr>
+  <td align="center"><script type="math/tex" id="MathJax-Element-289">k_{j}^{\left(b\right)}</script></td>
+  <td>Backward reaction rate coefficient for reaction <script type="math/tex" id="MathJax-Element-290">j</script></td>
+</tr>
+<tr>
+  <td align="center"><script type="math/tex" id="MathJax-Element-291">k_{j}^{e}</script></td>
+  <td>Equilibrium constant for reaction <script type="math/tex" id="MathJax-Element-292">j</script></td>
+</tr>
+<tr>
+  <td align="center"><script type="math/tex" id="MathJax-Element-293">p_{0}</script></td>
+  <td>Pressure of the reactor</td>
+</tr>
+<tr>
+  <td align="center"><script type="math/tex" id="MathJax-Element-294">\Delta S_{j}</script></td>
+  <td>Entropy change of reaction <script type="math/tex" id="MathJax-Element-295">j</script></td>
+</tr>
+<tr>
+  <td align="center"><script type="math/tex" id="MathJax-Element-296">\Delta H_{j}</script></td>
+  <td>Enthalpy change of reaction <script type="math/tex" id="MathJax-Element-297">j</script></td>
+</tr>
+<tr>
+  <td align="center"><script type="math/tex" id="MathJax-Element-298">S_{i}</script></td>
+  <td>Entropy of species <script type="math/tex" id="MathJax-Element-299">i</script></td>
+</tr>
+<tr>
+  <td align="center"><script type="math/tex" id="MathJax-Element-300">H_{i}</script></td>
+  <td>Enthalpy of species <script type="math/tex" id="MathJax-Element-301">i</script></td>
+</tr>
+<tr>
+  <td align="center"><script type="math/tex" id="MathJax-Element-302">C_{p,i}</script></td>
+  <td>Specific heat at constant pressure of species <script type="math/tex" id="MathJax-Element-303">i</script></td>
+</tr>
+<tr>
+  <td align="center">T</td>
+  <td>Temperature</td>
+</tr>
+<tr>
+  <td align="center">R</td>
+  <td>Ideal gas constant</td>
+</tr>
+</tbody></table>
+
+
+<h3 id="12-the-chemkin-library">1.2 The <code>chemkin</code> Library</h3>
+
+<p>The high level functionality of the <strong>chemkin</strong> module is to take an XML file with reaction data as input and outputs the RHS (right-hand-side) of the ODE describing the rate of change of all molecular species involved in the chemical reaction(s) of interest (i.e. for <strong>irreversible elementary</strong> reaction: <script type="math/tex" id="MathJax-Element-141">\sum_{j=1}^{M}{\nu_{ij}\omega_{j}}, \text{ for } i = 1, \ldots, N</script>, and for <strong>reversible elementary</strong> reaction: <script type="math/tex" id="MathJax-Element-142">\sum_{j=1}^{M}{\nu_{ij}r_{j}}, \text{ for } i = 1, \ldots, N</script>).</p>
+
+<p>Features of the <strong>chemkin</strong> module include:</p>
+
+<ul>
+<li><p>Parsing XML file with chemical reaction data to extract relevant paramters</p></li>
+<li><p>Handling the calculation of 3+ classes of reaction rate coefficients (e.g. constant, Arrhenius and modified Arrhenius) given the appropriate parameters</p></li>
+<li><p>Handling the calculation of progress rates (<script type="math/tex" id="MathJax-Element-143">\omega_{j}</script> or <script type="math/tex" id="MathJax-Element-144">r_{j}</script>) and reaction rates (<script type="math/tex" id="MathJax-Element-145">f_{i}</script>)  for a system  consisting of <script type="math/tex" id="MathJax-Element-146">N</script> species undergoing <script type="math/tex" id="MathJax-Element-147">M</script> <strong>irreversible</strong> or <strong>reversible</strong> <strong>elementary</strong> reactions</p></li>
+</ul>
+
+
+
+<h4 id="overall-structure-of-the-chemkin-library">Overall structure of the <code>chemkin</code> library</h4>
+
+<pre class="prettyprint"><code class="language-sh hljs avrasm">chemkin/
+    __init__<span class="hljs-preprocessor">.py</span>
+    chemkin_errors<span class="hljs-preprocessor">.py</span>
+    run_chemkin<span class="hljs-preprocessor">.py</span>
+    preprocessing/
+        __init__<span class="hljs-preprocessor">.py</span>
+        parse_xml<span class="hljs-preprocessor">.py</span>
+        tests/
+            test_parse_xml<span class="hljs-preprocessor">.py</span>
+    reaction/
+        __init__<span class="hljs-preprocessor">.py</span>
+        base_rxn<span class="hljs-preprocessor">.py</span>
+        elementary_rxn<span class="hljs-preprocessor">.py</span>
+        non_elementary_rxn<span class="hljs-preprocessor">.py</span>
+        reaction_coefficients<span class="hljs-preprocessor">.py</span>
+        tests/
+            test_base_rxn<span class="hljs-preprocessor">.py</span>
+            test_elementary_rxn<span class="hljs-preprocessor">.py</span>
+            test_non_elementary_rxn<span class="hljs-preprocessor">.py</span>
+            test_reaction_coefficients<span class="hljs-preprocessor">.py</span>
+    thermodynamics/
+        __init__<span class="hljs-preprocessor">.py</span>
+        thermo<span class="hljs-preprocessor">.py</span>
+        NASA_coef<span class="hljs-preprocessor">.sqlite</span>
+        tests/
+    viz/
+        __init__<span class="hljs-preprocessor">.py</span>
+        summary<span class="hljs-preprocessor">.py</span>
+        tests/
+    xml-files/</code></pre>
+
+<p>A brief description of each subdirectory:</p>
+
+<ul>
+<li><p><code>chemkin_errors</code> module hosts functions to detect library-related errors.</p></li>
+<li><p><code>preprocessing</code> package contains modules to parse input files, extracts and returns relevant reaction parameters into a python dictionary. Currently, the library only parses .xml input files.</p></li>
+<li><p><code>reaction</code> package contains modules to handle different reaction types as well as calculating the forward reaction coefficients</p></li>
+<li><p><code>thermodynamics</code> package contains modules to handle all thermodynamics related calculations. For now, it handles the processing of backward reaction coefficients in reversible reactions using the NASA_coef SQL database.</p></li>
+<li><p><code>viz</code> package contains modules that allow the user to visualize reaction kinetics (e.g. printing reaction rates in a prettified, tabular format)</p></li>
+</ul>
+
+
+
+<h4 id="future-features">Future Features</h4>
+
+<p>The main future feature is to install differential equation solvers to calculate species concentrations as a function of time. We envision at least 3 additional library functions that follows:</p>
+
+<ol>
+<li><p>Given an end-time (<script type="math/tex" id="MathJax-Element-148">t_{end}</script>) and reaction data, function outputs the concentrations of each species at <script type="math/tex" id="MathJax-Element-149">t_{end}</script>.</p></li>
+<li><p>Given reaction data, function outputs the time to reach equilibrium (in the case of reversible elementary reactions) or the time for the reaction to reach completion (in the case of irreversible elementary reactions).</p></li>
+<li><p>Given an end-time (<script type="math/tex" id="MathJax-Element-150">t_{end}</script>), function plots the time evolution of species concentrations from <script type="math/tex" id="MathJax-Element-151">t_0</script> to <script type="math/tex" id="MathJax-Element-152">t_{end}</script>.</p></li>
+</ol>
+
+
+
+<h2 id="2-installation">2. Installation</h2>
+
+<p>The neccessary code can be found at and downloaded from <a href="https://github.com/G12-cs207-FinalProject/cs207-FinalProject">here</a>.</p>
+
+<p>It is also pip-installable using the following command:</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs ruby"><span class="hljs-variable">$ </span>pip install chemkin</code></pre>
+
+<p>You can run the test suite on your local machine by typing the following command in your command line when in the directory of the downloaded files.</p>
+
+
+
+<pre class="prettyprint"><code class="language-sh hljs ruby"><span class="hljs-variable">$ </span>pytest</code></pre>
+
+
+
+<h2 id="3-basic-usage">3. Basic Usage</h2>
+
+
+
+<h3 id="31-structure-of-the-input-file">3.1 Structure of the input file</h3>
+
+<p>Chemical reaction data should be stored in XML format with the following specifications:</p>
+
+<ol>
+<li><p>a <code>&lt;phase&gt;</code> element with a <code>&lt;speciesArray&gt;</code> child element which lists the molecular species invovled in the reaction</p></li>
+<li><p>a <code>&lt;reactionData&gt;</code> element that stores relevant parameters of the reaction:</p>
+
+<ul><li><code>&lt;reaction reversible&gt;</code> tag indicates whether a reaction is reversible or irreversible, possible values = [“yes”, “no”]</li>
+<li><code>&lt;type&gt;</code> tag indicates whether a reaction is elementary or non-elementary, possible values = [“Elementary”, “Non-Elementary]</li>
+<li><code>&lt;equation&gt;</code> tag specifies the chemical reaction</li>
+<li><code>&lt;rateCoeff&gt;</code> tag stores parameters relevant to calculate the rate coefficient. It has a child tag indicating the rate coefficient class, which can be one of three acceptable types, each of which dictates what coefficient values are parsed by the <code>XmlParser</code> class: <br>
+<ol><li><code>&lt;Arrhenius&gt;</code>: Coefficients [A, E] will be retrieved.</li>
+<li><code>&lt;modifiedArrhenius&gt;</code>: [A, b, E] will be retrieved.</li>
+<li><code>&lt;Constant&gt;</code>: k will be retrieved.</li></ol></li></ul></li>
+</ol>
+
+<p><strong>Note</strong> If no recognized child tag of <code>&lt;rateCoeff&gt;</code> is encountered, then <code>XmlParser</code> will raise a <code>ChemKinError</code>. Also, its retrieval of elements is case-sensitive. So, for example, <code>&lt;A&gt;</code>, <code>&lt;b&gt;</code>, <code>&lt;E&gt;</code>, and <code>&lt;k&gt;</code> must be used to store the appropriate coefficients; elements named <code>&lt;a&gt;</code>, <code>&lt;B&gt;</code>, <code>&lt;e&gt;</code> or <code>&lt;K&gt;</code> would not be recognized and would lead to an error.</p>
+
+<p><strong>Example 3.1.</strong> XML file for the following chemical reaction:</p>
+
+
+
+<p><script type="math/tex; mode=display" id="MathJax-Element-153">
+\begin{aligned}
+2H_2 + O_2 \quad \longrightarrow \quad 2OH + H_2
+\end{aligned}
+</script></p>
+
+
+
+<pre class="prettyprint"><code class=" hljs xml"><span class="hljs-pi">&lt;?xml version="1.0"?&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-title">ctml</span>&gt;</span>
+
+    <span class="hljs-tag">&lt;<span class="hljs-title">phase</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-title">speciesArray</span>&gt;</span> H2 O2 OH HO2 H2O <span class="hljs-tag">&lt;/<span class="hljs-title">speciesArray</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-title">phase</span>&gt;</span>
+
+    <span class="hljs-tag">&lt;<span class="hljs-title">reactionData</span> <span class="hljs-attribute">id</span>=<span class="hljs-value">"test_mechanism"</span>&gt;</span>
+
+        <span class="hljs-comment">&lt;!-- reaction 01  --&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-title">reaction</span> <span class="hljs-attribute">reversible</span>=<span class="hljs-value">"no"</span> <span class="hljs-attribute">type</span>=<span class="hljs-value">"Elementary"</span> <span class="hljs-attribute">id</span>=<span class="hljs-value">"reaction01"</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-title">equation</span>&gt;</span>2H2 + O2 [=] 2OH + H2<span class="hljs-tag">&lt;/<span class="hljs-title">equation</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-title">rateCoeff</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-title">modifiedArrhenius</span>&gt;</span>
+                    <span class="hljs-tag">&lt;<span class="hljs-title">A</span> <span class="hljs-attribute">units</span>=<span class="hljs-value">"m3/mol/s"</span>&gt;</span>1e+8<span class="hljs-tag">&lt;/<span class="hljs-title">A</span>&gt;</span>
+                    <span class="hljs-tag">&lt;<span class="hljs-title">b</span>&gt;</span>0.5<span class="hljs-tag">&lt;/<span class="hljs-title">b</span>&gt;</span>
+                    <span class="hljs-tag">&lt;<span class="hljs-title">E</span> <span class="hljs-attribute">units</span>=<span class="hljs-value">"J/mol"</span>&gt;</span>5e+04<span class="hljs-tag">&lt;/<span class="hljs-title">E</span>&gt;</span>
+                <span class="hljs-tag">&lt;/<span class="hljs-title">modifiedArrhenius</span>&gt;</span>
+            <span class="hljs-tag">&lt;/<span class="hljs-title">rateCoeff</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-title">reactants</span>&gt;</span>H2:2 O2:1<span class="hljs-tag">&lt;/<span class="hljs-title">reactants</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-title">products</span>&gt;</span>OH:2 H2:1<span class="hljs-tag">&lt;/<span class="hljs-title">products</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-title">reaction</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-title">reactionData</span>&gt;</span>
+
+<span class="hljs-tag">&lt;/<span class="hljs-title">ctml</span>&gt;</span></code></pre>
+
+
+
+<h3 id="32-reading-and-parsing-the-input-file">3.2 Reading and parsing the input file</h3>
+
+<p>Reading and parsing the input XML file is handled in the <code>preprocessing</code> package, where there are two related classes that allow the user to work with reaction data stored in XML files.</p>
+
+<ul>
+<li><code>XmlParser</code></li>
+<li><code>RxnData</code></li>
+</ul>
+
+
+
+<h4 id="321-xmlparser">3.2.1 <code>XmlParser</code></h4>
+
+<p>The <code>XmlParser</code> class pulls reaction data from XML files and preprocesses the data (e.g. calculates the reaction rate coefficients from given paramters) with its <code>parsed_data_list(Ti)</code> method. <code>parsed_data_list(Ti)</code> takes a list of temperatures as input and returns a <code>list</code> of <code>dictionaries</code> that contain relevant reaction parameters at each of the temperatures.</p>
+
+<p>Each dictionary in the returned list contains the following attributes:</p>
+
+<ul>
+<li><p><code>species</code>: a list of moleucular species invovled in the reaction</p></li>
+<li><p><code>ki</code>: a list of forward reaction rate coefficients, the <script type="math/tex" id="MathJax-Element-154">i^{th}</script> entry in the list is the coefficient for the <script type="math/tex" id="MathJax-Element-155">i^{th}</script> reaction in the system</p></li>
+<li><p><code>sys_vi_p</code>: a list of stoichemotetric coefficients of the reactants, the <script type="math/tex" id="MathJax-Element-156">i^{th}</script> entry in the list is the coefficients for the <script type="math/tex" id="MathJax-Element-157">i^{th}</script> reaction in the system</p></li>
+<li><p><code>sys_vi_dp</code>: a list of stoichemotetric coefficients of the products, the <script type="math/tex" id="MathJax-Element-158">i^{th}</script> entry in the list is the coefficients for the <script type="math/tex" id="MathJax-Element-159">i^{th}</script> reaction in the system</p></li>
+<li><p><code>is_reversible</code>: an indicator of whether the reaction is reversible (takes on values of True or False)</p></li>
+<li><p><code>T</code>: a float of reaction temperature</p></li>
+<li><p><code>b_ki</code>: a list of backward reaction rate coefficients, the <script type="math/tex" id="MathJax-Element-160">i^{th}</script> entry in the list is the coefficient for the <script type="math/tex" id="MathJax-Element-161">i^{th}</script> reaction in the system (only dictionary for reversible reactions has this attribute)</p></li>
+</ul>
+
+<p><strong>Example 3.2.</strong> Read in, parse and preprocess an input XML file</p>
+
+
+
+<pre class="prettyprint"><code class="language-python hljs "><span class="hljs-keyword">from</span> chemkin.preprocessing.parse_xml <span class="hljs-keyword">import</span> XmlParser
+
+Ti = [<span class="hljs-number">750</span>, <span class="hljs-number">1500</span>, <span class="hljs-number">2500</span>] <span class="hljs-comment"># user-specified reaction temperatures</span>
+
+xml_file = <span class="hljs-string">'./chemkin/xml-files/rxns_reversible.xml'</span> <span class="hljs-comment"># input XML file path</span>
+xml_parser = XmlParser(xml_file)
+parsed_data_list = xml_parser.parsed_data_list(Ti)</code></pre>
+
+<p>The <code>parsed_data_list(Ti)</code> method abstracts much of the preprocssing stage, including calculating the reaction rate coefficients. However, there are instances where the user might want to simply extract XML elements (e.g. if the user wishes to calculate the reaction rate coefficients in an user-specified manner). The <code>XmlParser</code> module also allows the user to work directly with XML elements with its <code>load()</code> method. <code>load</code> returns a <code>tuple</code> of two lists:</p>
+
+<ul>
+<li><p>the species invovled in all the reactions in the file</p></li>
+<li><p>list of <code>RxnData</code> objects, with each object containing the data for an individual reaction (discussed in next section)</p></li>
+</ul>
+
+<p><strong>Example 3.3.</strong> Read in and parse XML file to work with XML elements directly</p>
+
+
+
+<pre class="prettyprint"><code class="language-python hljs "><span class="hljs-keyword">from</span> chemkin.preprocessing.parse_xml <span class="hljs-keyword">import</span> XmlParser
+
+xml_file = <span class="hljs-string">'./chemkin/xml-files/rxns_reversible.xml'</span> <span class="hljs-comment"># input XML file path</span>
+xml_parser = XmlParser(xml_file)
+
+species, reaction_data = xml.load()</code></pre>
+
+
+
+<h4 id="322-rxndata">3.2.2 <code>RxnData</code></h4>
+
+<p>The reaction data parsed by the XmlParser <code>load()</code> function from XML files is returned as a list of <code>RxnData</code> objects. This class encapsulates relevant information from the XML file in a way that allows the caller to easily process reactions differently according to their features.</p>
+
+<p><code>RxnData</code> objects have the following attributes:</p>
+
+<ul>
+<li><p><code>rxn_id</code>: a string for reaction ID</p></li>
+<li><p><code>reversible</code>: a boolean indicating whether the reaction is reversible</p></li>
+<li><p><code>type</code>: a RxnType object from the Enum class indicating whether a reaction is elementary or  non-elementary</p></li>
+<li><p><code>rate_coef</code>: a list of parameters for reaction rate coefficient</p></li>
+<li><p><code>reactants</code>: a dictionary with molecular species of the reactants as keys and their respecitve stoicheometric coefficient as values</p></li>
+<li><p><code>products</code>: a dictionary with moelcular speicies of the products as keys and their respective stoichemotetric coefficient as values</p></li>
+</ul>
+
+<p><strong>Example 3.4.</strong> Working with <code>RxnData</code> objects</p>
+
+
+
+<pre class="prettyprint"><code class="language-python hljs "><span class="hljs-keyword">from</span> chemkin.preprocessing.parse_xml <span class="hljs-keyword">import</span> XmlParser
+
+xml_file = <span class="hljs-string">'./chemkin/xml-files/rxns_reversible.xml'</span> <span class="hljs-comment"># input XML file path</span>
+xml_parser = XmlParser(xml_file)
+
+_, reaction_data = xml.load()
+
+<span class="hljs-keyword">for</span> rxn <span class="hljs-keyword">in</span> reaction_data:
+    <span class="hljs-keyword">if</span> rxn.reversible:
+        <span class="hljs-comment"># Handle special reversible reaction logic</span></code></pre>
+
+
+
+<h3 id="33-calculating-kinetic-parameters-of-interest">3.3. Calculating kinetic parameters of interest</h3>
+
+<p>Two families of modules in the <code>reaction</code> package allow you to compute kinetic paramters such as reaction rate coefficients, progress rates and reaction rates.</p>
+
+<ul>
+<li><p><code>reaction_coefficients</code> module handles calculations of reaction rate coefficients</p></li>
+<li><p><code>base_rxn</code>, <code>elementary_rxn</code> and <code>non_elementary_rxn</code> modules handle calculations of progress rates and reaction rates.</p></li>
+</ul>
+
+
+
+<h4 id="331-reactioncoefficients-module">3.3.1. <code>reaction_coefficients</code> module</h4>
+
+<p>The <code>reaction_coefficients</code> module contains a base class <code>RxnCoefficientBase</code> from which then the three subclasses (<code>ConstantCoefficient</code>,<code>ArrheniusCoefficient</code>, and <code>ModifiedArrheniusCoefficient</code>) inherit its basic properties (such as <code>init</code>,<code>__repr__</code> and <code>__eq__</code>). When creating the instances of these classes, their parameters are based on inputs extracted using the <code>load</code> method from the <code>XmlParser</code> class and stored in <code>RxnData</code> object. As documented above, <code>RxnData</code> objects have a <code>rate_coef</code> attribute, which is a list of parameters for reaction rate coefficient. The list can have the following entires: temperature <script type="math/tex" id="MathJax-Element-162">T</script>, Arrhenius constant <script type="math/tex" id="MathJax-Element-163">A</script> (where applicable), modified constant <script type="math/tex" id="MathJax-Element-164">b</script> (where applicable), ideal gas constant <script type="math/tex" id="MathJax-Element-165">R</script>, and Activation energy <script type="math/tex" id="MathJax-Element-166">E</script>.</p>
+
+<p>Since different classes of rate coefficients have different number of input parameters, we can utilize the length of the <code>rate_coef</code> to determine the class to use to calculate the reaction rate coefficients. The <code>get_coeff()</code> method handls the calculation of the the rate coefficients <script type="math/tex" id="MathJax-Element-167">ki</script> for reaction <script type="math/tex" id="MathJax-Element-168">i</script>. </p>
+
+<p><strong>Example 3.5.</strong> Calculating reaction rate coefficients</p>
+
+
+
+<pre class="prettyprint"><code class="language-python hljs "><span class="hljs-keyword">from</span> chemkin.preprocessing.parse_xml <span class="hljs-keyword">import</span> XmlParser
+
+xml_file = <span class="hljs-string">'./chemkin/xml-files/rxns_reversible.xml'</span> <span class="hljs-comment"># input XML file path</span>
+xml_parser = XmlParser(xml_file)
+
+_, reaction_data = xml.load()
+
+coef_params = reaction_data.rate_coeff
+
+        <span class="hljs-keyword">if</span> isinstance(coef_params, list):
+            <span class="hljs-keyword">if</span> len(coef_params) == <span class="hljs-number">3</span>: <span class="hljs-comment"># modified arrhenius coef</span>
+                A = coef_params[<span class="hljs-number">0</span>]
+                b = coef_params[<span class="hljs-number">1</span>]
+                E = coef_params[<span class="hljs-number">2</span>]
+                ki.append(ModifiedArrheniusCoefficient(A, b, E, T).get_coef())
+            <span class="hljs-keyword">else</span>: <span class="hljs-comment"># arrhenius coef</span>
+                A = coef_params[<span class="hljs-number">0</span>]
+                E = coef_params[<span class="hljs-number">1</span>]
+                ki.append(ArrheniusCoefficient(A, E, T).get_coef())
+        <span class="hljs-keyword">else</span>: <span class="hljs-comment"># const coef</span>
+            ki.append(ConstantCoefficient(coef_params).get_coef())
+</code></pre>
+
+
+
+<h4 id="332-baserxn-module">3.3.2 <code>base_rxn</code> module</h4>
+
+<p>The <code>base_rxn</code> module contains a single <code>RxnBase</code> class, from which the subclasses in <code>elementary_rxn</code> and <code>non_elementary_rxn</code> modules inherit. The <code>RxnBase</code> base class and its subclasses have methods to calculate the progress rates and reaction rates given data on a system of chemical reactions and associated parameters.</p>
+
+<p><code>RxnBase</code> objects have the following attributes:</p>
+
+<ul>
+<li><code>ki</code>: a list of reaction rate coefficients</li>
+<li><code>xi</code>: a list of concentrations of molecular species</li>
+<li><code>vi_p</code>: a list of stoichiometric coefficients of the reactants</li>
+<li><code>vi_dp</code>: a list of stoichiometric coefficients of the product</li>
+<li><code>wi</code>: a list of progress rates</li>
+<li><code>rates</code>: a list of reaction rates</li>
+</ul>
+
+<p><strong>Note</strong> These attributes are initialized when <code>RxnBase</code> objects are created. For example,</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs lua">reaction1 = RxnBase(ki=[<span class="hljs-number">10</span>, <span class="hljs-number">10</span>], xi=[<span class="hljs-number">1.0</span>, <span class="hljs-number">2.0</span>, <span class="hljs-number">1.0</span>], vi_p=<span class="hljs-string">[[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]]</span>, vi_dp=<span class="hljs-string">[[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]]</span></code></pre>
+
+<p><code>RxnBase</code> objects have the following methods:</p>
+
+<ul>
+<li><p><code>progress_rate()</code>: Returns a list of progress rates for the system (Not implemented in the base class)</p></li>
+<li><p><code>reaction_rate()</code>: Returns a list of reaction rates for the system (Not implemented in the base class)</p></li>
+</ul>
+
+
+
+<h4 id="333-elementaryrxn-module">3.3.3 <code>elementary_rxn</code> module</h4>
+
+<p>The <code>elementary_rxn</code> module deals with elementary chemical reactions. It contains an <code>ElementaryRxn</code> base class which inhertis from <code>RxnBase</code> and two subclasses <code>IrreversibleElementaryRxn</code> and <code>ReversibleElementaryRxn</code>, which handle <strong>irreversible</strong> and <strong>reversible</strong> elementary reactions, respectively.</p>
+
+<p><strong>The <code>IrreversibleElementaryRxn</code> class</strong></p>
+
+<p>This class handles a system  consisting of <script type="math/tex" id="MathJax-Element-169">N</script> species undergoing <script type="math/tex" id="MathJax-Element-170">M</script> <strong>irreversible</strong>, <strong>elementary</strong> reactions of the form:</p>
+
+
+
+<p><script type="math/tex; mode=display" id="MathJax-Element-308">\sum_{i=1}^{N}{\nu_{ij}^{\prime}\mathcal{s}_{i}} \longrightarrow 
+  \sum_{i=1}^{N}{\nu_{ij}^{\prime\prime}\mathcal{s}_{i}}, \qquad \text{for } j = 1, \ldots, M</script></p>
+
+<p>The progress rate <script type="math/tex" id="MathJax-Element-309">\omega_{j}</script> is given by </p>
+
+<p><script type="math/tex; mode=display" id="MathJax-Element-173">\begin{aligned}
+  \omega_{j} = k_{j}\prod_{i=1}^{N}{x_{i}^{\nu_{ij}^{\prime}}}, \qquad j = 1, \ldots, M
+\end{aligned}
+</script></p>
+
+<p>The reaction rate <script type="math/tex" id="MathJax-Element-174">f_{i} = \frac{d[i]}{dt}</script> is given by</p>
+
+
+
+<p><script type="math/tex; mode=display" id="MathJax-Element-175">\begin{aligned}
+  f_{i} = \frac{d[i]}{dt} = \sum_{j=1}^{M}{\nu_{ij}\omega_{j}}, \qquad \text{for } i = 1, \ldots, N
+\end{aligned}</script></p>
+
+<p><code>IrreversibleElementaryRxn</code> shares the same class attributes as the base class and implements the two methods in the following manner: </p>
+
+<ul>
+<li><p><code>progress_rate()</code>: Returns a list of <script type="math/tex" id="MathJax-Element-176">k_{j}\prod_{i=1}^{N}{x_{i}^{\nu_{ij}^{\prime}}}</script></p></li>
+<li><p><code>reaction_rate()</code>: Returns a list of <script type="math/tex" id="MathJax-Element-177">\sum_{j=1}^{M}{\nu_{ij}\omega_{j}}</script></p></li>
+</ul>
+
+<p><strong>The <code>ReversibleElementaryRxn</code> class</strong></p>
+
+<p>This class handles a system  consisting of <script type="math/tex" id="MathJax-Element-178">N</script> species undergoing <script type="math/tex" id="MathJax-Element-179">M</script> <strong>reversible</strong>, <strong>elementary</strong> reactions of the form:</p>
+
+
+
+<p><script type="math/tex; mode=display" id="MathJax-Element-312">\sum_{i=1}^{N}{\nu_{ij}^{\prime}\mathcal{s}_{i}}  \rightleftharpoons \sum_{i=1}^{N}{\nu_{ij}^{\prime\prime}\mathcal{s}_{i}} \qquad j = 1, \ldots, M</script></p>
+
+<p>The total progress rate <script type="math/tex" id="MathJax-Element-313">r_{j}</script> is given by </p>
+
+<p><script type="math/tex; mode=display" id="MathJax-Element-182">r_{j} = k_{j}^{\left(f\right)}\prod_{i=1}^{N}{x_{i}^{\nu_{ij}^{\prime}}} - k_{j}^{\left(b\right)}\prod_{i=1}^{N}{x_{i}^{\nu_{ij}^{\prime\prime}}}, \qquad j = 1,\ldots, M</script></p>
+
+<p>The reaction rate <script type="math/tex" id="MathJax-Element-183">f_{i} = \frac{d[i]}{dt}</script> is given by</p>
+
+
+
+<p><script type="math/tex; mode=display" id="MathJax-Element-184">\begin{aligned}
+  f_{i} = \frac{d[i]}{dt} = \sum_{j=1}^{M}{\nu_{ij}r_{j}}, \qquad \text{for } i = 1, \ldots, N
+\end{aligned}</script></p>
+
+<p><code>ReversibleElementaryRxn</code> shares the same class attributes as the base class and implements the two methods in the following manner: </p>
+
+<ul>
+<li><p><code>progress_rate()</code>: Returns a list of <script type="math/tex" id="MathJax-Element-185">k_{j}^{\left(f\right)}\prod_{i=1}^{N}{x_{i}^{\nu_{ij}^{\prime}}} - k_{j}^{\left(b\right)}\prod_{i=1}^{N}{x_{i}^{\nu_{ij}^{\prime\prime}}}</script></p></li>
+<li><p><code>reaction_rate()</code>: Returns a list of <script type="math/tex" id="MathJax-Element-186">\sum_{j=1}^{M}{\nu_{ij}r_{j}}</script></p></li>
+</ul>
+
+
+
+<h4 id="334-nonelementaryrxn-module">3.3.4 <code>non_elementary_rxn</code> module</h4>
+
+<p>The implementation for non-elementary reactions is TBD.</p>
+
+
+
+<h2 id="4-examples">4. Examples</h2>
+
+
+
+<h3 id="41-a-system-of-irreversible-elementary-chemical-reactions">4.1. A system of irreversible, elementary chemical reactions</h3>
+
+<ul>
+<li>The system of chemical reactions of interest:</li>
+</ul>
+
+
+
+<p><script type="math/tex; mode=display" id="MathJax-Element-187">
+\begin{aligned}
+2H_2 + O_2 &\longrightarrow 2OH + H_2 \\
+OH + HO_2 &\longrightarrow H_2O + O_2 \\
+H_2O + O_2 &\longrightarrow HO_2 + OH
+\end{aligned}
+</script></p>
+
+<ul>
+<li>Input XML file:</li>
+</ul>
+
+
+
+<pre class="prettyprint"><code class=" hljs xml"><span class="hljs-pi">&lt;?xml version="1.0"?&gt;</span>
+
+<span class="hljs-tag">&lt;<span class="hljs-title">ctml</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">phase</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-title">speciesArray</span>&gt;</span> H2 O2 OH HO2 H2O <span class="hljs-tag">&lt;/<span class="hljs-title">speciesArray</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-title">phase</span>&gt;</span>
+
+    <span class="hljs-tag">&lt;<span class="hljs-title">reactionData</span> <span class="hljs-attribute">id</span>=<span class="hljs-value">"test_mechanism"</span>&gt;</span>
+        <span class="hljs-comment">&lt;!-- reaction 01  --&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-title">reaction</span> <span class="hljs-attribute">reversible</span>=<span class="hljs-value">"no"</span> <span class="hljs-attribute">type</span>=<span class="hljs-value">"Elementary"</span> <span class="hljs-attribute">id</span>=<span class="hljs-value">"reaction01"</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-title">equation</span>&gt;</span>2H2 + O2 [=] 2OH + H2<span class="hljs-tag">&lt;/<span class="hljs-title">equation</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-title">rateCoeff</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-title">modifiedArrhenius</span>&gt;</span>
+                    <span class="hljs-tag">&lt;<span class="hljs-title">A</span> <span class="hljs-attribute">units</span>=<span class="hljs-value">"m3/mol/s"</span>&gt;</span>1e+8<span class="hljs-tag">&lt;/<span class="hljs-title">A</span>&gt;</span>
+                    <span class="hljs-tag">&lt;<span class="hljs-title">b</span>&gt;</span>0.5<span class="hljs-tag">&lt;/<span class="hljs-title">b</span>&gt;</span>
+                    <span class="hljs-tag">&lt;<span class="hljs-title">E</span> <span class="hljs-attribute">units</span>=<span class="hljs-value">"J/mol"</span>&gt;</span>5e+04<span class="hljs-tag">&lt;/<span class="hljs-title">E</span>&gt;</span>
+                <span class="hljs-tag">&lt;/<span class="hljs-title">modifiedArrhenius</span>&gt;</span>
+            <span class="hljs-tag">&lt;/<span class="hljs-title">rateCoeff</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-title">reactants</span>&gt;</span>H2:2 O2:1<span class="hljs-tag">&lt;/<span class="hljs-title">reactants</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-title">products</span>&gt;</span>OH:2 H2:1<span class="hljs-tag">&lt;/<span class="hljs-title">products</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-title">reaction</span>&gt;</span>
+
+        <span class="hljs-comment">&lt;!-- reaction 02 --&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-title">reaction</span> <span class="hljs-attribute">reversible</span>=<span class="hljs-value">"no"</span> <span class="hljs-attribute">type</span>=<span class="hljs-value">"Elementary"</span> <span class="hljs-attribute">id</span>=<span class="hljs-value">"reaction02"</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-title">equation</span>&gt;</span>OH + HO2 [=] H2O + O2<span class="hljs-tag">&lt;/<span class="hljs-title">equation</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-title">rateCoeff</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-title">Constant</span>&gt;</span>
+                    <span class="hljs-tag">&lt;<span class="hljs-title">k</span>&gt;</span>1e+4<span class="hljs-tag">&lt;/<span class="hljs-title">k</span>&gt;</span>
+                <span class="hljs-tag">&lt;/<span class="hljs-title">Constant</span>&gt;</span>
+            <span class="hljs-tag">&lt;/<span class="hljs-title">rateCoeff</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-title">reactants</span>&gt;</span>OH:1 HO2:1<span class="hljs-tag">&lt;/<span class="hljs-title">reactants</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-title">products</span>&gt;</span>H2O:1 O2:1<span class="hljs-tag">&lt;/<span class="hljs-title">products</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-title">reaction</span>&gt;</span>
+
+        <span class="hljs-comment">&lt;!-- reaction 03 --&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-title">reaction</span> <span class="hljs-attribute">reversible</span>=<span class="hljs-value">"no"</span> <span class="hljs-attribute">type</span>=<span class="hljs-value">"Elementary"</span> <span class="hljs-attribute">id</span>=<span class="hljs-value">"reaction03"</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-title">equation</span>&gt;</span>H2O + O2 [=] HO2 + OH<span class="hljs-tag">&lt;/<span class="hljs-title">equation</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-title">rateCoeff</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-title">Arrhenius</span>&gt;</span>
+                    <span class="hljs-tag">&lt;<span class="hljs-title">A</span> <span class="hljs-attribute">units</span>=<span class="hljs-value">"m3/mol/s"</span>&gt;</span>1e+7<span class="hljs-tag">&lt;/<span class="hljs-title">A</span>&gt;</span>
+                    <span class="hljs-tag">&lt;<span class="hljs-title">E</span> <span class="hljs-attribute">units</span>=<span class="hljs-value">"J/mol"</span>&gt;</span>1e+04<span class="hljs-tag">&lt;/<span class="hljs-title">E</span>&gt;</span>
+                <span class="hljs-tag">&lt;/<span class="hljs-title">Arrhenius</span>&gt;</span>
+            <span class="hljs-tag">&lt;/<span class="hljs-title">rateCoeff</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-title">reactants</span>&gt;</span>H2O:1 O2:1<span class="hljs-tag">&lt;/<span class="hljs-title">reactants</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-title">products</span>&gt;</span>HO2:1 OH:1<span class="hljs-tag">&lt;/<span class="hljs-title">products</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-title">reaction</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-title">reactionData</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-title">ctml</span>&gt;</span></code></pre>
+
+
+
+<h4 id="411-printing-reaction-rates">4.1.1 Printing reaction rates</h4>
+
+<p>This example demonstrates the highest-level and most-abstracted use of the library. The user simply specifies the temperatures and initial species concentrations with the corresponding input XML file which contains the reaction data, and the following code prints reaction rates in a prettified, tabular format. </p>
+
+<ul>
+<li>Given the the species concentration <script type="math/tex" id="MathJax-Element-188">xi = [2.0, 1.0, 0.5, 1.0, 1.0]</script> in units of <script type="math/tex" id="MathJax-Element-189">m^{3}/(mol\cdot s)</script>, calculate the reaction rate of each species at <script type="math/tex" id="MathJax-Element-190">Ti = [750, 1500, 2500]</script> in units of K.</li>
+</ul>
+
+
+
+<pre class="prettyprint"><code class=" hljs python"><span class="hljs-keyword">from</span> chemkin.preprocessing.parse_xml <span class="hljs-keyword">import</span> XmlParser
+<span class="hljs-keyword">from</span> chemkin.viz <span class="hljs-keyword">import</span> summary
+
+Ti = [<span class="hljs-number">750</span>, <span class="hljs-number">1500</span>, <span class="hljs-number">2500</span>] 
+xi = [<span class="hljs-number">2.0</span>, <span class="hljs-number">1.0</span>, <span class="hljs-number">0.5</span>, <span class="hljs-number">1.0</span>, <span class="hljs-number">1.0</span>] <span class="hljs-comment"># species concentrations</span>
+
+xml_file = <span class="hljs-string">'./chemkin/xml-files/rxns_hw5.xml'</span>
+xml_parser = XmlParser(xml_file)
+parsed_data_list = xml_parser.parsed_data_list(Ti)
+summary.print_reaction_rate(parsed_data_list, xi)</code></pre>
+
+<ul>
+<li>The expected result:</li>
+</ul>
+
+<pre class="prettyprint"><code class=" hljs asciidoc">-------At Temperature 750 K------
+<span class="hljs-code">     H2 : -3607077.8728</span>
+<span class="hljs-code">     O2 : -5613545.18362</span>
+<span class="hljs-code">     OH : 9220623.05642</span>
+<span class="hljs-code">     HO2 : 2006467.31082</span>
+<span class="hljs-header">     H2O : -2006467.31082
+--------------------------------</span>
+------At Temperature 1500 K------
+<span class="hljs-code">     H2 : -281117620.765</span>
+<span class="hljs-code">     O2 : -285597559.238</span>
+<span class="hljs-code">     OH : 566715180.003</span>
+<span class="hljs-code">     HO2 : 4479938.47318</span>
+<span class="hljs-header">     H2O : -4479938.47318
+--------------------------------</span>
+------At Temperature 2500 K------
+<span class="hljs-code">     H2 : -1804261425.96</span>
+<span class="hljs-code">     O2 : -1810437356.94</span>
+<span class="hljs-code">     OH : 3614698782.9</span>
+<span class="hljs-code">     HO2 : 6175930.97566</span>
+<span class="hljs-header">     H2O : -6175930.97566
+--------------------------------</span></code></pre></div></body>
+</html>
