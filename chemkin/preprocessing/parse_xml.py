@@ -16,9 +16,8 @@ class RxnType(Enum):
 class XmlParser():
     """Core method load() produces list of RxnData from XML file contents.
 
-    Notes
-    -----
-    ChemKinError raised when invalid values are encountered in the XML file.
+    Notes:
+        ChemKinError raised when invalid values are encountered in the XML file.
     """
 
     def __init__ (self, path):

@@ -7,17 +7,17 @@
 #   rxns_neg_A: Same as rxns_ideal except for negative A rateCoeff in first
 #       reaction.
 ###############################################################################
-# Users/filipmichalsky/cs207-final-project/
 
 from pytest import approx
-from chemkin.preprocessing.parse_xml import *
+
+from chemkin import ChemKinError, RxnType, XmlParser, pckg_xml_path
 
 
 def test_parse_basic_functionality ():
-    """ Ensures number of reactions returned is correct and that attributes
+    """Ensures number of reactions returned is correct and that attributes
     of the <reaction> element in the XML file are parsed correctly.
     """
-    xml = XmlParser('../../xml-files/rxns_ideal.xml')
+    xml = XmlParser(pckg_xml_path('rxns_ideal.xml'))
     species, rxns = xml.load()
 
     # Correct number of reactions returned.
@@ -39,8 +39,8 @@ def test_parse_basic_functionality ():
 
 
 def test_parse_reactants_products ():
-    """ Ensures reactants and products parsed correctly. """
-    xml = XmlParser('../../xml-files/rxns_ideal.xml')
+    """Ensures reactants and products parsed correctly."""
+    xml = XmlParser(pckg_xml_path('rxns_ideal.xml'))
     species, rxns = xml.load()
 
     err_msg = 'reactants not parsed correctly.'
@@ -53,8 +53,8 @@ def test_parse_reactants_products ():
 
 
 def test_parse_rxn_coeff ():
-    """ Ensures reaction coefficients are what we expect them to be. """
-    xml = XmlParser('../../xml-files/rxns.xml')
+    """Ensures reaction coefficients are what we expect them to be."""
+    xml = XmlParser(pckg_xml_path('rxns.xml'))
     species, rxns = xml.load()
 
     rxn1_coeff = rxns[0].rate_coeff
@@ -75,8 +75,8 @@ def test_parse_rxn_coeff ():
 
 
 def test_rxndata_equation ():
-    """ Ensures equation representation of RxnData is correct. """
-    xml = XmlParser('../../xml-files/rxns_ideal.xml')
+    """Ensures equation representation of RxnData is correct."""
+    xml = XmlParser(pckg_xml_path('rxns_ideal.xml'))
     species, rxns = xml.load()
 
     err_msg = 'equation() method result different than expected.'
@@ -90,29 +90,26 @@ def test_rxndata_equation ():
 
 
 def test_badparse_negative_A_arr ():
-    """ Ensures ChemKinError raised when A coefficient for one of the
+    """Ensures ChemKinError raised when A coefficient for one of the
     reactions is negative.
     """
-    xml = XmlParser('../../xml-files/rxns_neg_A_2.xml')
+    xml = XmlParser(pckg_xml_path('rxns_neg_A_2'))
     try:
         rxns = xml.load()
     except ChemKinError as err:
         assert type(err) == ChemKinError
         assert str(err).find(
-            'A coeff < 0 in reaction with id = reaction02') != -1
+              'A coeff < 0 in reaction with id = reaction02') != -1
 
 
 def test_badparse_negative_A_modarr ():
-    """ Ensures ChemKinError raised when A coefficient for one of the
+    """Ensures ChemKinError raised when A coefficient for one of the
     reactions is negative.
     """
-    xml = XmlParser('../../xml-files/rxns_neg_A.xml')
+    xml = XmlParser(pckg_xml_path('rxns_neg_A'))
     try:
         rxns = xml.load()
     except ChemKinError as err:
         assert type(err) == ChemKinError
         assert str(err).find(
-            'A coeff < 0 in reaction with id = reaction01') != -1
-
-        # with pytest.raises(ChemKinError, message='Expecting ChemKinError '
-        #                                             'because of negative A coeff.'):
+              'A coeff < 0 in reaction with id = reaction01') != -1
