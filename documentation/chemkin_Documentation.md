@@ -13,11 +13,11 @@ Chemical reactions can be categorized as elementary or non-elementary and revers
 
 For a system  consisting of $N$ species undergoing $M$ **irreversible**, **elementary** reactions of the form:
 
-$$\sum_{i=1}^{N}{\nu_{ij}^{\prime}{S}_{i}} \longrightarrow 
-  \sum_{i=1}^{N}{\nu_{ij}^{\prime\prime}{S}_{i}}, \qquad \text{for } j = 1, \ldots, M$$
+$$\sum_{i=1}^{N}{\nu_{ij}^{\prime}{s}_{i}} \longrightarrow 
+  \sum_{i=1}^{N}{\nu_{ij}^{\prime\prime}{s}_{i}}, \qquad \text{for } j = 1, \ldots, M$$
 
 where
-$S_{i}$ = Chemical symbol of specie $i$ 
+$s_{i}$ = Chemical symbol of specie $i$ 
 $\nu_{ij}^{\prime}$ = Stoichiometric coefficients of reactants 
 $\nu_{ij}^{\prime\prime}$ = Stoichiometric coefficients of products
 
@@ -53,13 +53,6 @@ $$k_{j} = k_{j}$$
 
 $$k_{j} = A \cdot exp^{-E_a/(RT)}$$
 
-where
-$A$ = Arrhenius prefactor
-$E_a$ = Activation energy
-$R$ = Ideal gas constant
-$T$ = Temperature
-
-
 **Modified Arrhenius coefficient**:
 
 $$k_{j} = AT^{b}exp^{-E_a/(RT)}$$
@@ -74,7 +67,7 @@ $T$ = Temperature
 Note: A complete table of notation of **irreversible elementary** reacion
 | Symbol |Meaning|
 |:--------:|-------|
-| $\mathcal{S}_{i}$ | Chemical symbol of specie $i$ |
+| $\mathcal{s}_{i}$ | Chemical symbol of specie $i$ |
 | $\nu_{ij}^{\prime}$ | Stoichiometric coefficients of reactants |
 | $\nu_{ij}^{\prime\prime}$ | Stoichiometric coefficients of products |
 | $N$                       | Number of species in system |
@@ -93,10 +86,10 @@ Note: A complete table of notation of **irreversible elementary** reacion
 
 For a system  consisting of $N$ species undergoing $M$ **reversible**, **elementary** reactions of the form:
 
-$$\sum_{i=1}^{N}{\nu_{ij}^{\prime}\mathcal{S}_{i}}  \rightleftharpoons \sum_{i=1}^{N}{\nu_{ij}^{\prime\prime}\mathcal{S}_{i}} \qquad j = 1, \ldots, M$$
+$$\sum_{i=1}^{N}{\nu_{ij}^{\prime}\mathcal{s}_{i}}  \rightleftharpoons \sum_{i=1}^{N}{\nu_{ij}^{\prime\prime}\mathcal{s}_{i}} \qquad j = 1, \ldots, M$$
 
 where
-$S_{i}$ = Chemical symbol of specie $i$ 
+$\mathcal{s}_{i}$ = Chemical symbol of specie $i$ 
 $\nu_{ij}^{\prime}$ = Stoichiometric coefficients of reactants 
 $\nu_{ij}^{\prime\prime}$ = Stoichiometric coefficients of products
 
@@ -119,11 +112,11 @@ $k_{j}^{\left(f\right)}$ = Forward reaction rate coefficient for reaction $j$
 $k_{j}^{\left(b\right)}$ = Backward reaction rate coefficient for reaction $j$
 $x_{i}$ = Concentration of specie $i$
 
-The **backward reaction rate $k_{j}^{\left(b\right)}$** is given by
+The **backward reaction rate coefficient $k_{j}^{\left(b\right)}$** is given by
 
 $$k_{j}^{\left(b\right)} = \frac{k_{j}^{\left(f\right)}}{k_{j}^{e}}, \qquad j =1, \ldots, M$$
 
-where\
+where
 $k_{j}^{e}$ = Equilibrium constant for reaction $j$
 
 The **equilibrium constant  $k_{j}^{e}$** is related to the equilibrium thermochemistry of the elementary reactions, and it is given by
@@ -174,7 +167,7 @@ for $i = 1, \ldots, N$.
 Note: A complete table of notation of **reversible elementary** reacion
 | Symbol | Meaning |
 |:--------:|-------|
-| $\mathcal{S}_{i}$ | Chemical symbol of specie $i$ |
+| $\mathcal{s}_{i}$ | Chemical symbol of specie $i$ |
 | $\nu_{ij}^{\prime}$ | Stoichiometric coefficients of reactants |
 | $\nu_{ij}^{\prime\prime}$ | Stoichiometric coefficients of products |
 | $N$                       | Number of species in system |
@@ -207,7 +200,7 @@ Features of the **chemkin** module include:
 
 - Handling the calculation of progress rates ($\omega_{j}$ or $r_{j}$) and reaction rates ($f_{i}$)  for a system  consisting of $N$ species undergoing $M$ **irreversible** or **reversible** **elementary** reactions
 
-#### Overall structure of the `Chemkin` library
+#### Overall structure of the `chemkin` library
 
 ```sh
 chemkin/
@@ -499,8 +492,8 @@ The `elementary_rxn` module deals with elementary chemical reactions. It contain
 
 This class handles a system  consisting of $N$ species undergoing $M$ **irreversible**, **elementary** reactions of the form:
 
-$$\sum_{i=1}^{N}{\nu_{ij}^{\prime}{S}_{i}} \longrightarrow 
-  \sum_{i=1}^{N}{\nu_{ij}^{\prime\prime}{S}_{i}}, \qquad \text{for } j = 1, \ldots, M$$
+$$\sum_{i=1}^{N}{\nu_{ij}^{\prime}\mathcal{s}_{i}} \longrightarrow 
+  \sum_{i=1}^{N}{\nu_{ij}^{\prime\prime}\mathcal{s}_{i}}, \qquad \text{for } j = 1, \ldots, M$$
 
 The progress rate $\omega_{j}$ is given by 
 
@@ -525,7 +518,7 @@ $$\begin{aligned}
 
 This class handles a system  consisting of $N$ species undergoing $M$ **reversible**, **elementary** reactions of the form:
 
-$$\sum_{i=1}^{N}{\nu_{ij}^{\prime}\mathcal{S}_{i}}  \rightleftharpoons \sum_{i=1}^{N}{\nu_{ij}^{\prime\prime}\mathcal{S}_{i}} \qquad j = 1, \ldots, M$$
+$$\sum_{i=1}^{N}{\nu_{ij}^{\prime}\mathcal{s}_{i}}  \rightleftharpoons \sum_{i=1}^{N}{\nu_{ij}^{\prime\prime}\mathcal{s}_{i}} \qquad j = 1, \ldots, M$$
 
 The total progress rate $r_{j}$ is given by 
 
@@ -623,7 +616,7 @@ from chemkin.preprocessing.parse_xml import XmlParser
 from chemkin.viz import summary
 
 Ti = [750, 1500, 2500] 
-xi = [2.0, 1.0, 0.5, 1.0, 1.0] # specie concentrations
+xi = [2.0, 1.0, 0.5, 1.0, 1.0] # species concentrations
 
 xml_file = './chemkin/xml-files/rxns_hw5.xml'
 xml_parser = XmlParser(xml_file)
