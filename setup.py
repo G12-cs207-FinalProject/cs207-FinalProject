@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='chemkin',
-      version='2.6',
+      version='2.8',
       description='The best chemkin package',
       url='https://github.com/G12-cs207-FinalProject/cs207-FinalProject.git',
       author='Monsieur Package du Parser',
