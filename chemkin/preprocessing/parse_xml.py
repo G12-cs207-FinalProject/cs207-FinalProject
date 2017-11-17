@@ -68,7 +68,7 @@ class XmlParser():
         else:
             raise ChemKinError(
                   'XmlParser.load()',
-                  'Invalid type attribute in reaction {}'.format(
+                  'Reaction {} is non-elementary.'.format(
                         result.rxn_id))
 
         # rate_coeff
