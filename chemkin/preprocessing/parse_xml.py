@@ -13,7 +13,15 @@ class RxnType(Enum):
 
 
 class XmlParser():
-    """Core method load() produces list of RxnData from XML file contents.
+    """
+    Class to parse input XML files to retrieve and preprocess reaction data
+
+    METHODS:
+    ========
+    load(): Produces list of RxnData from XML file contents.
+
+    parsed_data_list(Ti): Given a list of temperatures, produces a list of preprocessed reaction parameters, where
+    each item in the list corresponds to one temperature
 
     Notes:
         ChemKinError raised when invalid values are encountered in the XML file.
@@ -125,6 +133,30 @@ class XmlParser():
         return result
 
     def parsed_data_list (self, Ti):
+        """ Returns a list of dictionaries where each dictionary contains reaction parameters for
+        one temperature
+
+        INPUTS
+        =======
+        Ti: a list of floats, required
+            Temperature, units = K
+
+        NOTES
+        =====
+        PRE:
+            - Ti is list or np.array type
+
+        POST:
+             - parameters, Ti is not changed by this function
+             - returns a list of dictionaries with the following attributes
+                parsed_data_dic['species'] = a list of reaction species
+                parsed_data_dic['ki'] = a list of reaction rate coefficients, ith item for ith reaction
+                parsed_data_dic['sys_vi_p'] = a list of stoichiometric coefficients of the reactants, ith item for ith reaction
+                parsed_data_dic['sys_vi_dp'] = sys_vi_dp, a list of stoichiometric coefficietns of the products, ith item for ith reaction
+                parsed_data_dic['is_reversible'] = a boolean indicating whether the raction is reversible
+                parsed_data_dic['T'] = a float of temperature
+
+        """
         species, rxn_data_list = self.load()
         n_species = len(species)
 
