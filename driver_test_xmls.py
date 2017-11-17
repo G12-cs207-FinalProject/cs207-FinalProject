@@ -12,7 +12,7 @@ irrev_xmls = ['rxns_hw5', 'rxns_ideal', 'rxns_neg_A', 'rxns_neg_A_2', 'rxns_neg_
 rev_xmls = ['rxns_reversible', 'rxns_rev_neg_A', 'rxns_rev_neg_k', 'rxns_rev_non_elementary', 'rxns_rev_inconsistent']
 Ti = [100, 750, 1500, 2500, 5000]
 xi = [2., 1., .5, 1., 1., 1., .5, 1.] # specie concentrations 'rxns_reversible.xml'
-xml_parser = XmlParser(pckg_xml_path(rev_xmls[3]))
+xml_parser = XmlParser(pckg_xml_path(rev_xmls[0]))
 
 
 parsed_data_list = xml_parser.parsed_data_list(Ti)
