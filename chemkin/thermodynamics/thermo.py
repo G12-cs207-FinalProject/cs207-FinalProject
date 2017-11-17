@@ -91,6 +91,6 @@ class ThermoDAO():
         db.close()
         return species
 
-if _name_ == "_main_":
+if __name__ == "__main__":
     import doctest
-    doctest.testmod()
+    doctest.testmod(verbose=True)
