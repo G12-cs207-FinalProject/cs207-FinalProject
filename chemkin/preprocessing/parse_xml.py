@@ -35,15 +35,6 @@ class XmlParser():
             path += '.xml'
         self.path = path
 
-    @staticmethod
-    def _contains_both_rev_and_irrev (reaction_list):
-        """Returns True if reaction_list contains both reversible and
-        irreversible reactions.
-        """
-        rev = [i for i in reaction_list if i.reversible]
-        irrev = [i for i in reaction_list if i.reversible]
-        return len(rev) > 0 and len(irrev) > 0
-
     def load (self):
         """ Parses XML file contents to create list of RxnData objects
         representing the reactions in the file.
@@ -60,10 +51,6 @@ class XmlParser():
             rxn_data = self.__extract_data_from_reaction_element(rxn)
             results.append(rxn_data)
 
-        if self._contains_both_rev_and_irrev(results):
-            raise ChemKinError('load()',
-                               'Reaction system contains both reversible and '
-                               'irreversible elements.')
         return species, results
 
     def __extract_data_from_reaction_element (self, rxn):
