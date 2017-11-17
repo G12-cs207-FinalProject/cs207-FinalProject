@@ -25,7 +25,7 @@ xml_parser = XmlParser(pckg_xml_path('rxns_hw5'))
 
 parsed_data_list = xml_parser.parsed_data_list(Ti2)
 
-for parsed_data in parsed_data_list:
+for i, parsed_data in enumerate(parsed_data_list):
 
     species = parsed_data['species']
     ki = parsed_data['ki']
@@ -34,9 +34,13 @@ for parsed_data in parsed_data_list:
     is_reversible = parsed_data['is_reversible']
     T = parsed_data['T']
 
-    rxn = IrreversibleElementaryRxn(ki, xi2, sys_vi_p, sys_vi_dp).progress_rate()
+    rxn = IrreversibleElementaryRxn(ki, xi2, sys_vi_p, sys_vi_dp)
     progress_rates = rxn.progress_rate()
     rxn_rates = rxn.reaction_rate()
 
+    print('At T = {}: '.format(Ti2[i]))
+    print('The progress rates: ')
     print(progress_rates)
+    print('The reaction rates: ')
     print(rxn_rates)
+    print('==================')
