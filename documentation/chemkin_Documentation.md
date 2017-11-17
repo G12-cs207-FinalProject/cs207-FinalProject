@@ -258,9 +258,9 @@ A brief description of each subdirectory:
 - `viz` package contains modules that allow the user to visualize reaction kinetics (e.g. printing reaction rates in a prettified, tabular format)
 
 
-#### Future Features
+#### Proposed Feature
 
-The main future feature is to install a differential equation solvers to calculate species concentrations as a function of time. We envision at least 3 additional library functions that follows:
+Our proposed future feature is to install a differential equation solvers to calculate species concentrations as a function of time. We envision at least 3 additional library functions that follows:
 
 1. Given an end-time ($t_{end}$) and reaction data, function outputs the concentrations of each species at $t_{end}$.
 
