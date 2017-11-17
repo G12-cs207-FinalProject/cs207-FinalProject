@@ -1,4 +1,6 @@
 
+
+
 # Chemical Kinetics Library
 
 ## 1. Introduction
@@ -668,6 +670,9 @@ summary.print_reaction_rate(parsed_data_list, xi)
 
 - The expected result:
 ```
+------At Temperature 100 K------
+Backward reaction coefficients not defined: T=100 is not in some specie's temperature range.
+--------------------------------
 ------At Temperature 750 K------
      H : 3.42304562795e+16
      O : -3.38308977852e+16
@@ -698,4 +703,8 @@ summary.print_reaction_rate(parsed_data_list, xi)
      HO2 : 5.28617565897e+12
      H2O2 : -1.54500764698e+14
 --------------------------------
+------At Temperature 5000 K------
+Backward reaction coefficients not defined: T=5000 is not in some specie's temperature range.
+--------------------------------
+
 ```
