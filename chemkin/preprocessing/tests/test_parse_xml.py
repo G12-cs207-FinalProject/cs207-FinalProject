@@ -9,9 +9,10 @@
 ###############################################################################
 
 from pytest import approx
+
 from chemkin import pckg_xml_path
 from chemkin.chemkin_errors import ChemKinError
-from chemkin.preprocessing.parse_xml import XmlParser, RxnType
+from chemkin.preprocessing.parse_xml import RxnType, XmlParser
 
 
 def test_parse_basic_functionality ():
@@ -115,3 +116,15 @@ def test_badparse_negative_A_modarr ():
         assert str(err).find(
               'A coeff < 0 in reaction with id = reaction01') != -1
 
+
+def test_both_rev_and_irrev_reactions ():
+    """ChemKinError should be raised if XML file contains both reversible and
+    irreversible reaction elements."""
+    xml = XmlParser(pckg_xml_path('rxns_reversible_and_irreversible'))
+    try:
+        rxns = xml.load()
+    except ChemKinError as err:
+        assert type(err) == ChemKinError
+        assert str(err).find(
+              'Reaction system contains both reversible and irreversible '
+              'elements.') != -1
