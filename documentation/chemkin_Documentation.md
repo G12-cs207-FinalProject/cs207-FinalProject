@@ -260,13 +260,35 @@ A brief description of each subdirectory:
 
 #### Proposed Feature
 
-Our proposed future feature is to install a differential equation solvers to calculate species concentrations as a function of time. We envision at least 3 additional library functions that follows:
+Our proposed future feature is to install a differential equation solver to calculate species concentrations as a function of time. 
+
+##### Motivation
+
+We motivate our feature by the following:
+
+* Visualize the change in species concentration over time.
+*	Identify time to reach equilibrium (i.e., reaction completion).
+*	Get the concentrations at some end time ($t_{end}$).
+
+For the end-user, it may be useful to learn about the concentration of the various species at any given point in time (as opposed to just the reaction rates).
+
+##### Implementation
+
+There will be a solver.py module containing a class that will be the workhorse to solve concentration of species over time. User will be able to call this class and use a solve() method for the desired outputs.
+
+The current ``summary.py`` module will call this method ``plot_reaction_rates()`` in order to produce a plot of the species concentrations over time.
+
+The feature will require an external ODE solver, most likely the ``ODEint`` from ``scipy.integrate`` as well as the ``matplotlib``.
+
+We envision at least 3 additional library functions that follows:
 
 1. Given an end-time ($t_{end}$) and reaction data, function outputs the concentrations of each species at $t_{end}$.
 
-1. Given reaction data, function outputs the time to reach equilibrium (in the case of reversible elementary reactions) or the time for the reaction to reach completion (in the case of irreversible elementary reactions).
+2. Given reaction data, function outputs the time to reach equilibrium (in the case of reversible elementary reactions) or the time for the reaction to reach completion (in the case of irreversible elementary reactions).
 
-1. Given an end-time ($t_{end}$), function plots the time evolution of species concentrations from $t_0$ to $t_{end}$.
+3. Given an end-time ($t_{end}$), function plots the time evolution of species concentrations from $t_0$ to $t_{end}$.
+
+##### Additional packaging
 
 Below is the structure of the add-on to the package.
 
@@ -280,10 +302,6 @@ chemkin/
             __init__.py
             test_ODEint_solver()
 ```
-
-We will also add a method ``plot_reaction_rates()``
-
-The feature will require an external ODE solver, most likely the ``ODEint`` from ``scipy.integrate`` as well as the ``matplotlib``.
 
 ## 2. Installation
 
