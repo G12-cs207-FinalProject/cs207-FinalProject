@@ -1,6 +1,4 @@
-
-
-
+﻿
 # Chemical Kinetics Library
 
 ## 1. Introduction
@@ -334,6 +332,10 @@ Chemical reaction data should be stored in XML format with the following specifi
         1. `<Arrhenius>`: Coefficients [A, E] will be retrieved.
         2. `<modifiedArrhenius>`: [A, b, E] will be retrieved.
         3. `<Constant>`: k will be retrieved.
+
+**Note** There should be only 1 system of reactions per XML file (i.e. 1 `<reactionData>` element). If more than 1 `<reactionData>` element resides within the XML, only the first `<reactionData>` element (i.e. first system of reactions) will be considered
+
+**Note** For a system of chemical reactions, there should only be 1 type of reaction (i.e. all elementary reversible or all elementary irreversible). If more than 1 type of reaction is specified in the XML file, then a ChemkinError will be raised.
 
 **Note** If no recognized child tag of `<rateCoeff>` is encountered, then `XmlParser` will raise a `ChemKinError`. Also, its retrieval of elements is case-sensitive. So, for example, `<A>`, `<b>`, `<E>`, and `<k>` must be used to store the appropriate coefficients; elements named `<a>`, `<B>`, `<e>` or `<K>` would not be recognized and would lead to an error.
 
