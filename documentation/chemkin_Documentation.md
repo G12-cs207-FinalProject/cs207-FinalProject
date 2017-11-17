@@ -1,11 +1,6 @@
-<<<<<<< HEAD
----
-output:
-  html_document: default
-  pdf_document: default
----
-=======
->>>>>>> 7bb041c018f6cb3105ff8120ade76e164c1b3fcb
+
+
+
 # Chemical Kinetics Library
 
 ## 1. Introduction
@@ -214,7 +209,6 @@ Features of the **chemkin** module include:
 chemkin/
     __init__.py
     chemkin_errors.py
-    run_chemkin.py
     preprocessing/
         __init__.py
         parse_xml.py
@@ -295,8 +289,14 @@ It is also pip-installable using the following command:
 $ pip install chemkin
 ```
 
+You can specify the directory of installation using the following command:
+```
+$ pip install -t [installation directory] chemkin
+```
+
 You can run the test suite on your local machine by typing the following command in your command line when in the directory of the installed module.
 ```sh
+$ cd [installation directory]
 $ pytest
 ```
 
@@ -313,9 +313,9 @@ Chemical reaction data should be stored in XML format with the following specifi
     - `<type>` tag indicates whether a reaction is elementary or non-elementary, possible values = ["Elementary", "Non-Elementary]
     - `<equation>` tag specifies the chemical reaction
     - `<rateCoeff>` tag stores parameters relevant to calculate the rate coefficient. It has a child tag indicating the rate coefficient class, which can be one of three acceptable types, each of which dictates what coefficient values are parsed by the `XmlParser` class:
-     	1. `<Arrhenius>`: Coefficients [A, E] will be retrieved.
-		2. `<modifiedArrhenius>`: [A, b, E] will be retrieved.
-		3. `<Constant>`: k will be retrieved.
+        1. `<Arrhenius>`: Coefficients [A, E] will be retrieved.
+        2. `<modifiedArrhenius>`: [A, b, E] will be retrieved.
+        3. `<Constant>`: k will be retrieved.
 
 **Note** If no recognized child tag of `<rateCoeff>` is encountered, then `XmlParser` will raise a `ChemKinError`. Also, its retrieval of elements is case-sensitive. So, for example, `<A>`, `<b>`, `<E>`, and `<k>` must be used to store the appropriate coefficients; elements named `<a>`, `<B>`, `<e>` or `<K>` would not be recognized and would lead to an error.
 
@@ -385,12 +385,13 @@ Each dictionary in the returned list contains the following attributes:
 **Example 3.2.** Read in, parse and preprocess an input XML file
 
 ```python
+from chemkin import pckg_xml_path
 from chemkin.preprocessing.parse_xml import XmlParser
 
-Ti = [750, 1500, 2500] # user-specified reaction temperatures
+Ti = [100, 750, 1500, 2500, 5000]
+xi = [2., 1., .5, 1., 1., 1., .5, 1.] 
 
-xml_file = './chemkin/xml-files/rxns_reversible.xml' # input XML file path
-xml_parser = XmlParser(xml_file)
+xml_parser = XmlParser(pckg_xml_path('rxns_reversible'))
 parsed_data_list = xml_parser.parsed_data_list(Ti)
 ```
 
@@ -403,12 +404,11 @@ The `parsed_data_list(Ti)` method abstracts much of the preprocssing stage, incl
 **Example 3.3.** Read in and parse XML file to work with XML elements directly
 
 ```python
+from chemkin import pckg_xml_path
 from chemkin.preprocessing.parse_xml import XmlParser
 
-xml_file = './chemkin/xml-files/rxns_reversible.xml' # input XML file path
-xml_parser = XmlParser(xml_file)
-
-species, reaction_data = xml.load()
+xml_parser = XmlParser(pckg_xml_path('rxns_reversible'))
+species, reaction_data = xml_parser.load()
 ```
 
 #### 3.2.2 `RxnData`
@@ -432,16 +432,15 @@ The reaction data parsed by the XmlParser `load()` function from XML files is re
 **Example 3.4.** Working with `RxnData` objects
 
 ```python
+from chemkin import pckg_xml_path
 from chemkin.preprocessing.parse_xml import XmlParser
 
-xml_file = './chemkin/xml-files/rxns_reversible.xml' # input XML file path
-xml_parser = XmlParser(xml_file)
-
-_, reaction_data = xml.load()
+xml_parser = XmlParser(pckg_xml_path('rxns_reversible'))
+_, reaction_data = xml_parser.load()
 
 for rxn in reaction_data:
-	if rxn.reversible:
-		# Handle special reversible reaction logic
+    if rxn.reversible:
+        # Handle special reversible reaction logic
 ```
 
 ### 3.3. Calculating kinetic parameters of interest
@@ -460,27 +459,27 @@ Since different classes of rate coefficients have different number of input para
 
 **Example 3.5.** Calculating reaction rate coefficients
 ```python
+from chemkin import pckg_xml_path
 from chemkin.preprocessing.parse_xml import XmlParser
 
-xml_file = './chemkin/xml-files/rxns_reversible.xml' # input XML file path
-xml_parser = XmlParser(xml_file)
+xml_parser = XmlParser(pckg_xml_path('rxns_reversible'))
 
-_, reaction_data = xml.load()
+_, reaction_data = xml_parser.load()
 
 coef_params = reaction_data.rate_coeff
         
-		if isinstance(coef_params, list):
-			if len(coef_params) == 3: # modified arrhenius coef
-				A = coef_params[0]
-				b = coef_params[1]
-				E = coef_params[2]
-				ki.append(ModifiedArrheniusCoefficient(A, b, E, T).get_coef())
-			else: # arrhenius coef
-				A = coef_params[0]
-				E = coef_params[1]
-				ki.append(ArrheniusCoefficient(A, E, T).get_coef())
-		else: # const coef
-			ki.append(ConstantCoefficient(coef_params).get_coef())
+        if isinstance(coef_params, list):
+            if len(coef_params) == 3: # modified arrhenius coef
+                A = coef_params[0]
+                b = coef_params[1]
+                E = coef_params[2]
+                ki.append(ModifiedArrheniusCoefficient(A, b, E, T).get_coef())
+            else: # arrhenius coef
+                A = coef_params[0]
+                E = coef_params[1]
+                ki.append(ArrheniusCoefficient(A, E, T).get_coef())
+        else: # const coef
+            ki.append(ConstantCoefficient(coef_params).get_coef())
 
 ```
 
@@ -639,14 +638,14 @@ This example demonstrates the highest-level and most-abstracted use of the libra
 - Given the the species concentration $xi = [2.0, 1.0, 0.5, 1.0, 1.0]$ in units of $m^{3}/(mol\cdot s)$, calculate the reaction rate of each species at $Ti = [750, 1500, 2500]$ in units of K.
 
 ```
+from chemkin import pckg_xml_path
 from chemkin.preprocessing.parse_xml import XmlParser
 from chemkin.viz import summary
 
 Ti = [750, 1500, 2500] 
 xi = [2.0, 1.0, 0.5, 1.0, 1.0] # species concentrations
 
-xml_file = './chemkin/xml-files/rxns_hw5.xml'
-xml_parser = XmlParser(xml_file)
+xml_parser = XmlParser(pckg_xml_path('rxns_reversible'))
 parsed_data_list = xml_parser.parsed_data_list(Ti)
 summary.print_reaction_rate(parsed_data_list, xi)
 ```
