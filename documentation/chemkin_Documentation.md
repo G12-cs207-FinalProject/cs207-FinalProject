@@ -1,4 +1,12 @@
-﻿# Chemical Kinetics Library
+<<<<<<< HEAD
+---
+output:
+  html_document: default
+  pdf_document: default
+---
+=======
+>>>>>>> 7bb041c018f6cb3105ff8120ade76e164c1b3fcb
+# Chemical Kinetics Library
 
 ## 1. Introduction
 `chemkin` stands for chemical kinetics and is an objected-oriented library for modeling kinetics of chemical reactions.
@@ -228,10 +236,12 @@ chemkin/
         thermo.py
         NASA_coef.sqlite
         tests/
+            test_thermo.py
     viz/
         __init__.py
         summary.py
         tests/
+            test_summary.py
     xml-files/
 ```
 
@@ -250,7 +260,7 @@ A brief description of each subdirectory:
 
 #### Future Features
 
-The main future feature is to install differential equation solvers to calculate species concentrations as a function of time. We envision at least 3 additional library functions that follows:
+The main future feature is to install a differential equation solvers to calculate species concentrations as a function of time. We envision at least 3 additional library functions that follows:
 
 1. Given an end-time ($t_{end}$) and reaction data, function outputs the concentrations of each species at $t_{end}$.
 
@@ -258,6 +268,22 @@ The main future feature is to install differential equation solvers to calculate
 
 1. Given an end-time ($t_{end}$), function plots the time evolution of species concentrations from $t_0$ to $t_{end}$.
 
+Below is the structure of the add-on to the package.
+
+```sh
+chemkin/
+    __init__.py
+    solver/
+        __init__.py
+        ODEint_solver.py
+        test/
+            __init__.py
+            test_ODEint_solver()
+```
+
+We will also add a method ``plot_reaction_rates()``
+
+The feature will require an external ODE solver, most likely the ``ODEint`` from ``scipy.integrate`` as well as the ``matplotlib``.
 
 ## 2. Installation
 
@@ -269,7 +295,7 @@ It is also pip-installable using the following command:
 $ pip install chemkin
 ```
 
-You can run the test suite on your local machine by typing the following command in your command line when in the directory of the downloaded files.
+You can run the test suite on your local machine by typing the following command in your command line when in the directory of the installed module.
 ```sh
 $ pytest
 ```
@@ -555,6 +581,7 @@ H_2O + O_2 &\longrightarrow HO_2 + OH
 $$
 
 - Input XML file:
+
 ```
 <?xml version="1.0"?>
 

@@ -76,7 +76,7 @@ class XmlParser():
         else:
             raise ChemKinError(
                   'XmlParser.load()',
-                  'Invalid type attribute in reaction {}'.format(
+                  'Reaction {} is non-elementary.'.format(
                         result.rxn_id))
 
         # rate_coeff
@@ -325,3 +325,7 @@ class RxnData():
             result += '{0}{1}{2}'.format(operator, conc_part, species)
 
         return result
+
+if _name_ == "_main_":
+    import doctest
+    doctest.testmod()

@@ -9,7 +9,6 @@
 ###############################################################################
 
 from pytest import approx
-
 from chemkin import pckg_xml_path
 from chemkin.chemkin_errors import ChemKinError
 from chemkin.preprocessing.parse_xml import XmlParser, RxnType
