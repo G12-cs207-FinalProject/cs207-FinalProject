@@ -59,8 +59,8 @@ class Thermo():
             S_coef_arr = np.array([NASA_coefs[0], NASA_coefs[1], NASA_coefs[2], NASA_coefs[3], NASA_coefs[4], NASA_coefs[6]])
             S_over_R_species.append(np.dot(S_T_arr, S_coef_arr))
 
-        delta_H_over_RT = np.squeeze(np.asarray(np.dot(H_over_RT_species, self.vi))) # delta enthalpy of a reaction
-        delta_S_over_R = np.squeeze(np.asarray(np.dot(S_over_R_species, self.vi))) # delta entropy of a reaction
+        delta_H_over_RT = np.squeeze(np.asarray(np.dot(H_over_RT_species, self.vi))) # delta enthalpy of a system of reactions
+        delta_S_over_R = np.squeeze(np.asarray(np.dot(S_over_R_species, self.vi))) # delta entropy of a system of reactions
         
         ke = np.squeeze(np.asarray(np.multiply(np.power(self.p0/(self.R*self.T), self.gamma), np.exp(delta_S_over_R-delta_H_over_RT))))
 
