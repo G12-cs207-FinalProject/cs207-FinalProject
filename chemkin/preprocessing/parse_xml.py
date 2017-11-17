@@ -293,3 +293,7 @@ class RxnData():
             result += '{0}{1}{2}'.format(operator, conc_part, species)
 
         return result
+
+if _name_ == "_main_":
+    import doctest
+    doctest.testmod()

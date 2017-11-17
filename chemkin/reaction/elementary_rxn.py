@@ -335,3 +335,7 @@ class IrreversibleElementaryRxn(ElementaryRxn):
 
 #a = IrreversibleElementaryRxn([10, 10], [1.0, 2.0, 1.0], [[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]], [[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]]).progress_rate()
 #print(a)
+
+if _name_ == "_main_":
+    import doctest
+    doctest.testmod()

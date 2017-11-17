@@ -287,3 +287,7 @@ class ModifiedArrheniusCoefficient(ArrheniusCoefficient):
                 raise OverflowError("The result is too large/small.")
 
             return self.k
+        
+if _name_ == "_main_":
+    import doctest
+    doctest.testmod()
