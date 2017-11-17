@@ -1,6 +1,4 @@
 
-
-
 # Chemical Kinetics Library
 
 ## 1. Introduction
@@ -252,7 +250,7 @@ A brief description of each subdirectory:
 - `viz` package contains modules that allow the user to visualize reaction kinetics (e.g. printing reaction rates in a prettified, tabular format)
 
 
-#### Proposed Feature
+## Proposed Feature
 
 Our proposed future feature is to install a differential equation solver to calculate species concentrations as a function of time. 
 
@@ -261,8 +259,8 @@ Our proposed future feature is to install a differential equation solver to calc
 We motivate our feature by the following:
 
 * Visualize the change in species concentration over time.
-*	Identify time to reach equilibrium (i.e., reaction completion).
-*	Get the concentrations at some end time ($t_{end}$).
+*   Identify time to reach equilibrium (i.e., reaction completion).
+*   Get the concentrations at some end time ($t_{end}$).
 
 For the end-user, it may be useful to learn about the concentration of the various species at any given point in time (as opposed to just the reaction rates).
 
@@ -660,8 +658,8 @@ from chemkin import pckg_xml_path
 from chemkin.preprocessing.parse_xml import XmlParser
 from chemkin.viz import summary
 
-Ti = [750, 1500, 2500] 
-xi = [2.0, 1.0, 0.5, 1.0, 1.0] # species concentrations
+Ti = [100, 750, 1500, 2500, 5000]
+xi = [2., 1., .5, 1., 1., 1., .5, 1.]
 
 xml_parser = XmlParser(pckg_xml_path('rxns_reversible'))
 parsed_data_list = xml_parser.parsed_data_list(Ti)
@@ -670,25 +668,34 @@ summary.print_reaction_rate(parsed_data_list, xi)
 
 - The expected result:
 ```
--------At Temperature 750 K------
-     H2 : -3607077.8728
-     O2 : -5613545.18362
-     OH : 9220623.05642
-     HO2 : 2006467.31082
-     H2O : -2006467.31082
+------At Temperature 750 K------
+     H : 3.42304562795e+16
+     O : -3.38308977852e+16
+     OH : -3.52979102957e+16
+     H2 : 4.07078984572e+13
+     H2O : 5.86479724945e+14
+     O2 : 3.44028050967e+16
+     HO2 : -7.63606068937e+13
+     H2O2 : -5.52803118677e+13
 --------------------------------
 ------At Temperature 1500 K------
-     H2 : -281117620.765
-     O2 : -285597559.238
-     OH : 566715180.003
-     HO2 : 4479938.47318
-     H2O : -4479938.47318
+     H : 1.32279654839e+14
+     O : -3.12877268431e+14
+     OH : -1.37621783394e+14
+     H2 : 6.07049182e+13
+     H2O : 6.45299057466e+13
+     O2 : 3.36486898686e+14
+     HO2 : -4.18771319555e+13
+     H2O2 : -1.01625193691e+14
 --------------------------------
 ------At Temperature 2500 K------
-     H2 : -1804261425.96
-     O2 : -1810437356.94
-     OH : 3614698782.9
-     HO2 : 6175930.97566
-     H2O : -6175930.97566
+     H : -2.4081673376e+14
+     O : -1.5885953972e+13
+     OH : 3.22268792909e+14
+     H2 : 6.41189812893e+13
+     H2O : 4.70126660046e+13
+     O2 : -2.74831634318e+13
+     HO2 : 5.28617565897e+12
+     H2O2 : -1.54500764698e+14
 --------------------------------
 ```
