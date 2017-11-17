@@ -151,7 +151,6 @@ class ReversibleElementaryRxn(ElementaryRxn):
         
         EXAMPLES
         =========
-
         MAKE EXAMPLE DOC TEST !!!!!! 
 
         """
@@ -231,6 +230,7 @@ class IrreversibleElementaryRxn(ElementaryRxn):
         self.vi_dp = vi_dp
         self.wi = None
         self.rates = None
+        # doctest: +SKIP
 
     # def __len__(self):
     #     """Returns the number of species in the reaction"""
@@ -336,6 +336,7 @@ class IrreversibleElementaryRxn(ElementaryRxn):
 #a = IrreversibleElementaryRxn([10, 10], [1.0, 2.0, 1.0], [[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]], [[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]]).progress_rate()
 #print(a)
 
-if _name_ == "_main_":
+if __name__ == "__main__":
     import doctest
-    doctest.testmod()
+    doctest.testmod(verbose=True)
+    
