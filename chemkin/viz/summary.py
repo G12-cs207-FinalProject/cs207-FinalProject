@@ -2,6 +2,8 @@ from chemkin.reaction.elementary_rxn import IrreversibleElementaryRxn
 from chemkin.reaction.elementary_rxn import ReversibleElementaryRxn
 
 def print_reaction_rate(parsed_data_list, xi):
+	test_flag = 0 # reation rates can be printed
+	
 	for parsed_data in parsed_data_list:
 
 		species = parsed_data['species']
@@ -17,6 +19,8 @@ def print_reaction_rate(parsed_data_list, xi):
 		else:
 			b_ki = parsed_data['b_ki']
 			if str(b_ki) == 'Not Defined':
+				test_flag = 1 # reaction rates cannot be printed because T is not in some specie's temperature range 
+				
 				print('------At Temperature', T, 'K------')
 				print('Backward reaction coefficients not defined: T={} is not in some specie\'s temperature range.'.format(T))
 				print('--------------------------------')
@@ -29,3 +33,5 @@ def print_reaction_rate(parsed_data_list, xi):
 		for s, rate in zip(species, rxn_rates):
 			print('    ', s, ':', rate)
 		print('--------------------------------')
+
+	return test_flag

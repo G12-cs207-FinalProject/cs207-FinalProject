@@ -1,11 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Nov 13 21:33:30 2017
-
-@author: filipmichalsky
-"""
-
 import os.path
 import sqlite3
 import numpy as np

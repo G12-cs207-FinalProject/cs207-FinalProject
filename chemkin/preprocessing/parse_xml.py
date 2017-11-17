@@ -1,6 +1,5 @@
 from enum import Enum
 import xml.etree.ElementTree as ET
-
 import numpy as np
 
 from chemkin.chemkin_errors import ChemKinError

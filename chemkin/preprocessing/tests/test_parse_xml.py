@@ -10,7 +10,9 @@
 
 from pytest import approx
 
-from chemkin import ChemKinError, RxnType, XmlParser, pckg_xml_path
+from chemkin import pckg_xml_path
+from chemkin.chemkin_errors import ChemKinError
+from chemkin.preprocessing.parse_xml import XmlParser, RxnType
 
 
 def test_parse_basic_functionality ():
@@ -113,3 +115,4 @@ def test_badparse_negative_A_modarr ():
         assert type(err) == ChemKinError
         assert str(err).find(
               'A coeff < 0 in reaction with id = reaction01') != -1
+
