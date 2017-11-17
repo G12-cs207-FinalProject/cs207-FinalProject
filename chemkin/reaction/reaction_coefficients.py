@@ -30,7 +30,7 @@ class RxnCoefficientBase():
             return False
 
     def get_coef (self):
-        """ Calculates and returns the reaction rate coefficient
+        """Calculates and returns the reaction rate coefficient
 
         Method is not implemented in this base class, but should be
         implemented in its subclasses.

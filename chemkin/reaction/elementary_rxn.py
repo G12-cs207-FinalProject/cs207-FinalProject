@@ -1,6 +1,7 @@
 import numpy as np
 from chemkin.reaction.base_rxn import RxnBase
 
+
 class ElementaryRxn(RxnBase):
     """Class of elementary reactions
     Subclass of RxnBase
