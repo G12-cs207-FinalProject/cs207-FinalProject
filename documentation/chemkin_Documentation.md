@@ -1,4 +1,4 @@
-﻿# Chemical Kinetics Library
+# Chemical Kinetics Library
 
 ## 1. Introduction
 `chemkin` stands for chemical kinetics and is an objected-oriented library for modeling kinetics of chemical reactions.
@@ -228,10 +228,12 @@ chemkin/
         thermo.py
         NASA_coef.sqlite
         tests/
+            test_thermo.py
     viz/
         __init__.py
         summary.py
         tests/
+            test_summary.py
     xml-files/
 ```
 
@@ -269,7 +271,7 @@ It is also pip-installable using the following command:
 $ pip install chemkin
 ```
 
-You can run the test suite on your local machine by typing the following command in your command line when in the directory of the downloaded files.
+You can run the test suite on your local machine by typing the following command in your command line when in the directory of the installed module.
 ```sh
 $ pytest
 ```
@@ -555,6 +557,7 @@ H_2O + O_2 &\longrightarrow HO_2 + OH
 $$
 
 - Input XML file:
+
 ```
 <?xml version="1.0"?>
 
