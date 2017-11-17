@@ -101,10 +101,8 @@ class ReversibleElementaryRxn(ElementaryRxn):
         
         EXAMPLES
         =========
-
-        MAKE EXAMPLE DOC TEST !!!!!! 
-
-
+        >>> ReversibleElementaryRxn([10, 10], [10, 10], [1.0, 2.0, 1.0], [[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]], [[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]]).progress_rate()
+        array([ 30., -10.])
         """
 
         # check value conditions
@@ -151,7 +149,8 @@ class ReversibleElementaryRxn(ElementaryRxn):
         
         EXAMPLES
         =========
-        MAKE EXAMPLE DOC TEST !!!!!! 
+        >>> ReversibleElementaryRxn([10, 10], [10, 10], [1.0, 2.0, 1.0], [[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]], [[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]]).reaction_rate()
+        array([-10., -70.,  70.])
 
         """
         # check value conditions
@@ -333,10 +332,7 @@ class IrreversibleElementaryRxn(ElementaryRxn):
 
             return self.rates
 
-#a = IrreversibleElementaryRxn([10, 10], [1.0, 2.0, 1.0], [[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]], [[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]]).progress_rate()
-#print(a)
-
 if __name__ == "__main__":
     import doctest
     doctest.testmod(verbose=True)
-    
+
