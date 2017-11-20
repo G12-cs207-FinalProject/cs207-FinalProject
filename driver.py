@@ -16,7 +16,7 @@ parsed_data_list = xml_parser.parsed_data_list(Ti)
 summary.print_reaction_rate(parsed_data_list, xi)
 
 
-
+"""
 #########################################
 # More user-oriented use of the library #
 #########################################
@@ -46,3 +46,4 @@ for i, parsed_data in enumerate(parsed_data_list):
     print('The reaction rates: ')
     print(rxn_rates)
     print('==================')
+"""
