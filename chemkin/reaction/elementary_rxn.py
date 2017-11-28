@@ -174,7 +174,7 @@ class ElementaryRxn(RxnBase):
             vi_dp = np.matrix(self.vi_dp).T
             vi = vi_dp - vi_p  # calculate overall stoicheometric coefficients
 
-            if self.wi == None:
+            if all(i == None for i in self.wi):
                 self.progress_rate()
             w = self.wi  # get progress rate
 

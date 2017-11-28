@@ -1,7 +1,7 @@
-##################################
+#################################
 # High level use of the library #
-##################################
-#
+#################################
+
 from chemkin import pckg_xml_path
 from chemkin.preprocessing.parse_xml import XmlParser
 from chemkin.viz import summary
