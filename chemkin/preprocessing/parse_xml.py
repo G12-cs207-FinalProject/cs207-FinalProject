@@ -1,5 +1,6 @@
 from enum import Enum
 import xml.etree.ElementTree as ET
+
 import numpy as np
 
 from chemkin.chemkin_errors import ChemKinError
@@ -20,7 +21,8 @@ class XmlParser():
     ========
     load(): Produces list of RxnData from XML file contents.
 
-    parsed_data_list(Ti): Given a list of temperatures, produces a list of preprocessed reaction parameters, where
+    parsed_data_list(Ti): Given a list of temperatures, produces a list of
+    preprocessed reaction parameters, where
     each item in the list corresponds to one temperature
 
     Notes:
@@ -48,6 +50,7 @@ class XmlParser():
         for rxn in root.find('reactionData').findall('reaction'):
             rxn_data = self.__extract_data_from_reaction_element(rxn)
             results.append(rxn_data)
+
         return species, results
 
     def __extract_data_from_reaction_element (self, rxn):
@@ -133,7 +136,8 @@ class XmlParser():
         return result
 
     def parsed_data_list (self, Ti):
-        """ Returns a list of dictionaries where each dictionary contains reaction parameters for
+        """ Returns a list of dictionaries where each dictionary contains
+        reaction parameters for
         one temperature
 
         INPUTS
@@ -150,10 +154,15 @@ class XmlParser():
              - parameters, Ti is not changed by this function
              - returns a list of dictionaries with the following attributes
                 parsed_data_dic['species'] = a list of reaction species
-                parsed_data_dic['ki'] = a list of reaction rate coefficients, ith item for ith reaction
-                parsed_data_dic['sys_vi_p'] = a list of stoichiometric coefficients of the reactants, ith item for ith reaction
-                parsed_data_dic['sys_vi_dp'] = sys_vi_dp, a list of stoichiometric coefficietns of the products, ith item for ith reaction
-                parsed_data_dic['is_reversible'] = a boolean indicating whether the reaction is reversible
+                parsed_data_dic['ki'] = a list of reaction rate coefficients,
+                ith item for ith reaction
+                parsed_data_dic['sys_vi_p'] = a list of stoichiometric
+                coefficients of the reactants, ith item for ith reaction
+                parsed_data_dic['sys_vi_dp'] = sys_vi_dp, a list of
+                stoichiometric coefficietns of the products, ith item for ith
+                reaction
+                parsed_data_dic['is_reversible'] = a boolean indicating
+                whether the raction is reversible
                 parsed_data_dic['T'] = a float of temperature
 
         """
@@ -190,7 +199,7 @@ class XmlParser():
                 rxn_id = rxn_data.rxn_id  # save id
 
                 rxn_vi_p = np.zeros((
-                                    n_species,))  # save the Stoichiometric
+                    n_species,))  # save the Stoichiometric
                 # coefficients of the reactants in this rxn
                 for s, vi in rxn_data.reactants.items():
                     idx = species_idx_dict[s]  # get index of the specii
@@ -198,7 +207,7 @@ class XmlParser():
                 sys_vi_p.append(list(rxn_vi_p))
 
                 rxn_vi_dp = np.zeros((
-                                     n_species,))  # save the Stoichiometric
+                    n_species,))  # save the Stoichiometric
                 # coefficients of the products in this rxn
                 for s, vi in rxn_data.products.items():
                     idx = species_idx_dict[s]  # get index of the specii
@@ -212,7 +221,8 @@ class XmlParser():
                         b = coef_params[1]
                         E = coef_params[2]
                         ki.append(
-                            ModifiedArrheniusCoefficient(A, b, E, T).get_coef())
+                              ModifiedArrheniusCoefficient(A, b, E,
+                                                           T).get_coef())
                     else:  # arrhenius coef
                         A = coef_params[0]
                         E = coef_params[1]
@@ -316,6 +326,7 @@ class RxnData():
             result += '{0}{1}{2}'.format(operator, conc_part, species)
 
         return result
+
 
 if __name__ == "__main__":
     import doctest
