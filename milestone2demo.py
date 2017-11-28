@@ -1,7 +1,7 @@
 from chemkin import pckg_xml_path
 from chemkin.preprocessing.parse_xml import XmlParser
 from chemkin.viz import summary
-from chemkin.reaction.elementary_rxn import IrreversibleElementaryRxn
+from chemkin.reaction.elementary_rxn import ElementaryRxn
 
 #########################################
 # Demo use of the library #
@@ -37,12 +37,13 @@ for i, parsed_data in enumerate(parsed_data_list):
 
     species = parsed_data['species']
     ki = parsed_data['ki']
+    b_ki = parsed_data['b_ki']
     sys_vi_p = parsed_data['sys_vi_p']
     sys_vi_dp = parsed_data['sys_vi_dp']
     is_reversible = parsed_data['is_reversible']
     T = parsed_data['T']
 
-    rxn = IrreversibleElementaryRxn(ki, xi2, sys_vi_p, sys_vi_dp)
+    rxn = ElementaryRxn(ki, b_ki, xi2, sys_vi_p, sys_vi_dp)
     progress_rates = rxn.progress_rate()
     rxn_rates = rxn.reaction_rate()
 
