@@ -4,8 +4,8 @@ import numpy as np
 
 from chemkin.chemkin_errors import ChemKinError
 from chemkin.reaction.reaction_coefficients import ArrheniusCoefficient, \
-    ConstantCoefficient, ModifiedArrheniusCoefficient
-from chemkin.thermodynamics.thermo import Thermo
+    ConstantCoefficient, ModifiedArrheniusCoefficient, BackwardCoefficient
+
 
 
 class RxnType(Enum):
@@ -153,7 +153,7 @@ class XmlParser():
                 parsed_data_dic['ki'] = a list of reaction rate coefficients, ith item for ith reaction
                 parsed_data_dic['sys_vi_p'] = a list of stoichiometric coefficients of the reactants, ith item for ith reaction
                 parsed_data_dic['sys_vi_dp'] = sys_vi_dp, a list of stoichiometric coefficietns of the products, ith item for ith reaction
-                parsed_data_dic['is_reversible'] = a boolean indicating whether the raction is reversible
+                parsed_data_dic['is_reversible'] = a boolean indicating whether the reaction is reversible
                 parsed_data_dic['T'] = a float of temperature
 
         """
@@ -173,7 +173,7 @@ class XmlParser():
             sys_vi_dp = []  # list of product Stoichiometric coefficients in
             # each rxn
             ki = []  # list of reation rate coefficients in each rxn
-            is_reversible = None  # indicator of the system of reactions
+            is_reversible = []  # list of indicators of each reaction in the system
             # being irreversible/reversible
 
             for rxn_data in rxn_data_list:  # 1 rxn per rxn_data
@@ -182,18 +182,10 @@ class XmlParser():
                                        'Non-elementary reactions cannot be '
                                        'parsed now.')
 
-                if is_reversible == None:
-                    is_reversible = rxn_data.reversible  # set the indicator
-                    # of the system of reactions to be irreversible/reversible
-
-                if rxn_data.reversible != is_reversible:  # the system of
-                    # reactions in the XML file must be all
-                    # irreversible/reversible
-                    raise ChemKinError('XmlParser.parsed_data_list(Ti)',
-                                       'The system of reactions in the XML '
-                                       'file {} are inconsistent in '
-                                       'reversibility.'.format(
-                                           self.path))
+                if rxn_data.reversible:
+                    is_reversible.append(True)
+                else:
+                    is_reversible.append(False)
 
                 rxn_id = rxn_data.rxn_id  # save id
 
@@ -228,22 +220,21 @@ class XmlParser():
                 else:  # const coef
                     ki.append(ConstantCoefficient(coef_params).get_coef())
 
-                parsed_data_dic = {}
-                parsed_data_dic['species'] = species
-                parsed_data_dic['ki'] = ki
-                parsed_data_dic['sys_vi_p'] = sys_vi_p
-                parsed_data_dic['sys_vi_dp'] = sys_vi_dp
-                parsed_data_dic['is_reversible'] = is_reversible
-                parsed_data_dic['T'] = T
+            parsed_data_dic = {}
+            parsed_data_dic['species'] = species
+            parsed_data_dic['ki'] = ki
+            parsed_data_dic['sys_vi_p'] = sys_vi_p
+            parsed_data_dic['sys_vi_dp'] = sys_vi_dp
+            parsed_data_dic['is_reversible'] = is_reversible
+            parsed_data_dic['T'] = T
 
-            if is_reversible == True:
-                try:
-                    b_ki = Thermo(species, T, ki, sys_vi_p,
-                                  sys_vi_dp).get_backward_coefs()
-                    parsed_data_dic['b_ki'] = b_ki
-                except ChemKinError as err:
-                    print(str(err))
-                    parsed_data_dic['b_ki'] = 'Not Defined'
+            try:
+                b_ki = BackwardCoefficient(species, T, ki, is_reversible, sys_vi_p,
+                          sys_vi_dp).get_backward_coefs()
+                parsed_data_dic['b_ki'] = b_ki
+            except ChemKinError as err:
+                parsed_data_dic['b_ki'] = 'Not Defined'
+
 
             parsed_data_dic_list.append(parsed_data_dic)
 

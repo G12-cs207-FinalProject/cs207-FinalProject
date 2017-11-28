@@ -8,7 +8,10 @@ import warnings
 import numpy as np
 
 from chemkin.reaction.reaction_coefficients import ArrheniusCoefficient, \
-    ConstantCoefficient, ModifiedArrheniusCoefficient, RxnCoefficientBase
+    ConstantCoefficient, ModifiedArrheniusCoefficient, RxnCoefficientBase, BackwardCoefficient
+from chemkin import pckg_xml_path
+from chemkin.preprocessing.parse_xml import XmlParser
+from chemkin.chemkin_errors import ChemKinError
 
 
 # tests for RxnCoefficientBase() base class
@@ -137,3 +140,26 @@ def test_modarr_get_coef_overflow ():
 def test_modarr_repr_ ():
     assert repr(ModifiedArrheniusCoefficient(A=10, b=0.5, E=100,
                                              T=300)) == 'ModifiedArrheniusCoefficient(A=10, b=0.5, E=100, T=300, R=8.314)'
+
+
+def test_get_backward_coefs_normal():
+    Ti = [750, 1500]
+    xml_parser = XmlParser(pckg_xml_path('rxns_reversible'))
+    parsed_data_list = xml_parser.parsed_data_list(Ti)  # calling Thermo().get_backward_coefs()
+    assert parsed_data_list[0]['T'] == 750
+    assert parsed_data_list[1]['T'] == 1500
+
+
+def test_get_backward_coefs_high_range_err():
+    Ti = [5000]
+    xml_parser = XmlParser(pckg_xml_path('rxns_reversible'))
+    parsed_data_list = xml_parser.parsed_data_list(Ti) # calling Thermo().get_backward_coefs()
+    assert parsed_data_list[0]['b_ki'] == 'Not Defined'
+
+
+
+def test_get_backward_coefs_low_range_err():
+    Ti = [100]
+    xml_parser = XmlParser(pckg_xml_path('rxns_reversible'))
+    parsed_data_list = xml_parser.parsed_data_list(Ti) # calling Thermo().get_backward_coefs()
+    assert parsed_data_list[0]['b_ki'] == 'Not Defined'

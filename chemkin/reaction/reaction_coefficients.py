@@ -1,4 +1,6 @@
 import numpy as np
+from chemkin.thermodynamics.thermo import ThermoDAO
+from chemkin.chemkin_errors import ChemKinError
 
 class RxnCoefficientBase():
     """Base class of reaction rate coefficients
@@ -287,6 +289,66 @@ class ModifiedArrheniusCoefficient(ArrheniusCoefficient):
                 raise OverflowError("The result is too large/small.")
 
             return self.k
+
+class BackwardCoefficient():
+    """ Class of BackwardCoefficient
+    """
+
+    def __init__ (self, species, T, ki, is_reversible, vi_p, vi_dp, db_name='NASA_coef.sqlite'):
+        self.p0 = 10e5
+        self.R = 8.314
+        self.species = species
+        self.T = T
+        self.ki = ki
+        self.b_ki = np.zeros((len(is_reversible,)))
+        self.is_reversible = is_reversible
+        self.vi_p = vi_p
+        self.vi_dp = vi_dp
+        self.vi = np.matrix(self.vi_dp).T - np.matrix(self.vi_p).T  # calculate overall stoicheometric coefficients
+        self.gamma = np.sum(self.vi, axis=0)
+        self.dao = ThermoDAO(db_name)
+
+
+    def get_backward_coefs (self):
+        species_high = self.dao.get_species(self.T, 'high')
+        species_low = self.dao.get_species(self.T, 'low')
+
+        H_over_RT_species = []
+        S_over_R_species = []
+        for s in self.species:
+            if self.T >= 1000: # high temperature range
+                if s not in species_high:
+                    raise ChemKinError('Thermo.get_backward_coefs()',
+                        'The specie {}\'s high temperature bound is not higher than the current T={}.'.format(s, self.T))
+                NASA_coefs = self.dao.get_coeffs(s, 'high')
+            else: # low temperature range
+                if s not in species_low:
+                    raise ChemKinError('Thermo.get_backward_coefs()',
+                        'The specie {}\'s low temperature bound is not lower than the current T={}.'.format(s, self.T))
+                NASA_coefs = self.dao.get_coeffs(s, 'low')
+
+            # Compute enthalpy/(RT) of a specie
+            H_T_arr = np.array([1, 1/2*self.T, 1/3*(self.T**2), 1/4*(self.T**3), 1/5*(self.T**4), 1/self.T])
+            H_coef_arr = np.array([NASA_coefs[0], NASA_coefs[1], NASA_coefs[2], NASA_coefs[3], NASA_coefs[4], NASA_coefs[5]])
+            H_over_RT_species.append(np.dot(H_T_arr, H_coef_arr))
+
+            # Compute entropy/R of a specie
+            S_T_arr = np.array([np.log(self.T), self.T, 1/2*(self.T**2), 1/3*(self.T**3), 1/4*(self.T**4), 1])
+            S_coef_arr = np.array([NASA_coefs[0], NASA_coefs[1], NASA_coefs[2], NASA_coefs[3], NASA_coefs[4], NASA_coefs[6]])
+            S_over_R_species.append(np.dot(S_T_arr, S_coef_arr))
+
+        delta_H_over_RT = np.squeeze(np.asarray(np.dot(H_over_RT_species, self.vi))) # delta enthalpy of a system of reactions
+        delta_S_over_R = np.squeeze(np.asarray(np.dot(S_over_R_species, self.vi))) # delta entropy of a system of reactions
+
+        factor = np.asarray(np.power(self.p0 / (self.R * self.T), self.gamma))[0]
+
+        for index, rxn_is_rev in enumerate(self.is_reversible):
+            if rxn_is_rev:
+                ke = factor[index] * np.exp(delta_S_over_R[index] - delta_H_over_RT[index])
+
+                self.b_ki[index] = self.ki[index]/ke
+
+        return self.b_ki
         
 if __name__ == "__main__":
     import doctest
