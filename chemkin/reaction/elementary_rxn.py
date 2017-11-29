@@ -88,8 +88,7 @@ class ElementaryRxn(RxnBase):
 
     def progress_rate(self):
         """
-        Returns the progress rate w for a system of reversible elementary
-        reaction
+        Sets and returns the progress rate w for a system of elementary reactions
 
         RETURNS
         ========
@@ -174,9 +173,8 @@ class ElementaryRxn(RxnBase):
             vi_dp = np.matrix(self.vi_dp).T
             vi = vi_dp - vi_p  # calculate overall stoicheometric coefficients
 
-            if self.wi is None:
-                self.progress_rate()
-            w = self.wi  # get progress rate
+            # Get the current progress rate
+            w = self.progress_rate() 
 
             self.rates = np.squeeze(np.array(np.dot(vi, w)))  # calculate reaction rate
 

@@ -4,8 +4,8 @@
 
 from chemkin import pckg_xml_path
 from chemkin.preprocessing.parse_xml import XmlParser
-from chemkin.viz import summary
 from chemkin.reaction.elementary_rxn import ElementaryRxn
+from chemkin.viz import summary
 
 # # Reversible Reactions
 # Ti = [100, 750, 1500, 2500, 5000]

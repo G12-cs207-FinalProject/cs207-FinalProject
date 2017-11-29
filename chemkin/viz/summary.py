@@ -1,4 +1,7 @@
+import numpy as np
+import matplotlib.pyplot as plt
 from chemkin.reaction.elementary_rxn import ElementaryRxn
+from chemkin.solver.ODEint_solver import ODE_int_solver
 
 def print_reaction_rate(parsed_data_list, xi):
 	test_flag = 0 # reation rates can be printed
@@ -30,3 +33,39 @@ def print_reaction_rate(parsed_data_list, xi):
 		print('--------------------------------')
 
 	return test_flag
+
+def plot_species_concentration(parsed_data_list, xi):
+	test_flag = 0 # species_concentrations can be plotted
+	for parsed_data in parsed_data_list:
+
+		species = parsed_data['species']
+		ki = parsed_data['ki']
+		sys_vi_p = parsed_data['sys_vi_p']
+		sys_vi_dp = parsed_data['sys_vi_dp']
+		is_reversible = parsed_data['is_reversible']
+		T = parsed_data['T']
+		
+		b_ki = parsed_data['b_ki']
+		if str(b_ki) == 'Not Defined':
+			test_flag = 1 # rspecies_concentrations cannot be plotted because T is not in some specie's temperature range
+
+			print('------At Temperature', T, 'K------')
+			print('Backward reaction coefficients not defined: T={} is not in some specie\'s temperature range.'.format(T))
+			print('--------------------------------')
+			continue
+
+		n_steps = 101
+		time_steps = np.linspace(0, 10, n_steps)
+		print('hhhhhh', xi)
+		my_solver = ODE_int_solver(T, xi, ki, b_ki, sys_vi_p, sys_vi_dp)
+		sol = my_solver.solve(time_steps)
+		print(np.min(sol), np.max(sol))
+
+		for i, s in enumerate(species):
+			plt.plot(time_steps, sol[:, i], label='{}'.format(s))
+			plt.legend()
+			plt.ylim(0, 10)
+		plt.savefig('evolution_{}.png'.format(T))
+
+	return test_flag
+
