@@ -67,6 +67,8 @@ class ElementaryRxn(RxnBase):
         self.vi_p = vi_p
         self.vi_dp = vi_dp
         self.wi = None
+        self.f_wi = None
+        self.b_wi = None
         self.rates = None
         self.is_reversible = []
 
@@ -130,9 +132,9 @@ class ElementaryRxn(RxnBase):
             f_prod = np.prod(np.power(xi, vi_p), axis=0)  # calculate the product of xi^(vi_p) for each reaction
             b_prod = np.prod(np.power(xi, vi_dp), axis=0)  # calculate the product of xi^(vi_p) for each reaction
 
-            f_wi = np.squeeze(ki * np.array(f_prod).reshape(-1, 1))  # forward progress rate
-            b_wi = np.squeeze(b_ki * np.array(b_prod).reshape(-1, 1))  # backward progress rate
-            self.wi = f_wi - b_wi  # set total progress rate
+            self.f_wi = np.squeeze(ki * np.array(f_prod).reshape(-1, 1))  # forward progress rate
+            self.b_wi = np.squeeze(b_ki * np.array(b_prod).reshape(-1, 1))  # backward progress rate
+            self.wi = self.f_wi - self.b_wi  # set total progress rate
 
             return self.wi
 
