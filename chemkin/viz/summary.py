@@ -61,10 +61,13 @@ def plot_species_concentration(parsed_data_list, xi):
 		sol = my_solver.solve(time_steps)
 		print(np.min(sol), np.max(sol))
 
+
+
 		for i, s in enumerate(species):
 			plt.plot(time_steps, sol[:, i], label='{}'.format(s))
-			plt.legend()
-			plt.ylim(0, 10)
+
+		plt.legend()
+		plt.ylim(0, 10)
 		plt.savefig('evolution_{}.png'.format(T))
 
 	return test_flag
