@@ -12,7 +12,6 @@ def print_reaction_rate(parsed_data_list, xi):
 		ki = parsed_data['ki']
 		sys_vi_p = parsed_data['sys_vi_p']
 		sys_vi_dp = parsed_data['sys_vi_dp']
-		is_reversible = parsed_data['is_reversible']
 		T = parsed_data['T']
 
 		b_ki = parsed_data['b_ki']
@@ -42,7 +41,6 @@ def plot_species_concentration(parsed_data_list, xi):
 		ki = parsed_data['ki']
 		sys_vi_p = parsed_data['sys_vi_p']
 		sys_vi_dp = parsed_data['sys_vi_dp']
-		is_reversible = parsed_data['is_reversible']
 		T = parsed_data['T']
 		
 		b_ki = parsed_data['b_ki']
@@ -58,10 +56,10 @@ def plot_species_concentration(parsed_data_list, xi):
 		time_steps = np.linspace(0, 10, n_steps)
 		print('hhhhhh', xi)
 		my_solver = ODE_int_solver(T, xi, ki, b_ki, sys_vi_p, sys_vi_dp)
-		sol = my_solver.solve(time_steps)
+		sol, critical_t = my_solver.solve(time_steps)
 		print(np.min(sol), np.max(sol))
 
-
+		print('Critical t: {}'.format(critical_t))
 
 		for i, s in enumerate(species):
 			plt.plot(time_steps, sol[:, i], label='{}'.format(s))
@@ -69,6 +67,7 @@ def plot_species_concentration(parsed_data_list, xi):
 		plt.legend()
 		plt.ylim(0, 10)
 		plt.savefig('evolution_{}.png'.format(T))
+		plt.show()
 
 	return test_flag
 
