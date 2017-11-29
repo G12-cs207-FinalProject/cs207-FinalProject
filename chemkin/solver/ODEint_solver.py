@@ -4,7 +4,6 @@ evolution of a specie i over specified time range t.
 """
 import numpy as np
 from scipy.integrate import odeint
-
 from chemkin.reaction.elementary_rxn import ElementaryRxn
 
 
