@@ -6,5 +6,6 @@ before_install:
     - pip install coveralls
 script:
     - py.test
+    - python milestone2demo.py < demo_test.txt
 after_success:
     - coveralls
