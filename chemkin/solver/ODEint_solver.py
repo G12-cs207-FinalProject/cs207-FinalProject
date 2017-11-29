@@ -15,7 +15,7 @@ class ODE_int_solver():
     Attributes:
         critical_t (float): Stores time at which reaction reaches equilibrium
             after integrating.
-        equil_thresh (float, default 0.01): The reaction is defined to reach
+        equil_thresh (float, default 0.1): The reaction is defined to reach
             equilibrium once np.linalg.norm(prograte_diff) < equil_thresh,
             where prograte_diff is the difference in forward and backward
             progress rates for reaction.
@@ -24,7 +24,7 @@ class ODE_int_solver():
     """
 
     def __init__ (self, temp, xi, ki, b_ki, sys_vi_p, sys_vi_dp, equil_thresh
-    =0.01):
+    =0.1):
 
         self.temp = temp  # temperature will be held constant in the calculation
         self.critical_t = None
