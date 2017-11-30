@@ -24,7 +24,7 @@ class ODE_int_solver():
     """
 
     def __init__ (self, temp, xi, ki, b_ki, sys_vi_p, sys_vi_dp, equil_thresh
-    =0.01):
+    =1e-5, overall_equil_thresh=1e-3):
 
         self.temp = temp  # temperature will be held constant in the calculation
         self.critical_t = None
@@ -34,7 +34,9 @@ class ODE_int_solver():
         self.sys_vi_p = sys_vi_p
         self.sys_vi_dp = sys_vi_dp
         self.equil_thresh = equil_thresh
-        self.critical_i = None
+        self.overall_equil_thresh = overall_equil_thresh
+        self.overall_critical_t = -2
+        self.critical_t = -2*np.ones((len(ki),))
 
     def solve (self, time_int):
         """Solves evolution of specie concentration over specified time range.
@@ -51,21 +53,25 @@ class ODE_int_solver():
         """
 
         # for starters, focus on time evolution of ALL species
-        rxn = ElementaryRxn(self.ki, self.b_ki, self.xi, self.sys_vi_p,
-                            self.sys_vi_dp)
+        rxn = ElementaryRxn(self.ki, self.b_ki, self.xi, self.sys_vi_p, self.sys_vi_dp)
 
         i = 0  # iteration count
 
         def rxn_rate (x, t):
             nonlocal  i
             rxn.xi = x
+            
             if i != 0:
-                if np.linalg.norm(rxn.b_wi - rxn.f_wi) < self.equil_thresh:
-                    if self.critical_t is None:
-                        self.critical_t = t
-                        self.critical_i = i
+                for j, (bw, fw) in enumerate(zip(rxn.b_wi, rxn.f_wi)):
+                    if np.abs(bw - fw) < self.equil_thresh:
+                        if self.critical_t[j] == -2:
+                            self.critical_t[j] = t
+
+                if np.linalg.norm(rxn.b_wi - rxn.f_wi) < self.overall_equil_thresh:
+                    if self.overall_critical_t == -2:
+                        self.overall_critical_t = t
             i += 1
             return rxn.reaction_rate()
 
         sol = odeint(func=rxn_rate, y0=self.xi, t=time_int, mxstep=5000000)
-        return sol, self.critical_t
+        return sol, self.critical_t, self.overall_critical_t

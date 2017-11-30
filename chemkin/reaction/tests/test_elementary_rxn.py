@@ -31,19 +31,26 @@ def test_Elementary_progress_rate_result():
 
 
 def test_Elementary_progress_rate_neg_ki():
-    reac1 = er.ElementaryRxn([-10, 10], [1.0, 2.0, 1.0], [[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]]
-                         ,[[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]])
+    reac1 = er.ElementaryRxn([-10, 10], [10, 10], [1.0, 2.0, 1.0], [[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]], [[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]])
     try:
         reac1.progress_rate()
-    except ValueError as err: assert(type(err) == ValueError)
+    except ValueError as err: 
+        assert(type(err) == ValueError)
+
+def test_Elementary_progress_rate_neg_b_ki():
+    reac1 = er.ElementaryRxn([10, 10], [-10, 10], [1.0, 2.0, 1.0], [[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]], [[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]])
+    try:
+        reac1.progress_rate()
+    except ValueError as err: 
+        assert(type(err) == ValueError)
 
 
 def test_Elementary_progress_rate_neg_xi():
-    reac1 = er.ElementaryRxn([10, 10], [-1.0, 2.0, 1.0], [[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]],[[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]])
+    reac1 = er.ElementaryRxn([10, 10], [10, 10], [-1.0, 2.0, 1.0], [[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]],[[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]])
     try:
         reac1.progress_rate()
     except ValueError as err:
-        assert(type(err ) == ValueError)
+        assert(type(err) == ValueError)
 
 
 def test_Elementary_progress_rate_dim_compat():
@@ -51,7 +58,7 @@ def test_Elementary_progress_rate_dim_compat():
     try:
         reac1.progress_rate()
     except ValueError as err:
-        assert(type(err ) == ValueError)
+        assert(type(err) == ValueError)
 
 
 def test_Elementary_reaction_rate_result():
@@ -63,6 +70,15 @@ def test_Elementary_reaction_rate_result():
 
 def test_Elementary_reaction_rate_neg_ki():
     reac1 = er.ElementaryRxn([-10, 10], [10, 10], [1.0, 2.0, 1.0], [[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]],[[0.0, 0.0
+                         , 2.0], [0.0, 1.0, 1.0]])
+    try:
+        reac1.reaction_rate()
+    except ValueError as err:
+        assert(type(err) == ValueError)
+
+
+def test_Elementary_reaction_rate_neg_b_ki():
+    reac1 = er.ElementaryRxn([10, 10], [-10, 10], [1.0, 2.0, 1.0], [[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]],[[0.0, 0.0
                          , 2.0], [0.0, 1.0, 1.0]])
     try:
         reac1.reaction_rate()
@@ -85,3 +101,7 @@ def test_Elementary_reaction_rate_dim_compat():
         reac1.reaction_rate()
     except ValueError as err:
         assert(type(err) == ValueError)
+
+def test_Elementary_n_reversible():
+    reac1 = er.ElementaryRxn([10, 10], [10, 10], [1.0, 2.0, 1.0], [[2.0, 0.0], [2.0, 0.0, 2.0]],[[0.0, 0.0 , 2.0], [0.0, 1.0, 1.0]])
+    assert reac1.n_reversible() == 2
