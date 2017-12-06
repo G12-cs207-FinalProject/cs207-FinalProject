@@ -1,4 +1,6 @@
 import numpy as np
+import matplotlib
+matplotlib.use('agg') # must be called before importing pyplot
 import matplotlib.pyplot as plt
 from chemkin.reaction.elementary_rxn import ElementaryRxn
 from chemkin.solver.ODEint_solver import ODE_int_solver
