@@ -1,9 +1,10 @@
 """
-The ODEint_solver.py contains a class ODE_int_solver which will return time
-evolution of a specie i over specified time range t.
+Contains class ODE_int_solver to compute the evolution of reaction species'
+concentrations over specified time range.
 """
 import numpy as np
 from scipy.integrate import odeint
+
 from chemkin.reaction.elementary_rxn import ElementaryRxn
 
 
@@ -12,62 +13,67 @@ class ODE_int_solver():
     specified time range.
 
     Attributes:
-        critical_t (float): Stores time at which reaction reaches equilibrium
-            after integrating.
-        equil_thresh (float, default 0.1): The reaction is defined to reach
-            equilibrium once np.linalg.norm(prograte_diff) < equil_thresh,
-            where prograte_diff is the difference in forward and backward
-            progress rates for reaction.
-        critical_i (int): Number of time steps used by ODE solver before
-            solving critical_t.
+        temp (float): Temperature for reaction (assumed to be held constant).
+        species_equil_thresh (float, default 1e-5): Species concentration
+            evolution  is defined to reach equilibrium once np.abs(bw - fw) <
+            species_equil_thresh, where (bw - fw) is the difference in
+            backward and forward progress rates for that species.
+        overall_equil_thresh (float, default 1e-2): Overall reaction is
+            defined to reach equilibrium once np.linalg.norm(prograte_diff) <
+            overall_equil_thresh, where prograte_diff is the difference in
+            the backward and forward progress rate vectors of the reaction.
+        critical_t (list of floats of len(ki)): Stores time(s) at which
+            reaction's component species' concentrations reach equilibrium.
+        overall_critical_t (float): Stores time at which overall reaction
+            reaches equilibrium.
+        xi, ki, b_ki, sys_vi_p, sys_vi_dp: Constructor args for ElementaryRxn
+            class.
     """
 
     def __init__ (self, temp, xi, ki, b_ki, sys_vi_p, sys_vi_dp, equil_thresh
     =1e-5, overall_equil_thresh=1e-2):
-
-
-        self.temp = temp  # temperature will be held constant in the calculation
-        self.critical_t = None
-        self.xi = xi  # need initial concentration of ALL species
+        self.temp = temp
+        self.xi = xi
         self.ki = ki
         self.b_ki = b_ki
         self.sys_vi_p = sys_vi_p
         self.sys_vi_dp = sys_vi_dp
-        self.equil_thresh = equil_thresh
+        self.species_equil_thresh = equil_thresh
         self.overall_equil_thresh = overall_equil_thresh
-        self.overall_critical_t = -2
+        # Init critical time attrs with dummy values.
         self.critical_t = -2*np.ones((len(ki),))
+        self.overall_critical_t = -2
 
     def solve (self, time_int):
         """Solves evolution of specie concentration over specified time range.
 
         Args:
-            time_int (List[float]): Time steps over which to solve evolution
-                of concentration.
+            time_int (list of floats): Time steps over which to solve evolution
+                of species concentrations.
 
         Returns:
-            sol (array, shape (len(t), len(y0)): Results of calling
-                scipy.integrate.odeint().
-            critical_t (float): Time at which reaction reaches equilibrium
-                after integrating.
+            sol (numpy array, shape (len(time_int), len(self.xi)): Results of
+                calling scipy.integrate.odeint().
+            self.critical_t
+            self.overall_critical_t
         """
-
-        # for starters, focus on time evolution of ALL species
-        rxn = ElementaryRxn(self.ki, self.b_ki, self.xi, self.sys_vi_p, self.sys_vi_dp)
+        rxn = ElementaryRxn(self.ki, self.b_ki, self.xi, self.sys_vi_p,
+                            self.sys_vi_dp)
 
         i = 0  # iteration count
 
         def rxn_rate (x, t):
             nonlocal  i
             rxn.xi = x
-            
+
             if i != 0:
                 for j, (bw, fw) in enumerate(zip(rxn.b_wi, rxn.f_wi)):
-                    if np.abs(bw - fw) < self.equil_thresh:
+                    if np.abs(bw - fw) < self.species_equil_thresh:
                         if self.critical_t[j] == -2:
                             self.critical_t[j] = t
 
-                if np.linalg.norm(rxn.b_wi - rxn.f_wi) < self.overall_equil_thresh:
+                if np.linalg.norm(
+                            rxn.b_wi - rxn.f_wi) < self.overall_equil_thresh:
                     if self.overall_critical_t == -2:
                         self.overall_critical_t = t
             i += 1
