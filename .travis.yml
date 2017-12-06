@@ -4,6 +4,8 @@ python:
 before_install:
     - pip install pytest pytest-cov
     - pip install coveralls
+    - pip install scipy
+    - pip install matplotlib
 script:
     - py.test
     - python milestone2demo.py < demo_test.txt
