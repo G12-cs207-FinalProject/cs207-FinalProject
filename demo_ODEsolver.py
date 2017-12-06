@@ -1,7 +1,5 @@
-import numpy as np
 from chemkin import pckg_xml_path
 from chemkin.preprocessing.parse_xml import XmlParser
-from chemkin.solver.ODEint_solver import ODE_int_solver
 from chemkin.viz import summary
 
 

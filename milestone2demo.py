@@ -1,6 +1,4 @@
-from chemkin import pckg_xml_path
 from chemkin.preprocessing.parse_xml import XmlParser
-from chemkin.viz import summary
 from chemkin.reaction.elementary_rxn import ElementaryRxn
 
 #########################################
@@ -43,9 +41,14 @@ for i, parsed_data in enumerate(parsed_data_list):
     is_reversible = parsed_data['is_reversible']
     T = parsed_data['T']
 
-    rxn = ElementaryRxn(ki, b_ki, xi2, sys_vi_p, sys_vi_dp)
-    progress_rates = rxn.progress_rate()
-    rxn_rates = rxn.reaction_rate()
+    try:
+        rxn = ElementaryRxn(ki, b_ki, xi2, sys_vi_p, sys_vi_dp)
+        progress_rates = rxn.progress_rate()
+        rxn_rates = rxn.reaction_rate()
+    except Exception as e:
+        print('Encountered following exception at T = {}'.format(T))
+        print(e)
+        continue
 
     print('At T = {}: '.format(Ti2[i]))
     print('The progress rates: ')
