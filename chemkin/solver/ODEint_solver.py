@@ -55,6 +55,13 @@ class ODE_int_solver():
         def rxn_rate (x, t):
             nonlocal  i
             self.rxn.xi = x
+
+            # reaction stops when some specie's concentration gets to zero
+            n_species = len(x)
+            for value in x:
+                if value <= 0:
+                    return np.zeros((n_species,))
+
             if i != 0:
                 for j, (bw, fw) in enumerate(zip(self.rxn.b_wi, self.rxn.f_wi)):
                     if np.abs(bw - fw) < self.species_equil_thresh:
