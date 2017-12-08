@@ -631,7 +631,7 @@ $$
 #### 4.1.1 Printing reaction rates
 This example demonstrates the highest-level and most-abstracted use of the library. The user simply specifies the temperatures and initial species concentrations with the corresponding input XML file which contains the reaction data, and the following code prints reaction rates in a prettified, tabular format. 
 
-- Given the the species concentration $xi = [2.0, 1.0, 0.5, 1.0, 1.0]$ in units of $m^{3}/(mol\cdot s)$, calculate the reaction rate of each species at $Ti = [750, 1500, 2500]$ in units of K.
+- Given the the species concentration $xi = [2.0, 1.0, 0.5, 1.0, 1.0]$ in units of $(mol/dm^3)$, calculate the reaction rate of each species at $Ti = [750, 1500, 2500]$ in units of K.
 
 ```
 from chemkin import pckg_xml_path
@@ -647,7 +647,9 @@ summary.print_reaction_rate(parsed_data_list, xi)
 ```
 
 - The expected result:
+
 ```
+
 ------At Temperature 100 K------
 Backward reaction coefficients not defined: T=100 is not in some specie's temperature range.
 --------------------------------
@@ -684,16 +686,16 @@ Backward reaction coefficients not defined: T=100 is not in some specie's temper
 ------At Temperature 5000 K------
 Backward reaction coefficients not defined: T=5000 is not in some specie's temperature range.
 --------------------------------
-
 ```
 
+
 #### 4.2 Plot Time Evolution of Concentration Species and Time to Reach Equlibrium
-This example demonstrates the visualization functionality of the `chemkin` library. The user specifies the temperature and initial species concentrations with the corresponding input XML file which contains the reaction data, and the following code plots the time evolution of the concetration species until the reaction reaches equilibrium, as well as the the time until each reaction reaches equilibrium
 
-- Given the the species concentration $xi = [2.0, 1.0, 0.5, 1.0, 1.0]$ in units of $m^{3}/(mol\cdot s)$, calculate the concentrations of species over a pre-specified with temperatures held at two levels: $Ti = [100, 1500]$ (Please note we assume the temperature is held constant in our calculation).
+This example demonstrates the visualization functionality of the `chemkin` library. The user specifies the temperature and initial species concentrations with the corresponding input XML file which contains the reaction data, and the following code plots the time evolution of the species concetration until the reaction reaches equilibrium, as well as the the time until each reaction reaches equilibrium.
 
+- Given the the species concentration $xi = [2.0, 1.0, 0.5, 1.0, 1.0]$ in units of $(mol/dm^3)$, calculate the concentrations of species over a pre-specified with temperatures held at two levels: $Ti = [100, 1500]$ (Please note we assume the temperature is held constant in our calculation).
 
-The demo code for this example can be found in the library repo in module `demo_ODEsolver.py`.
+The demo code for this example can be found in the library GitHub repo in the module `demo_ODEsolver.py` [here](https://github.com/G12-cs207-FinalProject/cs207-FinalProject).
 
 ```
 from chemkin import pckg_xml_path
@@ -710,17 +712,75 @@ summary.plot_species_concentration(parsed_data_list, xi)
 summary.plot_time_to_equilibrium(parsed_data_list, xi)
 ```
 
+- The expected result:
 
+  1. Species start/end concentration 
 
+```
+
+------At Temperature 100 K------
+Backward reaction coefficients not defined: T=100 is not in some specie's temperature range.
+--------------------------------
+
+------At Temperature 1500 K------
+Specie Concentration at the Start and the End
+  H: start = 2.0, end = 1.7380273730965146
+  O: start = 1.0, end = 0.7187817394337618
+  OH: start = 0.5, end = 0.2646483939132525
+  H2: start = 1.0, end = 0.5418530113743408
+  H2O: start = 1.0, end = 2.956809097711278
+  O2: start = 1.0, end = 1.779880369658244
+  HO2: start = 0.5, end = 1.4806235150147184e-08
+  H2O2: start = 1.0, end = 6.377762373035363e-12
+--------------------------------
+```
+
+  2. Time to equilibrium for each reaction/overall system
+
+```
+
+------At Temperature 100 K------
+Backward reaction coefficients not defined: T=100 is not in some specie's temperature range.
+--------------------------------
+
+------At Temperature 1500 K------
+Time to Equilibrium
+  Reaction #0: 1.3166067527094166e-07
+  Reaction #1: 131.65489891483153
+  Reaction #2: 1.3165489891540338
+  Reaction #3: 0.13165489892060211
+  Reaction #4: 1.3743125503074637e-10
+  Reaction #5: 1.3743125503074637e-10
+  Reaction #6: 1.3743125503074637e-10
+  Reaction #7: 1.3743125503074637e-10
+  Reaction #8: 1.637422015038343e-12
+  Reaction #9: 1.7075920124227771e-12
+  Reaction #10: 1.637422015038343e-12
+
+Overall Time to Equilibrium: 1.3166067527094166e-07
+--------------------------------
+```
+
+  3. Plots of the time evolution of species concentrations
+  
+  ![](/Users/filipmichalsky/cs207-final-project/evolution_1500K.png)
+  
+  
+  4. Plot of times for reactions to reach the equilibrium
+  
+  ![](/Users/filipmichalsky/cs207-final-project/time_evolution_1500K.png)
+  
 ### 5.New Feature
 
 Our new implemented feature is a differential equation solver to calculate species concentrations as a function of time as well as determine times each reaction reaches an equilibrium. 
 
 We implemented a numerical iterative solver of an Ordinary Differential Equation (ODE) under the assumption an ODE models the time evolution of the species concentration in the chemical system at hand.
  
- 1. Given an end-time ($t_{end}$) and reaction data, function outputs the concentrations of each species at $t_{end}$.
+ This new features enables the library to:
+ 
+ 1. Given an end-time ($t_{end}$) and reaction data, output the concentrations of each species at $t_{end}$.
 
-2. Given reaction data, function outputs the time to reach equilibrium (in the case of reversible elementary reactions) or the time for the reaction to reach completion (in the case of irreversible elementary reactions).
+2. Given reaction data, output the time to reach equilibrium (in the case of reversible elementary reactions) or the time for the reaction to reach completion (in the case of irreversible elementary reactions).
 
 3. Given an end-time ($t_{end}$), function plots the time evolution of species concentrations from $t_0$ to $t_{end}$.
 
@@ -732,24 +792,29 @@ We motivate our feature by the following:
 *   Identify time for each reaction to reach equilibrium as well as the time when the overall chemical system achieves equilibrium (i.e., reaction completion).
 *   Get the concentrations at some end time ($t_{end}$) for each specie.
 
-For the end-user, it may be useful to learn about the concentration of the various species at any given point in time (as opposed to just the reaction rates). Additionally, visualization of the gradient of change in concentration may help the user make a decision about an experiment design in e.g., titration experiments or chemical synthesis.
+For the end-user, it may be useful to learn about the concentration of the various species at any given point in time (as opposed to just the reaction rates). Additionally, visualization of the gradient of change in concentration may help the user make a decision about an experiment design in e.g., time to cut off a titration experiment or a batch chemical synthesis.
 
-In the future, the library could be enhanced by relaxing the condition of fixed temperature to further 
+In the future, the library could be enhanced by relaxing the condition of fixed temperature to further enable the user to gte insights in more complex systems.
 
 ##### Implementation Details
 
-###### ODE_int_solver()
+###### ``ODEint_solver.py``
 
+The ``ODEint_solver.py`` module contains a class ``ODE_int_solver`` in order to ...
 
-There will be a solver.py module containing a class that will be the workhorse to solve concentration of species over time. User will be able to call this class and use a solve() method for the desired outputs.
-
+The ``ODE_int_solver`` class is the workhorse to solve concentration of species over time. User will be able to call this class and use a solve() method for the desired outputs.
 
 The feature will require an external ODE solver, most likely the ``ODEint`` from ``scipy.integrate`` as well as the ``matplotlib``.
 
-###### plot_reaction_rates()
-The current ``summary.py`` module will call this method ``plot_reaction_rates()`` in order to produce a plot of the species concentrations over time.
+###### ``summary.py``
 
-We envision at least 3 additional library functions that follows:
+The current ``summary.py`` module contains a method ``plot_reaction_rates()`` in order to produce a plot of the species concentrations over time.
+
+plot_species_concentration()
+###### summary.plot_time_to_equilibrium()
+
+The current ``summary.py`` module contains a method ``plot_reaction_rates()`` in order to produce a plot of the species concentrations over time.
+
 
 
 
