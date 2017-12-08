@@ -134,7 +134,7 @@ def print_time_to_equilibrium(parsed_data_list, xi, n_steps=101, end_t=100):
 		critical_t, overall_critical_t = ElementaryRxn(ki, b_ki, xi, sys_vi_p, sys_vi_dp).time_to_equilibrium(T, end_t, n_steps)
 
 		print('------At Temperature', T, 'K------')
-		print('Time to Equilibrium')
+		print('Time to Equilibrium (end_t = {})'.format(end_t))
 		for i, t in enumerate(critical_t):
 			if t == -100:
 				t = 'Not yet reached equilibrium.'
@@ -145,6 +145,8 @@ def print_time_to_equilibrium(parsed_data_list, xi, n_steps=101, end_t=100):
 			overall_critical_t = 'The system has not yet reached equilibrium.'
 		print('Overall Time to Equilibrium: {}'.format(overall_critical_t))
 		print('--------------------------------\n')
+
+	return test_flag
 
 
 
@@ -182,9 +184,9 @@ def plot_time_to_equilibrium(parsed_data_list, xi, n_steps=101, end_t=100):
 				yval[j] = np.log(v+1)
 		labels = parsed_data['equations']
 
-		for j in range(len(xpos)):
-			ax2.bar(xpos[j], yval[j], width=0.5, bottom=0.0, align='center', alpha=0.6, label=labels[j]+':'+str('{:0.3e}'.format(yval[j])))
-
+		for j, (x, y) in enumerate(zip(xpos, yval)):
+			ax2.bar(x, y, width=0.5, bottom=0.0, align='center', alpha=0.6, label=labels[j]+':'+str('{:0.3e}'.format(yval[j])))
+		
 		ax2.legend(fontsize=9)
 		ax2.set_xlabel('Reaction equation')
 		ax2.set_ylabel('log(Time + 1)')

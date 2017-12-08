@@ -16,4 +16,5 @@ def test_get_species():
 	dao = ThermoDAO('NASA_coef.sqlite')
 	species_high = dao.get_species(1001, 'high')
 	species_low = dao.get_species(999, 'low')
-	assert len(species_high) == len(species_low)
+	assert len(species_high) > 0
+	assert len(species_low) > 0
