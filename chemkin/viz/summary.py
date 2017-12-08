@@ -112,7 +112,7 @@ def plot_species_concentration(parsed_data_list, xi, n_steps=101, end_t=1e-12):
 	return test_flag
 
 
-def print_time_to_equilibrium(parsed_data_list, xi, n_steps=101, end_t=100):
+def print_time_to_equilibrium(parsed_data_list, xi, n_steps=101):
 	test_flag = 0 # time_to_equilibrium can be printed
 	for parsed_data in parsed_data_list:
 
@@ -130,6 +130,7 @@ def print_time_to_equilibrium(parsed_data_list, xi, n_steps=101, end_t=100):
 			print('--------------------------------\n')
 			continue
 
+		end_t = 1e10
 		time_steps = np.linspace(0, end_t, n_steps)
 		critical_t, overall_critical_t = ElementaryRxn(ki, b_ki, xi, sys_vi_p, sys_vi_dp).time_to_equilibrium(T, end_t, n_steps)
 
@@ -150,7 +151,7 @@ def print_time_to_equilibrium(parsed_data_list, xi, n_steps=101, end_t=100):
 
 
 
-def plot_time_to_equilibrium(parsed_data_list, xi, n_steps=101, end_t=100):
+def plot_time_to_equilibrium(parsed_data_list, xi, n_steps=101):
 	test_flag = 0 # time_to_equilibrium can be plotted
 	for parsed_data in parsed_data_list:
 
@@ -168,6 +169,7 @@ def plot_time_to_equilibrium(parsed_data_list, xi, n_steps=101, end_t=100):
 			print('--------------------------------\n')
 			continue
 
+		end_t = 1e10
 		time_steps = np.linspace(0, end_t, n_steps)
 		critical_t, overall_critical_t = ElementaryRxn(ki, b_ki, xi, sys_vi_p, sys_vi_dp).time_to_equilibrium(T, end_t, n_steps)
 		
@@ -181,11 +183,11 @@ def plot_time_to_equilibrium(parsed_data_list, xi, n_steps=101, end_t=100):
 			if v == -100:
 				yval[j] = 0
 			else:
-				yval[j] = np.log(v+1)
+				yval[j] = np.log10(v+1)
 		labels = parsed_data['equations']
 
 		for j, (x, y) in enumerate(zip(xpos, yval)):
-			ax2.bar(x, y, width=0.5, bottom=0.0, align='center', alpha=0.6, label=labels[j]+':'+str('{:0.3e}'.format(yval[j])))
+			ax2.bar(x, y, width=0.5, bottom=0.0, align='center', alpha=0.6, label=labels[j]+':'+str('{:0.3e}'.format(y)))
 		
 		ax2.legend(fontsize=9)
 		ax2.set_xlabel('Reaction equation')
