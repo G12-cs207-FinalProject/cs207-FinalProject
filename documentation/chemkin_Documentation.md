@@ -1,3 +1,8 @@
+---
+output:
+  html_document: default
+  pdf_document: default
+---
 
 # Chemical Kinetics Library
 
@@ -257,7 +262,7 @@ A brief description of each subdirectory:
 
 - `viz` package contains modules that allow the user to visualize reaction kinetics (e.g. printing reaction rates in a prettified, tabular format)
 
-- `solver` package contains modules to solve the concentration of reaction species as a function of time as well as the time to reach reaction equilibrium
+- `solver` package contains modules to solve the concentration of reaction species as a function of time as well as the time to reach reaction equilibrium (both for individual reactions in the system as well as the overall equilibrium)
 
 ## 2. Installation
 
@@ -280,7 +285,7 @@ $ cd [installation directory]
 $ pytest
 ```
 
-If the user desires to contribute to the further development of this library, please do not hesitate to consult with the IACS department at Harvard University Graduate School of Arts and Sciences.
+If the user desires to contribute to the further development of this library, please do not hesitate to consult with the IACS department at Harvard University Graduate School of Arts and Sciences [here](https://iacs.seas.harvard.edu/).
 
 ## 3. Basic Usage
 
@@ -298,12 +303,16 @@ Chemical reaction data should be stored in XML format with the following specifi
         1. `<Arrhenius>`: Coefficients [A, E] will be retrieved.
         2. `<modifiedArrhenius>`: [A, b, E] will be retrieved.
         3. `<Constant>`: k will be retrieved.
+        4. `<equation>`: Equation expression for each reaction will be retrieved.
 
 **Note** There should be only 1 system of reactions per XML file (i.e. 1 `<reactionData>` element). If more than 1 `<reactionData>` element resides within the XML, only the first `<reactionData>` element (i.e. first system of reactions) will be considered
 
-**Note** For a system of chemical reactions, there should only be 1 type of reaction (i.e. all elementary reversible or all elementary irreversible). If more than 1 type of reaction is specified in the XML file, then a ChemkinError will be raised.
+**Note** For a system of chemical reactions, there can be a mix elementary reversible and elementary irreversible reactions. If more than 1 type of reaction is specified in the XML file, the user can check this by calling the `is_reversible` key from the parsed data dictionary for a given temperature. The output will be a list of Booleans indicating whether each reaction is reversible or not.
 
 **Note** If no recognized child tag of `<rateCoeff>` is encountered, then `XmlParser` will raise a `ChemKinError`. Also, its retrieval of elements is case-sensitive. So, for example, `<A>`, `<b>`, `<E>`, and `<k>` must be used to store the appropriate coefficients; elements named `<a>`, `<B>`, `<e>` or `<K>` would not be recognized and would lead to an error.
+
+**Note** If the user inputs <type = Non-elementary> or <type = Nonelementary>, the `XmlParser` will raise a `ChemKinError` as our library does not handle this type of reactions.
+
 
 **Example 3.1.** XML file for the following chemical reaction:
 
@@ -411,9 +420,11 @@ The reaction data parsed by the XmlParser `load()` function from XML files is re
 
 - `rate_coef`: a list of parameters for reaction rate coefficient
 
-- `reactants`: a dictionary with molecular species of the reactants as keys and their respecitve stoicheometric coefficient as values
+- `reactants`: a dictionary with molecular species of the reactants as keys and their respective stoichiometric coefficient as values
 
-- `products`: a dictionary with moelcular speicies of the products as keys and their respective stoichemotetric coefficient as values
+- `products`: a dictionary with molecular speicies of the products as keys and their respective stoichiometric coefficient as values
+
+- `equation`: a list of equations for each reaction.
 
 **Example 3.4.** Working with `RxnData` objects
 
@@ -497,11 +508,15 @@ reaction1 = RxnBase(ki=[10, 10], xi=[1.0, 2.0, 1.0], vi_p=[[1.0, 2.0, 0.0], [2.0
 
 #### 3.3.3 `elementary_rxn` module
 
-The `elementary_rxn` module deals with elementary chemical reactions. It contains an `ElementaryRxn` base class which inhertis from `RxnBase` and two subclasses `IrreversibleElementaryRxn` and `ReversibleElementaryRxn`, which handle **irreversible** and **reversible** elementary reactions, respectively.
+The `elementary_rxn` module deals with elementary chemical reactions. It contains an `ElementaryRxn` base class which inhertis from `RxnBase` and handles both **irreversible** and **reversible** elementary reactions.
 
-**The `IrreversibleElementaryRxn` class**
+**The `ElementaryRxn` class**
 
-This class handles a system  consisting of $N$ species undergoing $M$ **irreversible**, **elementary** reactions of the form:
+This class handles reversible, irreversible, and a mix thereof reactions in a chemical system.
+
+**Irreversible Reactions** 
+
+Consider a system consisting of $N$ species undergoing $M$ **irreversible**, **elementary** reactions of the form:
 
 $$\sum_{i=1}^{N}{\nu_{ij}^{\prime}\mathcal{s}_{i}} \longrightarrow 
   \sum_{i=1}^{N}{\nu_{ij}^{\prime\prime}\mathcal{s}_{i}}, \qquad \text{for } j = 1, \ldots, M$$
@@ -519,13 +534,8 @@ $$\begin{aligned}
   f_{i} = \frac{d[i]}{dt} = \sum_{j=1}^{M}{\nu_{ij}\omega_{j}}, \qquad \text{for } i = 1, \ldots, N
 \end{aligned}$$
 
-`IrreversibleElementaryRxn` shares the same class attributes as the base class and implements the two methods in the following manner: 
 
-- `progress_rate()`: Returns a list of $k_{j}\prod_{i=1}^{N}{x_{i}^{\nu_{ij}^{\prime}}}$
-
-- `reaction_rate()`: Returns a list of $\sum_{j=1}^{M}{\nu_{ij}\omega_{j}}$
-
-**The `ReversibleElementaryRxn` class**
+**Reversible Reactions**
 
 This class handles a system  consisting of $N$ species undergoing $M$ **reversible**, **elementary** reactions of the form:
 
@@ -541,7 +551,7 @@ $$\begin{aligned}
   f_{i} = \frac{d[i]}{dt} = \sum_{j=1}^{M}{\nu_{ij}r_{j}}, \qquad \text{for } i = 1, \ldots, N
 \end{aligned}$$
 
-`ReversibleElementaryRxn` shares the same class attributes as the base class and implements the two methods in the following manner: 
+`ElementaryRxn` shares the same class attributes as the base class and implements the two methods in the following manner: 
 
 - `progress_rate()`: Returns a list of $k_{j}^{\left(f\right)}\prod_{i=1}^{N}{x_{i}^{\nu_{ij}^{\prime}}} - k_{j}^{\left(b\right)}\prod_{i=1}^{N}{x_{i}^{\nu_{ij}^{\prime\prime}}}$
 
@@ -700,7 +710,7 @@ summary.plot_species_concentration(parsed_data_list, xi)
 summary.plot_time_to_equilibrium(parsed_data_list, xi)
 ```
 
-![Caption for the picture.](/path/to/image.png)
+
 
 ### 5.New Feature
 

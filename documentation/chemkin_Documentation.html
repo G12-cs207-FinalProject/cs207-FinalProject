@@ -198,9 +198,10 @@ $(document).ready(function () {
 <p>The high level functionality of the <strong>chemkin</strong> module is to take an XML file with reaction data as input and outputs the RHS (right-hand-side) of the ODE describing the rate of change of all molecular species involved in the chemical reaction(s) of interest (i.e. for <strong>irreversible elementary</strong> reaction: <span class="math inline">\(\sum_{j=1}^{M}{\nu_{ij}\omega_{j}}, \text{ for } i = 1, \ldots, N\)</span>, and for <strong>reversible elementary</strong> reaction: <span class="math inline">\(\sum_{j=1}^{M}{\nu_{ij}r_{j}}, \text{ for } i = 1, \ldots, N\)</span>).</p>
 <p>Features of the <strong>chemkin</strong> module include:</p>
 <ul>
-<li><p>Parsing XML file with chemical reaction data to extract relevant paramters</p></li>
+<li><p>Parsing XML file with chemical reaction data to extract relevant parameters</p></li>
 <li><p>Handling the calculation of 3+ classes of reaction rate coefficients (e.g. constant, Arrhenius and modified Arrhenius) given the appropriate parameters</p></li>
 <li><p>Handling the calculation of progress rates (<span class="math inline">\(\omega_{j}\)</span> or <span class="math inline">\(r_{j}\)</span>) and reaction rates (<span class="math inline">\(f_{i}\)</span>) for a system consisting of <span class="math inline">\(N\)</span> species undergoing <span class="math inline">\(M\)</span> <strong>irreversible</strong> or <strong>reversible</strong> <strong>elementary</strong> reactions</p></li>
+<li><p>Visualization of evolution of species concentration in the reaction system over time as well as visualization of the time to reach a dynamic equilibrium for each reaction</p></li>
 </ul>
 <div id="overall-structure-of-the-chemkin-library" class="section level4">
 <h4>Overall structure of the <code>chemkin</code> library</h4>
@@ -234,6 +235,12 @@ $(document).ready(function () {
         summary.py
         tests/
             test_summary.py
+    solver/
+        __init__.py
+        ODEint_solver.py
+        tests/
+            __init__.py
+            test_ODEint_solver.py
     xml-files/</code></pre>
 <p>A brief description of each subdirectory:</p>
 <ul>
@@ -242,46 +249,9 @@ $(document).ready(function () {
 <li><p><code>reaction</code> package contains modules to handle different reaction types as well as calculating the forward reaction coefficients</p></li>
 <li><p><code>thermodynamics</code> package contains modules to handle all thermodynamics related calculations. For now, it handles the processing of backward reaction coefficients in reversible reactions using the NASA_coef SQL database.</p></li>
 <li><p><code>viz</code> package contains modules that allow the user to visualize reaction kinetics (e.g. printing reaction rates in a prettified, tabular format)</p></li>
+<li><p><code>solver</code> package contains modules to solve the concentration of reaction species as a function of time as well as the time to reach reaction equilibrium (both for individual reactions in the system as well as the overall equilibrium)</p></li>
 </ul>
 </div>
-</div>
-</div>
-<div id="proposed-feature" class="section level2">
-<h2>Proposed Feature</h2>
-<p>Our proposed future feature is to install a differential equation solver to calculate species concentrations as a function of time.</p>
-<div id="motivation" class="section level5">
-<h5>Motivation</h5>
-<p>We motivate our feature by the following:</p>
-<ul>
-<li>Visualize the change in species concentration over time.</li>
-<li>Identify time to reach equilibrium (i.e., reaction completion).</li>
-<li>Get the concentrations at some end time (<span class="math inline">\(t_{end}\)</span>).</li>
-</ul>
-<p>For the end-user, it may be useful to learn about the concentration of the various species at any given point in time (as opposed to just the reaction rates).</p>
-</div>
-<div id="implementation" class="section level5">
-<h5>Implementation</h5>
-<p>There will be a solver.py module containing a class that will be the workhorse to solve concentration of species over time. User will be able to call this class and use a solve() method for the desired outputs.</p>
-<p>The current <code>summary.py</code> module will call this method <code>plot_reaction_rates()</code> in order to produce a plot of the species concentrations over time.</p>
-<p>The feature will require an external ODE solver, most likely the <code>ODEint</code> from <code>scipy.integrate</code> as well as the <code>matplotlib</code>.</p>
-<p>We envision at least 3 additional library functions that follows:</p>
-<ol style="list-style-type: decimal">
-<li><p>Given an end-time (<span class="math inline">\(t_{end}\)</span>) and reaction data, function outputs the concentrations of each species at <span class="math inline">\(t_{end}\)</span>.</p></li>
-<li><p>Given reaction data, function outputs the time to reach equilibrium (in the case of reversible elementary reactions) or the time for the reaction to reach completion (in the case of irreversible elementary reactions).</p></li>
-<li><p>Given an end-time (<span class="math inline">\(t_{end}\)</span>), function plots the time evolution of species concentrations from <span class="math inline">\(t_0\)</span> to <span class="math inline">\(t_{end}\)</span>.</p></li>
-</ol>
-</div>
-<div id="additional-packaging" class="section level5">
-<h5>Additional packaging</h5>
-<p>Below is the structure of the add-on to the package.</p>
-<pre class="sh"><code>chemkin/
-    __init__.py
-    solver/
-        __init__.py
-        ODEint_solver.py
-        test/
-            __init__.py
-            test_ODEint_solver()</code></pre>
 </div>
 </div>
 <div id="installation" class="section level2">
@@ -294,6 +264,7 @@ $(document).ready(function () {
 <p>You can run the test suite on your local machine by typing the following command in your command line when in the directory of the installed module.</p>
 <pre class="sh"><code>$ cd [installation directory]
 $ pytest</code></pre>
+<p>If the user desires to contribute to the further development of this library, please do not hesitate to consult with the IACS department at Harvard University Graduate School of Arts and Sciences <a href="https://iacs.seas.harvard.edu/">here</a>.</p>
 </div>
 <div id="basic-usage" class="section level2">
 <h2>3. Basic Usage</h2>
@@ -312,12 +283,14 @@ $ pytest</code></pre>
 <li><code>&lt;Arrhenius&gt;</code>: Coefficients [A, E] will be retrieved.</li>
 <li><code>&lt;modifiedArrhenius&gt;</code>: [A, b, E] will be retrieved.</li>
 <li><code>&lt;Constant&gt;</code>: k will be retrieved.</li>
+<li><code>&lt;equation&gt;</code>: Equation expression for each reaction will be retrieved.</li>
 </ol></li>
 </ul></li>
 </ol>
 <p><strong>Note</strong> There should be only 1 system of reactions per XML file (i.e. 1 <code>&lt;reactionData&gt;</code> element). If more than 1 <code>&lt;reactionData&gt;</code> element resides within the XML, only the first <code>&lt;reactionData&gt;</code> element (i.e. first system of reactions) will be considered</p>
-<p><strong>Note</strong> For a system of chemical reactions, there should only be 1 type of reaction (i.e. all elementary reversible or all elementary irreversible). If more than 1 type of reaction is specified in the XML file, then a ChemkinError will be raised.</p>
+<p><strong>Note</strong> For a system of chemical reactions, there can be a mix elementary reversible and elementary irreversible reactions. If more than 1 type of reaction is specified in the XML file, the user can check this by calling the <code>is_reversible</code> key from the parsed data dictionary for a given temperature. The output will be a list of Booleans indicating whether each reaction is reversible or not.</p>
 <p><strong>Note</strong> If no recognized child tag of <code>&lt;rateCoeff&gt;</code> is encountered, then <code>XmlParser</code> will raise a <code>ChemKinError</code>. Also, its retrieval of elements is case-sensitive. So, for example, <code>&lt;A&gt;</code>, <code>&lt;b&gt;</code>, <code>&lt;E&gt;</code>, and <code>&lt;k&gt;</code> must be used to store the appropriate coefficients; elements named <code>&lt;a&gt;</code>, <code>&lt;B&gt;</code>, <code>&lt;e&gt;</code> or <code>&lt;K&gt;</code> would not be recognized and would lead to an error.</p>
+<p><strong>Note</strong> If the user inputs <type = Non-elementary> or <type = Nonelementary>, the <code>XmlParser</code> will raise a <code>ChemKinError</code> as our library does not handle this type of reactions.</p>
 <p><strong>Example 3.1.</strong> XML file for the following chemical reaction:</p>
 <p><span class="math display">\[
 \begin{aligned}
@@ -351,7 +324,7 @@ $ pytest</code></pre>
 &lt;/ctml&gt;</code></pre>
 </div>
 <div id="reading-and-parsing-the-input-file" class="section level3">
-<h3>3.2 Reading and parsing the input file</h3>
+<h3>3.2 Reading and parsing the input file</h3>
 <p>Reading and parsing the input XML file is handled in the <code>preprocessing</code> package, where there are two related classes that allow the user to work with reaction data stored in XML files.</p>
 <ul>
 <li><code>XmlParser</code></li>
@@ -400,8 +373,9 @@ species, reaction_data = xml_parser.load()</code></pre>
 <li><p><code>reversible</code>: a boolean indicating whether the reaction is reversible</p></li>
 <li><p><code>type</code>: a RxnType object from the Enum class indicating whether a reaction is elementary or non-elementary</p></li>
 <li><p><code>rate_coef</code>: a list of parameters for reaction rate coefficient</p></li>
-<li><p><code>reactants</code>: a dictionary with molecular species of the reactants as keys and their respecitve stoicheometric coefficient as values</p></li>
-<li><p><code>products</code>: a dictionary with moelcular speicies of the products as keys and their respective stoichemotetric coefficient as values</p></li>
+<li><p><code>reactants</code>: a dictionary with molecular species of the reactants as keys and their respective stoichiometric coefficient as values</p></li>
+<li><p><code>products</code>: a dictionary with molecular speicies of the products as keys and their respective stoichiometric coefficient as values</p></li>
+<li><p><code>equation</code>: a list of equations for each reaction.</p></li>
 </ul>
 <p><strong>Example 3.4.</strong> Working with <code>RxnData</code> objects</p>
 <pre class="python"><code>from chemkin import pckg_xml_path
@@ -472,9 +446,11 @@ coef_params = reaction_data.rate_coeff
 </div>
 <div id="elementary_rxn-module" class="section level4">
 <h4>3.3.3 <code>elementary_rxn</code> module</h4>
-<p>The <code>elementary_rxn</code> module deals with elementary chemical reactions. It contains an <code>ElementaryRxn</code> base class which inhertis from <code>RxnBase</code> and two subclasses <code>IrreversibleElementaryRxn</code> and <code>ReversibleElementaryRxn</code>, which handle <strong>irreversible</strong> and <strong>reversible</strong> elementary reactions, respectively.</p>
-<p><strong>The <code>IrreversibleElementaryRxn</code> class</strong></p>
-<p>This class handles a system consisting of <span class="math inline">\(N\)</span> species undergoing <span class="math inline">\(M\)</span> <strong>irreversible</strong>, <strong>elementary</strong> reactions of the form:</p>
+<p>The <code>elementary_rxn</code> module deals with elementary chemical reactions. It contains an <code>ElementaryRxn</code> base class which inhertis from <code>RxnBase</code> and handles both <strong>irreversible</strong> and <strong>reversible</strong> elementary reactions.</p>
+<p><strong>The <code>ElementaryRxn</code> class</strong></p>
+<p>This class handles reversible, irreversible, and a mix thereof reactions in a chemical system.</p>
+<p><strong>Irreversible Reactions</strong></p>
+<p>Consider a system consisting of <span class="math inline">\(N\)</span> species undergoing <span class="math inline">\(M\)</span> <strong>irreversible</strong>, <strong>elementary</strong> reactions of the form:</p>
 <p><span class="math display">\[\sum_{i=1}^{N}{\nu_{ij}^{\prime}\mathcal{s}_{i}} \longrightarrow 
   \sum_{i=1}^{N}{\nu_{ij}^{\prime\prime}\mathcal{s}_{i}}, \qquad \text{for } j = 1, \ldots, M\]</span></p>
 <p>The progress rate <span class="math inline">\(\omega_{j}\)</span> is given by</p>
@@ -486,12 +462,7 @@ coef_params = reaction_data.rate_coeff
 <p><span class="math display">\[\begin{aligned}
   f_{i} = \frac{d[i]}{dt} = \sum_{j=1}^{M}{\nu_{ij}\omega_{j}}, \qquad \text{for } i = 1, \ldots, N
 \end{aligned}\]</span></p>
-<p><code>IrreversibleElementaryRxn</code> shares the same class attributes as the base class and implements the two methods in the following manner:</p>
-<ul>
-<li><p><code>progress_rate()</code>: Returns a list of <span class="math inline">\(k_{j}\prod_{i=1}^{N}{x_{i}^{\nu_{ij}^{\prime}}}\)</span></p></li>
-<li><p><code>reaction_rate()</code>: Returns a list of <span class="math inline">\(\sum_{j=1}^{M}{\nu_{ij}\omega_{j}}\)</span></p></li>
-</ul>
-<p><strong>The <code>ReversibleElementaryRxn</code> class</strong></p>
+<p><strong>Reversible Reactions</strong></p>
 <p>This class handles a system consisting of <span class="math inline">\(N\)</span> species undergoing <span class="math inline">\(M\)</span> <strong>reversible</strong>, <strong>elementary</strong> reactions of the form:</p>
 <p><span class="math display">\[\sum_{i=1}^{N}{\nu_{ij}^{\prime}\mathcal{s}_{i}}  \rightleftharpoons \sum_{i=1}^{N}{\nu_{ij}^{\prime\prime}\mathcal{s}_{i}} \qquad j = 1, \ldots, M\]</span></p>
 <p>The total progress rate <span class="math inline">\(r_{j}\)</span> is given by</p>
@@ -500,7 +471,7 @@ coef_params = reaction_data.rate_coeff
 <p><span class="math display">\[\begin{aligned}
   f_{i} = \frac{d[i]}{dt} = \sum_{j=1}^{M}{\nu_{ij}r_{j}}, \qquad \text{for } i = 1, \ldots, N
 \end{aligned}\]</span></p>
-<p><code>ReversibleElementaryRxn</code> shares the same class attributes as the base class and implements the two methods in the following manner:</p>
+<p><code>ElementaryRxn</code> shares the same class attributes as the base class and implements the two methods in the following manner:</p>
 <ul>
 <li><p><code>progress_rate()</code>: Returns a list of <span class="math inline">\(k_{j}^{\left(f\right)}\prod_{i=1}^{N}{x_{i}^{\nu_{ij}^{\prime}}} - k_{j}^{\left(b\right)}\prod_{i=1}^{N}{x_{i}^{\nu_{ij}^{\prime\prime}}}\)</span></p></li>
 <li><p><code>reaction_rate()</code>: Returns a list of <span class="math inline">\(\sum_{j=1}^{M}{\nu_{ij}r_{j}}\)</span></p></li>
@@ -596,7 +567,52 @@ summary.print_reaction_rate(parsed_data_list, xi)</code></pre>
 <ul>
 <li>The expected result: ``` ——At Temperature 100 K—— Backward reaction coefficients not defined: T=100 is not in some specie’s temperature range. ——————————– ——At Temperature 750 K—— H : 3.42304562795e+16 O : -3.38308977852e+16 OH : -3.52979102957e+16 H2 : 4.07078984572e+13 H2O : 5.86479724945e+14 O2 : 3.44028050967e+16 HO2 : -7.63606068937e+13 H2O2 : -5.52803118677e+13 ——————————– ——At Temperature 1500 K—— H : 1.32279654839e+14 O : -3.12877268431e+14 OH : -1.37621783394e+14 H2 : 6.07049182e+13 H2O : 6.45299057466e+13 O2 : 3.36486898686e+14 HO2 : -4.18771319555e+13 H2O2 : -1.01625193691e+14 ——————————– ——At Temperature 2500 K—— H : -2.4081673376e+14 O : -1.5885953972e+13 OH : 3.22268792909e+14 H2 : 6.41189812893e+13 H2O : 4.70126660046e+13 O2 : -2.74831634318e+13 HO2 : 5.28617565897e+12 H2O2 : -1.54500764698e+14 ——————————– ——At Temperature 5000 K—— Backward reaction coefficients not defined: T=5000 is not in some specie’s temperature range. ——————————–</li>
 </ul>
-<p>```</p>
+<pre><code>
+#### 4.2 Plot Time Evolution of Concentration Species and Time to Reach Equlibrium
+This example demonstrates the visualization functionality of the `chemkin` library. The user specifies the temperature and initial species concentrations with the corresponding input XML file which contains the reaction data, and the following code plots the time evolution of the concetration species until the reaction reaches equilibrium, as well as the the time until each reaction reaches equilibrium
+
+- Given the the species concentration $xi = [2.0, 1.0, 0.5, 1.0, 1.0]$ in units of $m^{3}/(mol\cdot s)$, calculate the concentrations of species over a pre-specified with temperatures held at two levels: $Ti = [100, 1500]$ (Please note we assume the temperature is held constant in our calculation).
+
+
+The demo code for this example can be found in the library repo in module `demo_ODEsolver.py`.
+</code></pre>
+<p>from chemkin import pckg_xml_path from chemkin.preprocessing.parse_xml import XmlParser from chemkin.viz import summary</p>
+<p>Ti = [100, 1500] # temp held constant xi = [2., 1., .5, 1., 1., 1., .5, 1.] # specie concentrations ‘rxns_reversible.xml’ xml_parser = XmlParser(pckg_xml_path(‘rxns_reversible’))</p>
+<p>parsed_data_list = xml_parser.parsed_data_list(Ti) summary.plot_species_concentration(parsed_data_list, xi) summary.plot_time_to_equilibrium(parsed_data_list, xi) ```</p>
+</div>
+</div>
+<div id="new-feature" class="section level3">
+<h3>5.New Feature</h3>
+<p>Our new implemented feature is a differential equation solver to calculate species concentrations as a function of time as well as determine times each reaction reaches an equilibrium.</p>
+<p>We implemented a numerical iterative solver of an Ordinary Differential Equation (ODE) under the assumption an ODE models the time evolution of the species concentration in the chemical system at hand.</p>
+<ol style="list-style-type: decimal">
+<li><p>Given an end-time (<span class="math inline">\(t_{end}\)</span>) and reaction data, function outputs the concentrations of each species at <span class="math inline">\(t_{end}\)</span>.</p></li>
+<li><p>Given reaction data, function outputs the time to reach equilibrium (in the case of reversible elementary reactions) or the time for the reaction to reach completion (in the case of irreversible elementary reactions).</p></li>
+<li><p>Given an end-time (<span class="math inline">\(t_{end}\)</span>), function plots the time evolution of species concentrations from <span class="math inline">\(t_0\)</span> to <span class="math inline">\(t_{end}\)</span>.</p></li>
+</ol>
+<div id="motivation" class="section level5">
+<h5>Motivation</h5>
+<p>We motivate our feature by the following:</p>
+<ul>
+<li>Visualize the change in species concentration over time.</li>
+<li>Identify time for each reaction to reach equilibrium as well as the time when the overall chemical system achieves equilibrium (i.e., reaction completion).</li>
+<li>Get the concentrations at some end time (<span class="math inline">\(t_{end}\)</span>) for each specie.</li>
+</ul>
+<p>For the end-user, it may be useful to learn about the concentration of the various species at any given point in time (as opposed to just the reaction rates). Additionally, visualization of the gradient of change in concentration may help the user make a decision about an experiment design in e.g., titration experiments or chemical synthesis.</p>
+<p>In the future, the library could be enhanced by relaxing the condition of fixed temperature to further</p>
+</div>
+<div id="implementation-details" class="section level5">
+<h5>Implementation Details</h5>
+<div id="ode_int_solver" class="section level6">
+<h6>ODE_int_solver()</h6>
+<p>There will be a solver.py module containing a class that will be the workhorse to solve concentration of species over time. User will be able to call this class and use a solve() method for the desired outputs.</p>
+<p>The feature will require an external ODE solver, most likely the <code>ODEint</code> from <code>scipy.integrate</code> as well as the <code>matplotlib</code>.</p>
+</div>
+<div id="plot_reaction_rates" class="section level6">
+<h6>plot_reaction_rates()</h6>
+<p>The current <code>summary.py</code> module will call this method <code>plot_reaction_rates()</code> in order to produce a plot of the species concentrations over time.</p>
+<p>We envision at least 3 additional library functions that follows:</p>
+</div>
 </div>
 </div>
 </div>
