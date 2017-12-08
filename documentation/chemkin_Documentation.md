@@ -1,4 +1,4 @@
-﻿
+
 # Chemical Kinetics Library
 
 ## 1. Introduction
@@ -65,7 +65,7 @@ $E_a$ = Activation energy
 $R$ = Ideal gas constant
 $T$ = Temperature
 
-Note: A complete table of notation of **irreversible elementary** reacion
+Note: A complete table of notation of **irreversible elementary** reaction
 | Symbol |Meaning|
 |:--------:|-------|
 | $\mathcal{s}_{i}$ | Chemical symbol of specie $i$ |
@@ -195,11 +195,13 @@ The high level functionality of the **chemkin** module is to take an XML file wi
 
 Features of the **chemkin** module include:
 
-- Parsing XML file with chemical reaction data to extract relevant paramters
+- Parsing XML file with chemical reaction data to extract relevant parameters
 
 - Handling the calculation of 3+ classes of reaction rate coefficients (e.g. constant, Arrhenius and modified Arrhenius) given the appropriate parameters
 
 - Handling the calculation of progress rates ($\omega_{j}$ or $r_{j}$) and reaction rates ($f_{i}$)  for a system  consisting of $N$ species undergoing $M$ **irreversible** or **reversible** **elementary** reactions
+
+- Visualization of evolution of species concentration in the reaction system over time as well as visualization of the time to reach a dynamic equilibrium for each reaction
 
 #### Overall structure of the `chemkin` library
 
@@ -234,6 +236,12 @@ chemkin/
         summary.py
         tests/
             test_summary.py
+    solver/
+        __init__.py
+        ODEint_solver.py
+        tests/
+            __init__.py
+            test_ODEint_solver.py
     xml-files/
 ```
 
@@ -249,51 +257,7 @@ A brief description of each subdirectory:
 
 - `viz` package contains modules that allow the user to visualize reaction kinetics (e.g. printing reaction rates in a prettified, tabular format)
 
-
-## Proposed Feature
-
-Our proposed future feature is to install a differential equation solver to calculate species concentrations as a function of time. 
-
-##### Motivation
-
-We motivate our feature by the following:
-
-* Visualize the change in species concentration over time.
-*   Identify time to reach equilibrium (i.e., reaction completion).
-*   Get the concentrations at some end time ($t_{end}$).
-
-For the end-user, it may be useful to learn about the concentration of the various species at any given point in time (as opposed to just the reaction rates).
-
-##### Implementation
-
-There will be a solver.py module containing a class that will be the workhorse to solve concentration of species over time. User will be able to call this class and use a solve() method for the desired outputs.
-
-The current ``summary.py`` module will call this method ``plot_reaction_rates()`` in order to produce a plot of the species concentrations over time.
-
-The feature will require an external ODE solver, most likely the ``ODEint`` from ``scipy.integrate`` as well as the ``matplotlib``.
-
-We envision at least 3 additional library functions that follows:
-
-1. Given an end-time ($t_{end}$) and reaction data, function outputs the concentrations of each species at $t_{end}$.
-
-2. Given reaction data, function outputs the time to reach equilibrium (in the case of reversible elementary reactions) or the time for the reaction to reach completion (in the case of irreversible elementary reactions).
-
-3. Given an end-time ($t_{end}$), function plots the time evolution of species concentrations from $t_0$ to $t_{end}$.
-
-##### Additional packaging
-
-Below is the structure of the add-on to the package.
-
-```sh
-chemkin/
-    __init__.py
-    solver/
-        __init__.py
-        ODEint_solver.py
-        test/
-            __init__.py
-            test_ODEint_solver()
-```
+- `solver` package contains modules to solve the concentration of reaction species as a function of time as well as the time to reach reaction equilibrium
 
 ## 2. Installation
 
@@ -315,6 +279,8 @@ You can run the test suite on your local machine by typing the following command
 $ cd [installation directory]
 $ pytest
 ```
+
+If the user desires to contribute to the further development of this library, please do not hesitate to consult with the IACS department at Harvard University Graduate School of Arts and Sciences.
 
 ## 3. Basic Usage
 
@@ -375,7 +341,7 @@ $$
 </ctml>
 ```
 
-### 3.2 Reading and parsing the input file
+### 3.2 Reading and parsing the input file
 
 Reading and parsing the input XML file is handled in the `preprocessing` package, where there are two related classes that allow the user to work with reaction data stored in XML files.
 
@@ -710,3 +676,70 @@ Backward reaction coefficients not defined: T=5000 is not in some specie's tempe
 --------------------------------
 
 ```
+
+#### 4.2 Plot Time Evolution of Concentration Species and Time to Reach Equlibrium
+This example demonstrates the visualization functionality of the `chemkin` library. The user specifies the temperature and initial species concentrations with the corresponding input XML file which contains the reaction data, and the following code plots the time evolution of the concetration species until the reaction reaches equilibrium, as well as the the time until each reaction reaches equilibrium
+
+- Given the the species concentration $xi = [2.0, 1.0, 0.5, 1.0, 1.0]$ in units of $m^{3}/(mol\cdot s)$, calculate the concentrations of species over a pre-specified with temperatures held at two levels: $Ti = [100, 1500]$ (Please note we assume the temperature is held constant in our calculation).
+
+
+The demo code for this example can be found in the library repo in module `demo_ODEsolver.py`.
+
+```
+from chemkin import pckg_xml_path
+from chemkin.preprocessing.parse_xml import XmlParser
+from chemkin.viz import summary
+
+
+Ti = [100, 1500] # temp held constant
+xi = [2., 1., .5, 1., 1., 1., .5, 1.] # specie concentrations 'rxns_reversible.xml'
+xml_parser = XmlParser(pckg_xml_path('rxns_reversible'))
+
+parsed_data_list = xml_parser.parsed_data_list(Ti)
+summary.plot_species_concentration(parsed_data_list, xi)
+summary.plot_time_to_equilibrium(parsed_data_list, xi)
+```
+
+![Caption for the picture.](/path/to/image.png)
+
+### 5.New Feature
+
+Our new implemented feature is a differential equation solver to calculate species concentrations as a function of time as well as determine times each reaction reaches an equilibrium. 
+
+We implemented a numerical iterative solver of an Ordinary Differential Equation (ODE) under the assumption an ODE models the time evolution of the species concentration in the chemical system at hand.
+ 
+ 1. Given an end-time ($t_{end}$) and reaction data, function outputs the concentrations of each species at $t_{end}$.
+
+2. Given reaction data, function outputs the time to reach equilibrium (in the case of reversible elementary reactions) or the time for the reaction to reach completion (in the case of irreversible elementary reactions).
+
+3. Given an end-time ($t_{end}$), function plots the time evolution of species concentrations from $t_0$ to $t_{end}$.
+
+##### Motivation
+
+We motivate our feature by the following:
+
+*  Visualize the change in species concentration over time.
+*   Identify time for each reaction to reach equilibrium as well as the time when the overall chemical system achieves equilibrium (i.e., reaction completion).
+*   Get the concentrations at some end time ($t_{end}$) for each specie.
+
+For the end-user, it may be useful to learn about the concentration of the various species at any given point in time (as opposed to just the reaction rates). Additionally, visualization of the gradient of change in concentration may help the user make a decision about an experiment design in e.g., titration experiments or chemical synthesis.
+
+In the future, the library could be enhanced by relaxing the condition of fixed temperature to further 
+
+##### Implementation Details
+
+###### ODE_int_solver()
+
+
+There will be a solver.py module containing a class that will be the workhorse to solve concentration of species over time. User will be able to call this class and use a solve() method for the desired outputs.
+
+
+The feature will require an external ODE solver, most likely the ``ODEint`` from ``scipy.integrate`` as well as the ``matplotlib``.
+
+###### plot_reaction_rates()
+The current ``summary.py`` module will call this method ``plot_reaction_rates()`` in order to produce a plot of the species concentrations over time.
+
+We envision at least 3 additional library functions that follows:
+
+
+

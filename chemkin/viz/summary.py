@@ -82,7 +82,6 @@ def plot_time_to_equilibrium(parsed_data_list, xi, n_steps=101, end_t=100):
 	test_flag = 0 # time_to_equilibrium can be plotted
 	for parsed_data in parsed_data_list:
 
-		species = parsed_data['species']
 		ki = parsed_data['ki']
 		sys_vi_p = parsed_data['sys_vi_p']
 		sys_vi_dp = parsed_data['sys_vi_dp']
@@ -116,9 +115,15 @@ def plot_time_to_equilibrium(parsed_data_list, xi, n_steps=101, end_t=100):
 
 		# Plot Log-scale Time to Equilibrium
 		f2, ax2 = plt.subplots(1, 1)
-		ax2.bar(np.arange(len(critical_t)), np.log(critical_t+1))
-		ax2.set_xlabel('Reaction #')
+		ax2.bar(np.arange(len(critical_t)), np.log(critical_t+2))
+		ax2.set_xlabel('Reaction equation')
 		ax2.set_ylabel('log(Time)')
+		#print(parsed_data['equations'])
+		ax2.xaxis.set_ticks(np.arange(0,11,1))
+		ax2.set_xticklabels(zip([i for i in range(1,len(parsed_data['equations'])+1)],parsed_data['equations']),minor=False)
+		for tick in ax2.get_xticklabels():
+			tick.set_rotation(90)
+		ax2.locator_params(tight=False,nbins=11)
 		ax2.set_title('Log-scale Time to Equilibrium')
 		f2.savefig('Time to Equilibrium_{}K.png'.format(T))
 

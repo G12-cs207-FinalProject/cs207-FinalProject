@@ -81,7 +81,7 @@ def test_ODE_solver_solve():
         
         assert s.shape == (len(s),len(xi)),error_msg1
         
-        assert len(t_c)==len(ki) and len(t_c)==len(b_ki)
+        assert len(t_c)==len(ki) and len(t_c)==len(b_ki),error_msg1
         
         #error_msg2 = "Reaction has not reached an equilibrium"
         #assert all(i>0 for i in t_c) and t_o >0, error_msg2

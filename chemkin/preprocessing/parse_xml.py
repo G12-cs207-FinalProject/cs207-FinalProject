@@ -115,11 +115,14 @@ class XmlParser():
             raise ChemKinError('XmlParser.load()',
                                'No recognized child of <rateCoeff> found '
                                'from which to parse coefficients.')
-
+        
+        #equation
+        
+        
         # reactants / products
         result.reactants = self.__map_conc_to_species(rxn.find('reactants'))
         result.products = self.__map_conc_to_species(rxn.find('products'))
-
+        result.rxn_equation = result.equation()
         return result
 
     @staticmethod
@@ -184,7 +187,7 @@ class XmlParser():
             ki = []  # list of reation rate coefficients in each rxn
             is_reversible = []  # list of indicators of each reaction in the system
             # being irreversible/reversible
-
+            equations = []
             for rxn_data in rxn_data_list:  # 1 rxn per rxn_data
                 if rxn_data.type != RxnType.Elementary:
                     raise ChemKinError('XmlParser.parsed_data_list(Ti)',
@@ -213,7 +216,7 @@ class XmlParser():
                     idx = species_idx_dict[s]  # get index of the specii
                     rxn_vi_dp[idx] = vi
                 sys_vi_dp.append(list(rxn_vi_dp))
-
+                
                 coef_params = rxn_data.rate_coeff
                 if isinstance(coef_params, list):
                     if len(coef_params) == 3:  # modified arrhenius coef
@@ -229,8 +232,12 @@ class XmlParser():
                         ki.append(ArrheniusCoefficient(A, E, T).get_coef())
                 else:  # const coef
                     ki.append(ConstantCoefficient(coef_params).get_coef())
+                if rxn_data.rxn_equation == None:
+                    rxn_data.rxn_equation = "Reaction equation not specified"
+                equations.append(rxn_data.rxn_equation)
 
             parsed_data_dic = {}
+            parsed_data_dic['equations'] = equations
             parsed_data_dic['species'] = species
             parsed_data_dic['ki'] = ki
             parsed_data_dic['sys_vi_p'] = sys_vi_p
@@ -272,17 +279,19 @@ class RxnData():
             Arrhenius: [A, E]
             modifiedArrhenius: [A, b, E]
             Constant: k
+    equation: Contains the equation of the reaction
     type : RxnType
         Enum value for reaction type.
     """
 
     def __init__ (self, rxn_id=None, reversible=None, reactants=None,
-                  products=None, rate_coeff=None, type=None):
+                  products=None, rate_coeff=None, rxn_equation=None,type=None):
         self.rxn_id = rxn_id
         self.reversible = reversible
         self.reactants = reactants
         self.products = products
         self.rate_coeff = rate_coeff
+        self.rxn_equation = rxn_equation
         self.type = type
 
     def equation (self):
