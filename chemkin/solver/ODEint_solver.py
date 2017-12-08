@@ -28,7 +28,8 @@ class ODE_int_solver():
             class.
     """
 
-    def __init__ (self, temp, rxn, equil_thresh=1e-5, overall_equil_thresh=1e-2):
+    def __init__ (self, temp, rxn, equil_thresh=1e-5,
+                  overall_equil_thresh=1e-2, max_t=100):
         self.temp = temp
         self.rxn = rxn
         self.species_equil_thresh = equil_thresh
@@ -36,6 +37,7 @@ class ODE_int_solver():
         # Init critical time attrs with dummy values.
         self.critical_t = -100*np.ones((len(self.rxn.ki),))
         self.overall_critical_t = -100
+        self.max_t = max_t
 
     def solve (self, time_int):
         """Solves evolution of specie concentration over specified time range.
@@ -76,4 +78,3 @@ class ODE_int_solver():
 
         sol = odeint(func=rxn_rate, y0=self.rxn.xi, t=time_int, mxstep=5000000)
         return sol, self.critical_t, self.overall_critical_t
-
