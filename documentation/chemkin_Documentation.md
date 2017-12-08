@@ -1,4 +1,4 @@
----
+﻿---
 output:
   html_document: default
   pdf_document: default
@@ -201,11 +201,15 @@ Features of the **chemkin** module include:
 
 - Parsing XML file with chemical reaction data to extract relevant parameters
 
-- Handling the calculation of 3+ classes of reaction rate coefficients (e.g. constant, Arrhenius and modified Arrhenius) given the appropriate parameters
+- Handling the calculation of 3+ classes of forward reaction rate coefficients (e.g. constant, Arrhenius and modified Arrhenius) given the appropriate parameters
+
+- Handling the calculation of backward reaction rate coefficients for **reversible** **elementary** reactions
 
 - Handling the calculation of progress rates ($\omega_{j}$ or $r_{j}$) and reaction rates ($f_{i}$)  for a system  consisting of $N$ species undergoing $M$ **irreversible** or **reversible** **elementary** reactions
 
-- Visualization of evolution of species concentration in the reaction system over time as well as visualization of the time to reach a dynamic equilibrium for each reaction
+- Computing species concentrations given a end time point $t_{end}$
+
+- Visualizing time evolution of species concentration in the reaction system as well as visualizing of the time to reach a dynamic equilibrium for each reaction
 
 #### Overall structure of the `chemkin` library
 
@@ -255,13 +259,13 @@ A brief description of each subdirectory:
 
 - `preprocessing` package contains modules to parse input files, extracts and returns relevant reaction parameters into a python dictionary. Currently, the library only parses .xml input files.
 
-- `reaction` package contains modules to handle different reaction types as well as calculating the forward reaction coefficients
+- `reaction` package contains modules to handle different reaction types (calculating progress rates, reaction rates, species concentrations and time to equilibrium) as well as calculating reaction rate coefficients
 
-- `thermodynamics` package contains modules to handle all thermodynamics related calculations. For now, it handles the processing of backward reaction coefficients in reversible reactions using the NASA_coef SQL database.
+- `thermodynamics` package contains module to process thermodynamics-related parameters using the NASA_coef SQL database
 
-- `viz` package contains modules that allow the user to visualize reaction kinetics (e.g. printing reaction rates in a prettified, tabular format)
+- `solver` package contains an ODE solver, upon which reaction objects call to solve for the concentrations of reaction species as a function of time as well as the time to reach reaction equilibrium (both for individual reactions in the system and the overall equilibrium)
 
-- `solver` package contains modules to solve the concentration of reaction species as a function of time as well as the time to reach reaction equilibrium (both for individual reactions in the system as well as the overall equilibrium)
+- `viz` package contains modules that allow the user to visualize reaction kinetics (e.g. printing reaction rates in a prettified, tabular format, plotting species concentration evolution)
 
 ## 2. Installation
 
@@ -284,7 +288,7 @@ $ cd [installation directory]
 $ pytest
 ```
 
-If the user desires to contribute to the further development of this library, please do not hesitate to consult with the IACS department at Harvard University Graduate School of Arts and Sciences [here](https://iacs.seas.harvard.edu/).
+If you wish to contribute to the further development of this library, please do not hesitate to consult with the IACS department at Harvard University Graduate School of Arts and Sciences [here](https://iacs.seas.harvard.edu/).
 
 ## 3. Basic Usage
 
@@ -304,13 +308,13 @@ Chemical reaction data should be stored in XML format with the following specifi
         3. `<Constant>`: k will be retrieved.
         4. `<equation>`: Equation expression for each reaction will be retrieved.
 
-**Note** There should be only 1 system of reactions per XML file (i.e. 1 `<reactionData>` element). If more than 1 `<reactionData>` element resides within the XML, only the first `<reactionData>` element (i.e. first system of reactions) will be considered
+**Note** There should be only 1 system of reactions per XML file (i.e. 1 `<reactionData>` element). If more than 1 `<reactionData>` element resides within the XML, only the first `<reactionData>` element (i.e. first system of reactions) will be considered.
 
-**Note** For a system of chemical reactions, there can be a mix elementary reversible and elementary irreversible reactions. If more than 1 type of reaction is specified in the XML file, the user can check this by calling the `is_reversible` key from the parsed data dictionary for a given temperature. The output will be a list of Booleans indicating whether each reaction is reversible or not.
+**Note** While it is not recommended, there can be a mix reversible and irreversible reactions in a system of chemical reactions. To check if more than 1 type of reaction is specified in the XML file and to count the number of reversible reactions in the system, please see **Example 3.6**.
 
 **Note** If no recognized child tag of `<rateCoeff>` is encountered, then `XmlParser` will raise a `ChemKinError`. Also, its retrieval of elements is case-sensitive. So, for example, `<A>`, `<b>`, `<E>`, and `<k>` must be used to store the appropriate coefficients; elements named `<a>`, `<B>`, `<e>` or `<K>` would not be recognized and would lead to an error.
 
-**Note** If the user inputs <type = Non-elementary> or <type = Nonelementary>, the `XmlParser` will raise a `ChemKinError` as our library does not handle this type of reactions.
+**Note** If the user inputs `<type = Non-elementary>` or `<type = Nonelementary>`, the `XmlParser` will raise a `ChemKinError` as our library does not handle this type of reactions.
 
 
 **Example 3.1.** XML file for the following chemical reaction:
@@ -364,6 +368,8 @@ Each dictionary in the returned list contains the following attributes:
 
 - `ki`: a list of forward reaction rate coefficients, the $i^{th}$ entry in the list is the coefficient for the $i^{th}$ reaction in the system
 
+- `b_ki`: a list of backward reaction rate coefficients, the $i^{th}$ entry in the list is the coefficient for the $i^{th}$ reaction in the system (this attribute is 0 for irreversible reactions)
+
 - `sys_vi_p`: a list of stoichemotetric coefficients of the reactants, the $i^{th}$ entry in the list is the coefficients for the $i^{th}$ reaction in the system
 
 - `sys_vi_dp`: a list of stoichemotetric coefficients of the products, the $i^{th}$ entry in the list is the coefficients for the $i^{th}$ reaction in the system
@@ -371,8 +377,6 @@ Each dictionary in the returned list contains the following attributes:
 - `is_reversible`: an indicator of whether the reaction is reversible (takes on values of True or False)
 
 - `T`: a float of reaction temperature
-
-- `b_ki`: a list of backward reaction rate coefficients, the $i^{th}$ entry in the list is the coefficient for the $i^{th}$ reaction in the system (only dictionary for reversible reactions has this attribute)
 
 **Example 3.2.** Read in, parse and preprocess an input XML file
 
@@ -426,7 +430,7 @@ The reaction data parsed by the XmlParser `load()` function from XML files is re
 **Example 3.4.** Working with `RxnData` objects
 
 ```python
-from chemkin import pckg_xml_path
+from chemkin import pckg_xml_path 
 from chemkin.preprocessing.parse_xml import XmlParser
 
 xml_parser = XmlParser(pckg_xml_path('rxns_reversible'))
@@ -443,15 +447,15 @@ Two families of modules in the `reaction` package allow you to compute kinetic p
 
 - `reaction_coefficients` module handles calculations of reaction rate coefficients
 
-- `base_rxn`, `elementary_rxn` and `non_elementary_rxn` modules handle calculations of progress rates and reaction rates.
+- `base_rxn`, `elementary_rxn` and `non_elementary_rxn` modules handle calculations of progress rates, reaction rates, species concentrations at a given time, evolution of species concentrations and time to reach equilibrium.
 
 #### 3.3.1. `reaction_coefficients` module
 
-The `reaction_coefficients` module contains a base class `RxnCoefficientBase` from which then the three subclasses (`ConstantCoefficient`,`ArrheniusCoefficient`, and `ModifiedArrheniusCoefficient`) inherit its basic properties (such as `init`,`__repr__` and `__eq__`). When creating the instances of these classes, their parameters are based on inputs extracted using the `load` method from the `XmlParser` class and stored in `RxnData` object. As documented above, `RxnData` objects have a `rate_coef` attribute, which is a list of parameters for reaction rate coefficient. The list can have the following entires: temperature $T$, Arrhenius constant $A$ (where applicable), modified constant $b$ (where applicable), ideal gas constant $R$, and Activation energy $E$.
+The `reaction_coefficients` module contains a base class `RxnCoefficientBase` for forward reaction coefficients, from which then the three subclasses (`ConstantCoefficient`,`ArrheniusCoefficient`, and `ModifiedArrheniusCoefficient`) inherit its basic properties (such as `init`,`__repr__` and `__eq__`). When creating the instances of these classes, their parameters are based on inputs extracted using the `load` method from the `XmlParser` class and stored in `RxnData` object. As documented above, `RxnData` objects have a `rate_coef` attribute, which is a list of parameters for reaction rate coefficient. The list can have the following entires: temperature $T$, Arrhenius constant $A$ (where applicable), modified constant $b$ (where applicable), ideal gas constant $R$, and Activation energy $E$.
 
 Since different classes of rate coefficients have different number of input parameters, we can utilize the length of the `rate_coef` to determine the class to use to calculate the reaction rate coefficients. The `get_coeff()` method handls the calculation of the the rate coefficients $ki$ for reaction $i$. 
 
-**Example 3.5.** Calculating reaction rate coefficients
+**Example 3.5.** Calculating forward reaction rate coefficients
 ```python
 from chemkin import pckg_xml_path
 from chemkin.preprocessing.parse_xml import XmlParser
@@ -474,26 +478,30 @@ coef_params = reaction_data.rate_coeff
                 ki.append(ArrheniusCoefficient(A, E, T).get_coef())
         else: # const coef
             ki.append(ConstantCoefficient(coef_params).get_coef())
-
 ```
+The `reaction_coefficients` module also contains a separate class of `BackwardCoefficient`, which calculates the backward reaction rate coefficient for reversible chemical reactions.
 
 #### 3.3.2 `base_rxn` module
 
-The `base_rxn` module contains a single `RxnBase` class, from which the subclasses in `elementary_rxn` and `non_elementary_rxn` modules inherit. The `RxnBase` base class and its subclasses have methods to calculate the progress rates and reaction rates given data on a system of chemical reactions and associated parameters.
+The `base_rxn` module contains a single `RxnBase` class, from which the subclasses in `elementary_rxn` and `non_elementary_rxn` modules inherit. The `RxnBase` base class and its subclasses have methods to calculate the progress rates, reaction rates, species concentrations at a given time, time evolution of species concentrations and time to reach equilibrium given data on a system of chemical reactions and associated parameters.
 
 `RxnBase` objects have the following attributes:
 
-- `ki`: a list of reaction rate coefficients
+- `ki`: a list of forward reaction rate coefficients
+- `b_ki`: a list of backward reaction rate coefficients
 - `xi`: a list of concentrations of molecular species
 - `vi_p`: a list of stoichiometric coefficients of the reactants
 - `vi_dp`: a list of stoichiometric coefficients of the product
-- `wi`: a list of progress rates
+- `wi`: a list of total progress rates
+- `f_wi`: a list of forward progress rates
+- `b_wi`: a list of backward progress rates
 - `rates`: a list of reaction rates
+- `is_reversible`: a list of booleans indicating whether $i^{th}$ reaction is reversible
 
 **Note** These attributes are initialized when `RxnBase` objects are created. For example,
 
 ```
-reaction1 = RxnBase(ki=[10, 10], xi=[1.0, 2.0, 1.0], vi_p=[[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]], vi_dp=[[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]]
+reaction1 = RxnBase(ki=[10, 10], b_ki=[20, 20], xi=[1.0, 2.0, 1.0], vi_p=[[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]], vi_dp=[[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]]
 ```
 
 `RxnBase` objects have the following methods:
@@ -502,6 +510,11 @@ reaction1 = RxnBase(ki=[10, 10], xi=[1.0, 2.0, 1.0], vi_p=[[1.0, 2.0, 0.0], [2.0
 
 - `reaction_rate()`: Returns a list of reaction rates for the system (Not implemented in the base class)
 
+- `species_concentration(self, T, end_t, n_steps=101)`: Returns a list of species concentrations at temperature = T and end time = end_t
+
+- `species_concentration_evolution(self, T, end_t, n_steps=101)`:  Returns a matrix of species concentration evolution at temperature = T and from start to end_t
+
+- `time_to_equilibrium(self, T, n_steps=101)`: Returns the list of time to equilibrium of all the reactions and the time to equilibrium of the overall system at temperature = T
 
 #### 3.3.3 `elementary_rxn` module
 
@@ -548,7 +561,7 @@ $$\begin{aligned}
   f_{i} = \frac{d[i]}{dt} = \sum_{j=1}^{M}{\nu_{ij}r_{j}}, \qquad \text{for } i = 1, \ldots, N
 \end{aligned}$$
 
-`ElementaryRxn` shares the same class attributes as the base class and implements the two methods in the following manner: 
+`ElementaryRxn` shares the same class attributes as the base class, inherits `species_concentration(self, T, end_t, n_steps=101)`, `species_concentration_evolution(self, T, end_t, n_steps=101)`, `time_to_equilibrium(self, T, n_steps=101)` methods and implements the two methods in the following manner: 
 
 - `progress_rate()`: Returns a list of $k_{j}^{\left(f\right)}\prod_{i=1}^{N}{x_{i}^{\nu_{ij}^{\prime}}} - k_{j}^{\left(b\right)}\prod_{i=1}^{N}{x_{i}^{\nu_{ij}^{\prime\prime}}}$
 
@@ -684,102 +697,331 @@ Backward reaction coefficients not defined: T=100 is not in some specie's temper
 Backward reaction coefficients not defined: T=5000 is not in some specie's temperature range.
 --------------------------------
 ```
+### 4.2 A system of reversible, elementary chemical reactions
+- The system of chemical reactions of interest:
+
+$$
+\begin{aligned}
+H + O_2 &\longrightarrow O + OH \\
+O+ H_2 &\longrightarrow H + OH \\
+H_2 + OH &\longrightarrow H_2O + H \\
+O + H_2O &\longrightarrow OH + OH \\
+HO_2 + H &\longrightarrow H_2 + O_2 \\
+HO_2 + H &\longrightarrow OH + OH \\
+HO_2 + O &\longrightarrow O_2 + OH \\
+HO_2 + OH &\longrightarrow H_2O + O_2 \\
+H_2O_2 + H &\longrightarrow H_2O + OH \\
+H_2O_2 + H &\longrightarrow HO_2 + H_2 \\
+H_2O_2 + O &\longrightarrow OH + HO_2 \\
+\end{aligned}
+$$
+
+- Input XML file:
+
+```
+<?xml version="1.0"?>
+
+<ctml>
+
+  <phase>
+      <speciesArray> H O OH H2 H2O O2 HO2 H2O2 </speciesArray>
+  </phase>
+
+  <reactionData id="hydrogen_air_mechanism">
+    <!-- reaction 01  -->
+    <reaction reversible="yes" type="Elementary" id="reaction01">
+      <equation>H + O2 =] O + OH</equation>
+      <rateCoeff>
+        <modifiedArrhenius>
+          <A>3.547e+15</A>
+          <b>-0.406</b>
+          <E>1.6599e+04</E>
+        </modifiedArrhenius>
+      </rateCoeff>
+      <reactants>H:1 O2:1</reactants>
+      <products>O:1 OH:1</products>
+    </reaction>
+
+    <reaction reversible="yes" type="Elementary" id="reaction02">
+    <!-- reaction O2  -->
+      <equation>O + H2 =] H + OH</equation>
+      <rateCoeff>
+        <modifiedArrhenius>
+          <A >5.08e+4</A>
+          <b>2.67</b>
+          <E >6.29e+03</E>
+        </modifiedArrhenius>
+      </rateCoeff>
+      <reactants>O:1 H2:1</reactants>
+      <products>H:1 OH:1</products>
+    </reaction>
+
+    <reaction reversible="yes" type="Elementary" id="reaction03">
+    <!-- reaction 03  -->
+      <equation>H2 + OH =] H2O + H</equation>
+      <rateCoeff>
+        <modifiedArrhenius>
+          <A >2.16e+08</A>
+          <b>1.51</b>
+          <E >3.43e+03</E>
+        </modifiedArrhenius>
+      </rateCoeff>
+      <reactants>H2:1 OH:1</reactants>
+      <products>H2O:1 H:1</products>
+    </reaction>
+
+    <reaction reversible="yes" type="Elementary" id="reaction04">
+    <!-- reaction 04  -->
+      <equation>O + H2O =] OH + OH</equation>
+      <rateCoeff>
+        <modifiedArrhenius>
+          <A >2.97e+06</A>
+          <b>2.02</b>
+          <E >1.34e+04</E>
+        </modifiedArrhenius>
+      </rateCoeff>
+      <reactants>O:1 H2O:1</reactants>
+      <products>OH:2</products>
+    </reaction>
+
+    <reaction reversible="yes" type="Elementary" id="reaction05">
+    <!-- reaction 10  -->
+      <equation>HO2 + H =] H2 + O2</equation>
+      <rateCoeff>
+        <Arrhenius>
+          <A >1.66e+13</A>
+          <E >8.23e+02</E>
+        </Arrhenius>
+      </rateCoeff>
+      <reactants>HO2:1 H:1</reactants>
+      <products>H2:1 O2:1</products>
+    </reaction>
+
+    <reaction reversible="yes" type="Elementary" id="reaction06">
+    <!-- reaction 11  -->
+      <equation>HO2 + H =] OH + OH</equation>
+      <rateCoeff>
+        <Arrhenius>
+          <A >7.079e+13</A>
+          <E >2.95e+02</E>
+        </Arrhenius>
+      </rateCoeff>
+      <reactants>HO2:1 H:1</reactants>
+      <products>OH:2</products>
+    </reaction>
+
+    <reaction reversible="yes" type="Elementary" id="reaction07">
+    <!-- reaction 12  -->
+      <equation>HO2 + O =] O2 + OH</equation>
+      <rateCoeff>
+        <Arrhenius>
+          <A >3.25e+13</A>
+          <E >0.0</E>
+        </Arrhenius>
+      </rateCoeff>
+      <reactants>HO2:1 O:1</reactants>
+      <products>O2:1 OH:1</products>
+    </reaction>
+
+    <reaction reversible="yes" type="Elementary" id="reaction08">
+    <!-- reaction 13  -->
+      <equation>HO2 + OH =] H2O + O2</equation>
+      <rateCoeff>
+        <Arrhenius>
+          <A >2.890e+13</A>
+          <E >-4.970e+02</E>
+        </Arrhenius>
+      </rateCoeff>
+      <reactants>HO2:1 OH:1</reactants>
+      <products>H2O:1 O2:1</products>
+    </reaction>
+
+    <reaction reversible="yes" type="Elementary" id="reaction09">
+    <!-- reaction 17  -->
+      <equation>H2O2 + H =] H2O + OH</equation>
+      <rateCoeff>
+        <Arrhenius>
+          <A >2.41e+13</A>
+          <E >3.97e+03</E>
+        </Arrhenius>
+      </rateCoeff>
+      <reactants>H2O2:1 H:1</reactants>
+      <products>H2O:1 OH:1</products>
+    </reaction>
+
+    <reaction reversible="yes" type="Elementary" id="reaction10">
+    <!-- reaction 18  -->
+      <equation>H2O2 + H =] HO2 + H2</equation>
+      <rateCoeff>
+        <Arrhenius>
+          <A >4.82e+13</A>
+          <E >7.95e+03</E>
+        </Arrhenius>
+      </rateCoeff>
+      <reactants>H2O2:1 H:1</reactants>
+      <products>HO2:1 H2:1</products>
+    </reaction>
+
+    <reaction reversible="yes" type="Elementary" id="reaction11">
+    <!-- reaction 19  -->
+      <equation>H2O2 + O =] OH + HO2</equation>
+      <rateCoeff>
+        <modifiedArrhenius>
+          <A >9.55e+06</A>
+          <b>2.0</b>
+          <E >3.970e+03</E>
+        </modifiedArrhenius>
+      </rateCoeff>
+      <reactants>H2O2:1 O:1</reactants>
+      <products>OH:1 HO2:1</products>
+    </reaction>
+
+  </reactionData>
+</ctml>
+```
 
 
-#### 4.2 Plot Time Evolution of Concentration Species and Time to Reach Equlibrium
-
-This example demonstrates the visualization functionality of the `chemkin` library. The user specifies the temperature and initial species concentrations with the corresponding input XML file which contains the reaction data, and the following code plots the time evolution of the species concetration until the reaction reaches equilibrium, as well as the the time until each reaction reaches equilibrium.
+The following examples demonstrate the visualization functionality of the `chemkin` library. The user specifies the temperature and initial species concentrations with the corresponding input XML file which contains the reaction data, and the following code plots the time evolution of the species concetration until the reaction reaches equilibrium, as well as the the time until each reaction reaches equilibrium.
 
 - Given the the species concentration $xi = [2.0, 1.0, 0.5, 1.0, 1.0]$ in units of $(mol/dm^3)$, calculate the concentrations of species over a pre-specified with temperatures held at two levels: $Ti = [100, 1500]$ (Please note we assume the temperature is held constant in our calculation).
 
-The demo code for this example can be found in the library GitHub repo in the module `demo_ODEsolver.py` [here](https://github.com/G12-cs207-FinalProject/cs207-FinalProject).
-
+#### 4.2.1 Print Concentration of Species at Time end_t
 ```
 from chemkin import pckg_xml_path
 from chemkin.preprocessing.parse_xml import XmlParser
 from chemkin.viz import summary
 
-
-Ti = [100, 1500] # temp held constant
-xi = [2., 1., .5, 1., 1., 1., .5, 1.] # specie concentrations 'rxns_reversible.xml'
+Ti = [900, 2500]
+xi = [2., 1., .5, 1., 1., 1., .5, 1.] # specie concentrations
 xml_parser = XmlParser(pckg_xml_path('rxns_reversible'))
 
 parsed_data_list = xml_parser.parsed_data_list(Ti)
+
+summary.print_species_concentration(parsed_data_list, xi, end_t=1e-12)
+```
+- The expected result:
+```
+------At Temperature 900 K------
+Specie Concentration at time = 1e-12
+  H: start = 2.0, end = 1.723901712597415
+  O: start = 1.0, end = 0.23872213644765622
+  OH: start = 0.5, end = 0.027139067877998888
+  H2: start = 1.0, end = 1.1618557607172413
+  H2O: start = 1.0, end = 2.4626238490452628
+  O2: start = 1.0, end = 2.385757473314534
+  HO2: start = 0.5, end = 6.056885759728584e-14
+  H2O2: start = 1.0, end = 6.5724287182009025e-19
+--------------------------------
+
+------At Temperature 2500 K------
+Specie Concentration at time = 1e-12
+  H: start = 2.0, end = 1.2148570014216886
+  O: start = 1.0, end = 0.9791302354930477
+  OH: start = 0.5, end = 0.9111019320202484
+  H2: start = 1.0, end = 0.7430549709243639
+  H2O: start = 1.0, end = 2.6939438877946014
+  O2: start = 1.0, end = 1.4578690352649595
+  HO2: start = 0.5, end = 4.252504205019055e-05
+  H2O2: start = 1.0, end = 4.120390407757191e-07
+--------------------------------
+```
+#### 4.2.2 Print Time to Reach Equilibrium
+```
+from chemkin import pckg_xml_path
+from chemkin.preprocessing.parse_xml import XmlParser
+from chemkin.viz import summary
+
+Ti = [900, 2500]
+xi = [2., 1., .5, 1., 1., 1., .5, 1.] # specie concentrations
+xml_parser = XmlParser(pckg_xml_path('rxns_reversible'))
+
+parsed_data_list = xml_parser.parsed_data_list(Ti)
+
+summary.print_time_to_equilibrium(parsed_data_list, xi)
+```
+- The expected result:
+```
+------At Temperature 900 K------
+Time to Equilibrium (end_t = 10000000000.0)
+  Reaction #0: 1.7710385756438292e-05
+  Reaction #1: 1.7710385756438292e-05
+  Reaction #2: 1.773464177804173e-07
+  Reaction #3: 1.773464177804173e-07
+  Reaction #4: 2.1808938174999524e-11
+  Reaction #5: 2.1808938174999524e-11
+  Reaction #6: 1.743709840167672e-11
+  Reaction #7: 1.4245072821790747e-11
+  Reaction #8: 8.557334002807858e-13
+  Reaction #9: 1.3523084464099764e-12
+  Reaction #10: 7.872345307371005e-13
+
+Overall Time to Equilibrium: 1.7710385756438292e-05
+--------------------------------
+
+------At Temperature 2500 K------
+Time to Equilibrium (end_t = 10000000000.0)
+  Reaction #0: 3.28928631333613e-08
+  Reaction #1: 32892533.73554649
+  Reaction #2: 3289253.373554649
+  Reaction #3: 0.0032892533738840468
+  Reaction #4: 3.322193155035267e-11
+  Reaction #5: 3.292547351702711e-10
+  Reaction #6: 3.292547351702711e-10
+  Reaction #7: 3.292547351702711e-10
+  Reaction #8: 3.322193155035267e-11
+  Reaction #9: 3.322193155035267e-11
+  Reaction #10: 3.292547351702711e-10
+
+Overall Time to Equilibrium: The system has not yet reached equilibrium.
+--------------------------------
+```
+
+#### 4.2.3 Plot Time Evolution of Concentration Species
+```
+from chemkin import pckg_xml_path
+from chemkin.preprocessing.parse_xml import XmlParser
+from chemkin.viz import summary
+
+Ti = [900]
+xi = [2., 1., .5, 1., 1., 1., .5, 1.] # specie concentrations
+xml_parser = XmlParser(pckg_xml_path('rxns_reversible'))
+
+parsed_data_list = xml_parser.parsed_data_list(Ti)
+
 summary.plot_species_concentration(parsed_data_list, xi)
+```
+- See the expected image [here](https://github.com/G12-cs207-FinalProject/cs207-FinalProject/blob/master/chemkin/viz/img/evolution_900K.png)
+
+
+#### 4.2.4 Plot Time to Equilibrium
+```
+from chemkin import pckg_xml_path
+from chemkin.preprocessing.parse_xml import XmlParser
+from chemkin.viz import summary
+
+Ti = [900]
+xi = [2., 1., .5, 1., 1., 1., .5, 1.] # specie concentrations
+xml_parser = XmlParser(pckg_xml_path('rxns_reversible'))
+
+parsed_data_list = xml_parser.parsed_data_list(Ti)
+
 summary.plot_time_to_equilibrium(parsed_data_list, xi)
 ```
+- See the expected image [here](https://github.com/G12-cs207-FinalProject/cs207-FinalProject/blob/master/chemkin/viz/img/Time_to_Equilibrium_900K.png)
 
-- The expected result:
-
-  1. Species start/end concentration 
-
-```
-
-------At Temperature 100 K------
-Backward reaction coefficients not defined: T=100 is not in some specie's temperature range.
---------------------------------
-
-------At Temperature 1500 K------
-Specie Concentration at the Start and the End
-  H: start = 2.0, end = 1.7380273730965146
-  O: start = 1.0, end = 0.7187817394337618
-  OH: start = 0.5, end = 0.2646483939132525
-  H2: start = 1.0, end = 0.5418530113743408
-  H2O: start = 1.0, end = 2.956809097711278
-  O2: start = 1.0, end = 1.779880369658244
-  HO2: start = 0.5, end = 1.4806235150147184e-08
-  H2O2: start = 1.0, end = 6.377762373035363e-12
---------------------------------
-```
-
-    2. Time to equilibrium for each reaction/overall system
-
-```
-
-------At Temperature 100 K------
-Backward reaction coefficients not defined: T=100 is not in some specie's temperature range.
---------------------------------
-
-------At Temperature 1500 K------
-Time to Equilibrium
-  Reaction #0: 1.3166067527094166e-07
-  Reaction #1: 131.65489891483153
-  Reaction #2: 1.3165489891540338
-  Reaction #3: 0.13165489892060211
-  Reaction #4: 1.3743125503074637e-10
-  Reaction #5: 1.3743125503074637e-10
-  Reaction #6: 1.3743125503074637e-10
-  Reaction #7: 1.3743125503074637e-10
-  Reaction #8: 1.637422015038343e-12
-  Reaction #9: 1.7075920124227771e-12
-  Reaction #10: 1.637422015038343e-12
-
-Overall Time to Equilibrium: 1.3166067527094166e-07
---------------------------------
-```
-
-    3. Plots of the time evolution of species concentrations
-
-  ![](/Users/filipmichalsky/cs207-final-project/evolution_1500K.png)
-
-
-    4. Plot of times for reactions to reach the equilibrium
-
-  ![](/Users/filipmichalsky/cs207-final-project/time_evolution_1500K.png)
+The demo code for this example can be found in the library GitHub repo in the module `demo_ODEsolver.py` [here](https://github.com/G12-cs207-FinalProject/cs207-FinalProject).
 
 ### 5.New Feature
 
-Our new implemented feature is a differential equation solver to calculate species concentrations as a function of time as well as determine times each reaction reaches an equilibrium. 
+Our new implemented feature is a differential equation solver that calculates species concentrations as a function of time as well as determines the time for each reaction to reach an equilibrium. 
 
 We implemented a numerical iterative solver of an Ordinary Differential Equation (ODE) under the assumption an ODE models the time evolution of the species concentration in the chemical system at hand.
 
- This new features enables the library to:
+ This new feature enables the library to:
 
   1. Given an end-time ($t_{end}$) and reaction data, output the concentrations of each species at $t_{end}$.
-
- 2. Given reaction data, output the time to reach equilibrium (in the case of reversible elementary reactions) or the time for the reaction to reach completion (in the case of irreversible elementary reactions).
-
- 3. Given an end-time ($t_{end}$), function plots the time evolution of species concentrations from $t_0$ to $t_{end}$.
+  2. Given reaction data, output the time to reach equilibrium (in the case of reversible elementary reactions) or the time for the reaction to reach completion (in the case of irreversible elementary reactions).
+  3. Given an end-time ($t_{end}$), function plots the time evolution of species concentrations from $t_0$ to $t_{end}$.
 
 ##### Motivation
 
@@ -791,7 +1033,7 @@ We motivate our feature by the following:
 
 For the end-user, it may be useful to learn about the concentration of the various species at any given point in time (as opposed to just the reaction rates). Additionally, visualization of the gradient of change in concentration may help the user make a decision about an experiment design in e.g., time to cut off a titration experiment or a batch chemical synthesis.
 
-In the future, the library could be enhanced by relaxing the condition of fixed temperature to further enable the user to gte insights in more complex systems.
+In the future, the library could be enhanced by relaxing the condition of fixed temperature to further enable the user to get insights in more complex systems.
 
 ##### Implementation Details
 
@@ -811,7 +1053,5 @@ plot_species_concentration()
 ###### summary.plot_time_to_equilibrium()
 
 The current ``summary.py`` module contains a method ``plot_reaction_rates()`` in order to produce a plot of the species concentrations over time.
-
-
 
 
