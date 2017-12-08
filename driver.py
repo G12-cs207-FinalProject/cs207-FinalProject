@@ -8,8 +8,7 @@ from chemkin.reaction.elementary_rxn import ElementaryRxn
 from chemkin.viz import summary
 
 # Reversible Reactions
-# Ti = [100, 750, 1500, 2500, 5000]
-Ti = [1500]
+Ti = [100, 750, 1500, 2500, 5000]
 xi = [2., 1., .5, 1., 1., 1., .5, 1.] # specie concentrations 'rxns_reversible.xml'
 xml_parser = XmlParser(pckg_xml_path('rxns_reversible'))
 
