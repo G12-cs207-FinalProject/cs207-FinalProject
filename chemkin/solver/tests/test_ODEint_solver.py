@@ -11,10 +11,10 @@ Created on Thu Dec  7 16:16:40 2017
 import sys
 import numpy as np
 #print(sys.path)
-from chemkin.solver.ODEint_solver import ODE_int_solver
-
 from chemkin import pckg_xml_path
 from chemkin.preprocessing.parse_xml import XmlParser
+from chemkin.solver.ODEint_solver import ODE_int_solver
+from chemkin.reaction.elementary_rxn import ElementaryRxn
 
 ##########
 #had to hack to make it work in my dir
@@ -46,8 +46,9 @@ def test_ODE_solver_functionality():
         sys_vi_dp = parsed_data['sys_vi_dp']
         T= parsed_data['T']
         b_ki=parsed_data['b_ki']
-        
-        my_solver = ODE_int_solver(T, xi, ki, b_ki, sys_vi_p, sys_vi_dp)
+
+        rxn = ElementaryRxn(ki, b_ki, xi, sys_vi_p, sys_vi_dp)
+        my_solver = ODE_int_solver(T, rxn)
         
         error_msg = "Solver is not initiating properly"
         assert my_solver != None and isinstance(my_solver,ODE_int_solver),error_msg
@@ -71,8 +72,10 @@ def test_ODE_solver_solve():
         sys_vi_dp = parsed_data['sys_vi_dp']
         T= parsed_data['T']
         b_ki=parsed_data['b_ki']       
-        my_solver = ODE_int_solver(T, xi, ki, b_ki, sys_vi_p, sys_vi_dp)
-        
+
+        rxn = ElementaryRxn(ki, b_ki, xi, sys_vi_p, sys_vi_dp)
+        my_solver = ODE_int_solver(T, rxn)
+
         time_int = time_steps = np.linspace(0, 100, 101)
         
         s , t_c , t_o =my_solver.solve(time_int)

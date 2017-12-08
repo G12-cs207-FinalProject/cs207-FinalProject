@@ -7,7 +7,7 @@ from chemkin.preprocessing.parse_xml import XmlParser
 from chemkin.reaction.elementary_rxn import ElementaryRxn
 from chemkin.viz import summary
 
-# # Reversible Reactions
+# Reversible Reactions
 # Ti = [100, 750, 1500, 2500, 5000]
 Ti = [1500]
 xi = [2., 1., .5, 1., 1., 1., .5, 1.] # specie concentrations 'rxns_reversible.xml'

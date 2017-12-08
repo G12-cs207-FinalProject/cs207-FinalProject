@@ -3,7 +3,7 @@ from chemkin.preprocessing.parse_xml import XmlParser
 from chemkin.viz import summary
 
 # test xml files for irreversible reactions
-irrev_xmls = ['rxns_hw5', 'rxns_ideal', 'rxns_neg_A', 'rxns_neg_A_2', 'rxns_neg_k', 'rxns_non_elementary']
+irrev_xmls = ['rxns_hw5', 'rxns_neg_A', 'rxns_neg_A_2', 'rxns_neg_k', 'rxns_non_elementary']
 # Ti = [750, 1500, 2500]
 # xi = [2.0, 1.0, 0.5, 1.0, 1.0]
 # xml_parser = XmlParser(pckg_xml_path(irrev_xmls[0]))
