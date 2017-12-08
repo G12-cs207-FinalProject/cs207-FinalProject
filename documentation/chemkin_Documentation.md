@@ -7,7 +7,7 @@ output:
 # Chemical Kinetics Library
 
 ## 1. Introduction
-`chemkin` stands for chemical kinetics and is an objected-oriented library for modeling kinetics of chemical reactions.
+`chemkin` stands for chemical kinetics and is an objected-oriented library for modeling the kinetics of chemical reactions.
 
 ### 1.1 Key Chemical Kinetics Concepts
 
@@ -28,7 +28,7 @@ $\nu_{ij}^{\prime}$ = Stoichiometric coefficients of reactants
 $\nu_{ij}^{\prime\prime}$ = Stoichiometric coefficients of products
 
 The **rate of change of species $i$** (i.e. the **reaction rate of species $i$**) can be written as
-  
+
 $$\begin{aligned}
   f_{i} = \frac{d[i]}{dt} = \sum_{j=1}^{M}{\nu_{ij}\omega_{j}} \qquad i = 1, \ldots, N
 \end{aligned}$$
@@ -44,7 +44,6 @@ $$\begin{aligned}
   \omega_{j} = k_{j}\prod_{i=1}^{N}{x_{i}^{\nu_{ij}^{\prime}}} \qquad j = 1, \ldots, M
 \end{aligned}
 $$
-
 where 
 $k_{j}$ = Forward reaction rate coefficient for reaction $j$
 $x_{i}$ = Concentration of specie $i$
@@ -315,13 +314,11 @@ Chemical reaction data should be stored in XML format with the following specifi
 
 
 **Example 3.1.** XML file for the following chemical reaction:
-
 $$
 \begin{aligned}
 2H_2 + O_2 \quad \longrightarrow \quad 2OH + H_2
 \end{aligned}
 $$
-
 ```
 <?xml version="1.0"?>
 <ctml>
@@ -529,7 +526,7 @@ $$\begin{aligned}
 $$
 
 The reaction rate $f_{i} = \frac{d[i]}{dt}$ is given by
-  
+
 $$\begin{aligned}
   f_{i} = \frac{d[i]}{dt} = \sum_{j=1}^{M}{\nu_{ij}\omega_{j}}, \qquad \text{for } i = 1, \ldots, N
 \end{aligned}$$
@@ -546,7 +543,7 @@ The total progress rate $r_{j}$ is given by
 $$r_{j} = k_{j}^{\left(f\right)}\prod_{i=1}^{N}{x_{i}^{\nu_{ij}^{\prime}}} - k_{j}^{\left(b\right)}\prod_{i=1}^{N}{x_{i}^{\nu_{ij}^{\prime\prime}}}, \qquad j = 1,\ldots, M$$
 
 The reaction rate $f_{i} = \frac{d[i]}{dt}$ is given by
-  
+
 $$\begin{aligned}
   f_{i} = \frac{d[i]}{dt} = \sum_{j=1}^{M}{\nu_{ij}r_{j}}, \qquad \text{for } i = 1, \ldots, N
 \end{aligned}$$
@@ -735,7 +732,7 @@ Specie Concentration at the Start and the End
 --------------------------------
 ```
 
-  2. Time to equilibrium for each reaction/overall system
+    2. Time to equilibrium for each reaction/overall system
 
 ```
 
@@ -761,36 +758,36 @@ Overall Time to Equilibrium: 1.3166067527094166e-07
 --------------------------------
 ```
 
-  3. Plots of the time evolution of species concentrations
-  
+    3. Plots of the time evolution of species concentrations
+
   ![](/Users/filipmichalsky/cs207-final-project/evolution_1500K.png)
-  
-  
-  4. Plot of times for reactions to reach the equilibrium
-  
+
+
+    4. Plot of times for reactions to reach the equilibrium
+
   ![](/Users/filipmichalsky/cs207-final-project/time_evolution_1500K.png)
-  
+
 ### 5.New Feature
 
 Our new implemented feature is a differential equation solver to calculate species concentrations as a function of time as well as determine times each reaction reaches an equilibrium. 
 
 We implemented a numerical iterative solver of an Ordinary Differential Equation (ODE) under the assumption an ODE models the time evolution of the species concentration in the chemical system at hand.
- 
+
  This new features enables the library to:
- 
- 1. Given an end-time ($t_{end}$) and reaction data, output the concentrations of each species at $t_{end}$.
 
-2. Given reaction data, output the time to reach equilibrium (in the case of reversible elementary reactions) or the time for the reaction to reach completion (in the case of irreversible elementary reactions).
+  1. Given an end-time ($t_{end}$) and reaction data, output the concentrations of each species at $t_{end}$.
 
-3. Given an end-time ($t_{end}$), function plots the time evolution of species concentrations from $t_0$ to $t_{end}$.
+ 2. Given reaction data, output the time to reach equilibrium (in the case of reversible elementary reactions) or the time for the reaction to reach completion (in the case of irreversible elementary reactions).
+
+ 3. Given an end-time ($t_{end}$), function plots the time evolution of species concentrations from $t_0$ to $t_{end}$.
 
 ##### Motivation
 
 We motivate our feature by the following:
 
 *  Visualize the change in species concentration over time.
-*   Identify time for each reaction to reach equilibrium as well as the time when the overall chemical system achieves equilibrium (i.e., reaction completion).
-*   Get the concentrations at some end time ($t_{end}$) for each specie.
+*  Identify time for each reaction to reach equilibrium as well as the time when the overall chemical system achieves equilibrium (i.e., reaction completion).
+*  Get the concentrations at some end time ($t_{end}$) for each specie.
 
 For the end-user, it may be useful to learn about the concentration of the various species at any given point in time (as opposed to just the reaction rates). Additionally, visualization of the gradient of change in concentration may help the user make a decision about an experiment design in e.g., time to cut off a titration experiment or a batch chemical synthesis.
 
