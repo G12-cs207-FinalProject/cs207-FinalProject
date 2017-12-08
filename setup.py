@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='chemkin',
-      version='3.1',
+      version='3.3',
       description='The best chemkin package',
       url='https://github.com/G12-cs207-FinalProject/cs207-FinalProject.git',
       author='Monsieur Package du Parser',
@@ -15,7 +15,9 @@ setup(name='chemkin',
                 'chemkin.thermodynamics',
                 'chemkin.thermodynamics.tests',
                 'chemkin.viz',
-                'chemkin.viz.tests'],
+                'chemkin.viz.tests',
+                'chemkin.solver',
+                'chemkin.solver.tests'],
       package_data={'chemkin':['thermodynamics/*.sqlite',
                                'xml-files/*.xml']})
 
