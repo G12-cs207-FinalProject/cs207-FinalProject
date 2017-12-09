@@ -1,4 +1,4 @@
-﻿---
+---
 output:
   html_document: default
   pdf_document: default
@@ -899,7 +899,9 @@ parsed_data_list = xml_parser.parsed_data_list(Ti)
 
 summary.print_species_concentration(parsed_data_list, xi, end_t=1e-12)
 ```
+
 - The expected result:
+
 ```
 ------At Temperature 900 K------
 Specie Concentration at time = 1e-12
@@ -925,7 +927,9 @@ Specie Concentration at time = 1e-12
   H2O2: start = 1.0, end = 4.120390407757191e-07
 --------------------------------
 ```
+
 #### 4.2.2 Print Time to Reach Equilibrium
+
 ```
 from chemkin import pckg_xml_path
 from chemkin.preprocessing.parse_xml import XmlParser
@@ -939,7 +943,9 @@ parsed_data_list = xml_parser.parsed_data_list(Ti)
 
 summary.print_time_to_equilibrium(parsed_data_list, xi)
 ```
+
 - The expected result:
+
 ```
 ------At Temperature 900 K------
 Time to Equilibrium (end_t = 10000000000.0)
@@ -1006,12 +1012,14 @@ xml_parser = XmlParser(pckg_xml_path('rxns_reversible'))
 parsed_data_list = xml_parser.parsed_data_list(Ti)
 
 summary.plot_time_to_equilibrium(parsed_data_list, xi)
+
 ```
+
 - See the expected image [here](https://github.com/G12-cs207-FinalProject/cs207-FinalProject/blob/master/chemkin/viz/img/Time_to_Equilibrium_900K.png)
 
 The demo code for this example can be found in the library GitHub repo in the module `demo_ODEsolver.py` [here](https://github.com/G12-cs207-FinalProject/cs207-FinalProject).
 
-### 5.New Feature
+### 5. New Feature
 
 Our new implemented feature is a differential equation solver that calculates species concentrations as a function of time as well as determines the time for each reaction to reach an equilibrium. 
 
@@ -1023,7 +1031,7 @@ We implemented a numerical iterative solver of an Ordinary Differential Equation
   2. Given reaction data, output the time to reach equilibrium (in the case of reversible elementary reactions) or the time for the reaction to reach completion (in the case of irreversible elementary reactions).
   3. Given an end-time ($t_{end}$), function plots the time evolution of species concentrations from $t_0$ to $t_{end}$.
 
-##### Motivation
+##### 5.1 Motivation
 
 We motivate our feature by the following:
 
@@ -1033,25 +1041,41 @@ We motivate our feature by the following:
 
 For the end-user, it may be useful to learn about the concentration of the various species at any given point in time (as opposed to just the reaction rates). Additionally, visualization of the gradient of change in concentration may help the user make a decision about an experiment design in e.g., time to cut off a titration experiment or a batch chemical synthesis.
 
-In the future, the library could be enhanced by relaxing the condition of fixed temperature to further enable the user to get insights in more complex systems.
+In the future, the library could be enhanced by relaxing the condition of fixed temperature to further enable the user to get insights on more complex systems.
 
-##### Implementation Details
+##### 5.2 Implementation Details
 
-###### ``ODEint_solver.py``
+In the next section, we discuss the functionality of the ``chemkin`` ODE solver.
 
-The ``ODEint_solver.py`` module contains a class ``ODE_int_solver`` in order to ...
+##### 5.2.1 ``ODE_int_solver``
 
-The ``ODE_int_solver`` class is the workhorse to solve concentration of species over time. User will be able to call this class and use a solve() method for the desired outputs.
+The class ``ODE_int_solver`` is contained in the ``ODEint_solver.py`` module. The ``ODE_int_solver`` class is the workhorse to solve concentration of species over time as well as time to reach the equilibrium. 
 
-The feature will require an external ODE solver, most likely the ``ODEint`` from ``scipy.integrate`` as well as the ``matplotlib``.
+Attributes of ``ODE_int_solver``:
 
-###### ``summary.py``
+  - ``temp``: float, temperature for reaction (assumed to be held constant).
+  - ``rxn``: an instance of the ``ElementaryRxn()`` object
+  - ``species_equil_thresh``: (float, default 1e-5): Species concentration
+  evolution  is defined to reach equilibrium once ``np.abs(bw - fw) < species_equil_thresh``, where ``(bw - fw)`` is the difference in backward and forward progress rates for that species.
+  - ``overall_equil_thresh``: (float, default 1e-2), overall reaction is defined to reach equilibrium once ``np.linalg.norm(prograte_diff) < overall_equil_thresh``, where ``prograte_diff ``is the difference in the backward and forward progress rate vectors of the reaction.
+  - ``critical_t``: List of floats of len(ki). Stores time(s) at which reaction's component species' concentrations reach equilibrium.
+  - ``overall_critical_t``: float, stores time at which overall reaction reaches equilibrium
+  - ``max_t``: float, maximum time allowed for the solver
+  
 
-The current ``summary.py`` module contains a method ``plot_reaction_rates()`` in order to produce a plot of the species concentrations over time.
-
-plot_species_concentration()
-###### summary.plot_time_to_equilibrium()
-
-The current ``summary.py`` module contains a method ``plot_reaction_rates()`` in order to produce a plot of the species concentrations over time.
+- ``solve()`` method: 
+    - Input: the time interval (a list of floats) over which the ``odeint`` numerical integrator will iteratively solve for the concentration of reaction species over time.
+    - Output: 
+        1) sol: the list of lists (type: numpy array) for concentrations of each specie over the ``time_int`` time interval.
+        2) critical_t: time for each reaction to reach equilibrium
+        2) overall_t: time for the overall system to reach equilibrium
+  
+    - ``rxn_rate()``: function (dx/dt) passed to the ``odeint`` solver to perform the numerical integration. Once the difference of backward and forward coefficients falls below a pre-defined threshold ``species_equil_thresh``, the respective species time to reach equilibrium and in similar manner for ``overall_equil_thresh`` the overall reaction equilibrium time are recorded. 
+    
+    - the ``solve()`` method utilizes an external ODE solver, namely the ``odeint`` from ``scipy.integrate``. 
+    
+    - The solver initializes with list of starting species concentrations stored as the attribute ``xi`` of the ``ElementaryRxn`` object. Then, in each iteration, the solver numerically integrates the concentration ``xi`` attribute of the passed ``ElementaryRxn`` object  via the ``rxn_rate()`` function. Finally, the new reaction rates of the ``ElementaryRxn`` based on updated concentrations are calculated via ``ElementaryRxn`` object method ``reaction_rate``.
+    
+**Note** In our implementation, the methods ``species_concentration()``, ``species_concentration_evolution()``, and ``time_to_equilibrium()`` from the ``ElementaryRxn`` class create an instance of the ``ODE_int_solver`` object in order to solve for concentration time evolution and equilibrium, respectively.
 
 

@@ -12,6 +12,7 @@ class ODE_int_solver():
 
     Attributes:
         temp (float): Temperature for reaction (assumed to be held constant).
+        rxn (object): an instance of the ElementaryRxn() object
         species_equil_thresh (float, default 1e-5): Species concentration
             evolution  is defined to reach equilibrium once np.abs(bw - fw) <
             species_equil_thresh, where (bw - fw) is the difference in
@@ -23,9 +24,9 @@ class ODE_int_solver():
         critical_t (list of floats of len(ki)): Stores time(s) at which
             reaction's component species' concentrations reach equilibrium.
         overall_critical_t (float): Stores time at which overall reaction
-            reaches equilibrium.
-        xi, ki, b_ki, sys_vi_p, sys_vi_dp: Constructor args for ElementaryRxn
-            class.
+            reaches equilibrium
+        max_t (float): maximum time allowed for the solver
+        
     """
 
     def __init__ (self, temp, rxn, equil_thresh=1e-5,
