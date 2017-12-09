@@ -12,6 +12,7 @@ class ODE_int_solver():
 
     Attributes:
         temp (float): Temperature for reaction (assumed to be held constant).
+        rxn (object): an instance of the ElementaryRxn() object
         species_equil_thresh (float, default 1e-5): Species concentration
             evolution  is defined to reach equilibrium once np.abs(bw - fw) <
             species_equil_thresh, where (bw - fw) is the difference in
@@ -23,12 +24,13 @@ class ODE_int_solver():
         critical_t (list of floats of len(ki)): Stores time(s) at which
             reaction's component species' concentrations reach equilibrium.
         overall_critical_t (float): Stores time at which overall reaction
-            reaches equilibrium.
-        xi, ki, b_ki, sys_vi_p, sys_vi_dp: Constructor args for ElementaryRxn
-            class.
+            reaches equilibrium
+        max_t (float): maximum time allowed for the solver
+        
     """
 
-    def __init__ (self, temp, rxn, equil_thresh=1e-5, overall_equil_thresh=1e-2):
+    def __init__ (self, temp, rxn, equil_thresh=1e-5,
+                  overall_equil_thresh=1e-2, max_t=100):
         self.temp = temp
         self.rxn = rxn
         self.species_equil_thresh = equil_thresh
@@ -36,6 +38,7 @@ class ODE_int_solver():
         # Init critical time attrs with dummy values.
         self.critical_t = -100*np.ones((len(self.rxn.ki),))
         self.overall_critical_t = -100
+        self.max_t = max_t
 
     def solve (self, time_int):
         """Solves evolution of specie concentration over specified time range.
@@ -76,4 +79,3 @@ class ODE_int_solver():
 
         sol = odeint(func=rxn_rate, y0=self.rxn.xi, t=time_int, mxstep=5000000)
         return sol, self.critical_t, self.overall_critical_t
-
