@@ -974,19 +974,10 @@ summary.plot_time_to_equilibrium(parsed_data_list, xi)
 </ol></li>
 <li><p><code>rxn_rate()</code>: function (dx/dt) passed to the <code>odeint</code> solver to perform the numerical integration. Once the difference of backward and forward coefficients falls below a pre-defined threshold <code>species_equil_thresh</code>, the respective species time to reach equilibrium and in similar manner for <code>overall_equil_thresh</code> the overall reaction equilibrium time are recorded.</p></li>
 <li><p>the <code>solve()</code> method utilizes an external ODE solver, namely the <code>odeint</code> from <code>scipy.integrate</code>.</p></li>
-<li><p>The solver initializes with list of starting species concentrations stored as the attribute <code>xi</code> of the <code>ElementaryRxn</code> object. Then, in each iteration the solver updates the concentration <code>xi</code> attribute of the passed <code>ElementaryRxn</code> object via the <code>rxn_rate()</code> function and sets the new reaction rate of the <code>ElementaryRxn</code>.</p></li>
+<li><p>The solver initializes with list of starting species concentrations stored as the attribute <code>xi</code> of the <code>ElementaryRxn</code> object. Then, in each iteration, the solver numerically integrates the concentration <code>xi</code> attribute of the passed <code>ElementaryRxn</code> object via the <code>rxn_rate()</code> function. Finally, the new reaction rates of the <code>ElementaryRxn</code> based on updated concentrations are calculated via <code>ElementaryRxn</code> object method <code>reaction_rate</code>.</p></li>
 </ul></li>
 </ul>
 <p><strong>Note</strong> In our implementation, the methods <code>species_concentration()</code>, <code>species_concentration_evolution()</code>, and <code>time_to_equilibrium()</code> from the <code>ElementaryRxn</code> class create an instance of the <code>ODE_int_solver</code> object in order to solve for concentration time evolution and equilibrium, respectively.</p>
-</div>
-<div id="summary.py" class="section level5">
-<h5>5.2.2 <code>summary.py</code></h5>
-<p>The current <code>summary.py</code> module contains a method <code>plot_reaction_rates()</code> in order to produce a plot of the species concentrations over time.</p>
-<p>plot_species_concentration()</p>
-</div>
-<div id="summary.plot_time_to_equilibrium" class="section level5">
-<h5>5.2.3 summary.plot_time_to_equilibrium()</h5>
-<p>The current <code>summary.py</code> module contains a method <code>plot_reaction_rates()</code> in order to produce a plot of the species concentrations over time.</p>
 </div>
 </div>
 </div>
