@@ -7,6 +7,8 @@ import matplotlib.pyplot as plt
 from chemkin.reaction.elementary_rxn import ElementaryRxn
 
 def print_reaction_rate(parsed_data_list, xi):
+	''' Function to print the reaction rates
+	'''
 	test_flag = 0 # reation rates can be printed
 	
 	for parsed_data in parsed_data_list:
@@ -37,6 +39,8 @@ def print_reaction_rate(parsed_data_list, xi):
 
 
 def print_species_concentration(parsed_data_list, xi, n_steps=101, end_t=1e-12):
+	''' Function to print the species concentration at a given time: end_t
+	'''
 	test_flag = 0 # species_concentrations can be printed
 	for parsed_data in parsed_data_list:
 
@@ -69,6 +73,8 @@ def print_species_concentration(parsed_data_list, xi, n_steps=101, end_t=1e-12):
 
 
 def plot_species_concentration(parsed_data_list, xi, n_steps=101, end_t=1e-12):
+	''' Function to plot the evolution of species concentration from start to an end time: end_t
+	'''
 	test_flag = 0 # species_concentrations can be plotted
 	for parsed_data in parsed_data_list:
 
@@ -103,7 +109,7 @@ def plot_species_concentration(parsed_data_list, xi, n_steps=101, end_t=1e-12):
 		ax1.set_title('Evolution of Species Concentration over Time')
 
 		BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-		image_dir = os.path.join(BASE_DIR, 'img')
+		image_dir = os.path.join(BASE_DIR, 'examples')
 		if not os.path.exists(image_dir):
 			os.makedirs(image_dir)
 		img_path = os.path.join(image_dir, 'evolution_{}K.png'.format(T))
@@ -113,6 +119,8 @@ def plot_species_concentration(parsed_data_list, xi, n_steps=101, end_t=1e-12):
 
 
 def print_time_to_equilibrium(parsed_data_list, xi, n_steps=101):
+	''' Function to print the time to equilibrium of all reactions
+	'''
 	test_flag = 0 # time_to_equilibrium can be printed
 	for parsed_data in parsed_data_list:
 
@@ -152,6 +160,8 @@ def print_time_to_equilibrium(parsed_data_list, xi, n_steps=101):
 
 
 def plot_time_to_equilibrium(parsed_data_list, xi, n_steps=101):
+	''' Function to plot the time to equilibrium of all reactions
+	'''
 	test_flag = 0 # time_to_equilibrium can be plotted
 	for parsed_data in parsed_data_list:
 
@@ -196,7 +206,7 @@ def plot_time_to_equilibrium(parsed_data_list, xi, n_steps=101):
 		ax2.set_title('Log-scale Time to Equilibrium')
 
 		BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-		image_dir = os.path.join(BASE_DIR, 'img')
+		image_dir = os.path.join(BASE_DIR, 'examples')
 		if not os.path.exists(image_dir):
 			os.makedirs(image_dir)
 		img_path = os.path.join(image_dir, 'Time_to_Equilibrium_{}K.png'.format(T))

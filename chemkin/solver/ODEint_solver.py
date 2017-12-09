@@ -56,7 +56,7 @@ class ODE_int_solver():
             nonlocal  i
             self.rxn.xi = x
 
-            # reaction stops when some specie's concentration gets to zero
+            # reaction rate = 0 when some specie's concentration gets to zero
             n_species = len(x)
             for value in x:
                 if value <= 0:
