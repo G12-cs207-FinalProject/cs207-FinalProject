@@ -1040,7 +1040,7 @@ summary.plot_time_to_equilibrium(parsed_data_list, xi)
 
 The demo code for this example can be found in the library GitHub repo in the module `demo_ODEsolver.py` [here](https://github.com/G12-cs207-FinalProject/cs207-FinalProject).
 
-### 5. New Feature
+## 5. New Feature
 
 Our new implemented feature is a differential equation solver that calculates species concentrations as a function of time as well as determines the time for each reaction to reach an equilibrium. 
 
@@ -1052,7 +1052,7 @@ We implemented a numerical iterative solver of an Ordinary Differential Equation
   2. Given reaction data, output the time to reach equilibrium (in the case of reversible elementary reactions) or the time for the reaction to reach completion (in the case of irreversible elementary reactions).
   3. Given an end-time ($t_{end}$), function plots the time evolution of species concentrations from $t_0$ to $t_{end}$.
 
-##### 5.1 Motivation
+### 5.1 Motivation
 
 We motivate our feature by the following:
 
@@ -1064,11 +1064,11 @@ For the end-user, it may be useful to learn about the concentration of the vario
 
 In the future, the library could be enhanced by relaxing the condition of fixed temperature to further enable the user to get insights on more complex systems.
 
-##### 5.2 Implementation Details
+### 5.2 Implementation Details
 
 In the next section, we discuss the functionality of the ``chemkin`` ODE solver as well as new methods that realize the 3  additional features listed above (i.e. 1 - Calculate the concentrations of each species at a given $t_{end}$; 2- Calculate the time to reach equilibrium; and 3 - Plot time evolution of species concentration and time to equilibrium.
 
-##### 5.2.1 ``ODE_int_solver``
+#### 5.2.1 ``ODE_int_solver``
 
 The class ``ODE_int_solver`` is contained in the ``ODEint_solver.py`` module in the `solver` package. The ``ODE_int_solver`` class is the workhorse to solve concentration of species over time as well as time to reach the equilibrium. 
 
@@ -1100,7 +1100,7 @@ Attributes of ``ODE_int_solver``:
     
 **Note** In our implementation, the methods ``species_concentration()``, ``species_concentration_evolution()``, and ``time_to_equilibrium()`` from the ``RxnBase`` class create an instance of the ``ODE_int_solver`` object in order to solve for concentration time evolution and equilibrium, respectively. These methods are discussed in the next section.
 
-##### 5.2.2 Added methods in ``RxnBase`` class
+#### 5.2.2 Added methods in ``RxnBase`` class
 
 - `species_concentration(self, T, end_t, n_steps=101)`: Returns a list of species concentrations at temperature = T and end time = end_t (n_steps specifies the number of time steps for the ODE solver)
 
@@ -1108,7 +1108,7 @@ Attributes of ``ODE_int_solver``:
 
 - `time_to_equilibrium(self, T, n_steps=101)`: Returns the list of time to equilibrium of all the reactions and the time to equilibrium of the overall system at temperature = T  (n_steps specifies the number of time steps for the ODE solver)
 
-##### 5.2.2  ``viz``  package
+#### 5.2.2  ``viz``  package
 The `viz` package contains the `summary` module allows various visualizations of kinetic parameters of interest.
 
 The methods in the `summary` module is roughly divided into 2 high-level functions: 1) printing kinetic parameters of interest in prettified tabular format; and 2) plotting kinetic parameters of interest 

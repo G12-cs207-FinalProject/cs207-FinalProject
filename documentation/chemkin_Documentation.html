@@ -1273,7 +1273,7 @@ summary.plot_time_to_equilibrium(parsed_data_list, xi)
 
 
 
-<h3 id="5-new-feature">5. New Feature</h3>
+<h2 id="5-new-feature">5. New Feature</h2>
 
 <p>Our new implemented feature is a differential equation solver that calculates species concentrations as a function of time as well as determines the time for each reaction to reach an equilibrium. </p>
 
@@ -1282,34 +1282,30 @@ summary.plot_time_to_equilibrium(parsed_data_list, xi)
 <p>This new feature enables the library to:</p>
 
 <ol>
-<li>Given an end-time (<script type="math/tex" id="MathJax-Element-656">t_{end}</script>) and reaction data, output the concentrations of each species at <script type="math/tex" id="MathJax-Element-657">t_{end}</script>.</li>
+<li>Given an end-time (<script type="math/tex" id="MathJax-Element-769">t_{end}</script>) and reaction data, output the concentrations of each species at <script type="math/tex" id="MathJax-Element-770">t_{end}</script>.</li>
 <li>Given reaction data, output the time to reach equilibrium (in the case of reversible elementary reactions) or the time for the reaction to reach completion (in the case of irreversible elementary reactions).</li>
-<li>Given an end-time (<script type="math/tex" id="MathJax-Element-658">t_{end}</script>), function plots the time evolution of species concentrations from <script type="math/tex" id="MathJax-Element-659">t_0</script> to <script type="math/tex" id="MathJax-Element-660">t_{end}</script>.</li>
+<li>Given an end-time (<script type="math/tex" id="MathJax-Element-771">t_{end}</script>), function plots the time evolution of species concentrations from <script type="math/tex" id="MathJax-Element-772">t_0</script> to <script type="math/tex" id="MathJax-Element-773">t_{end}</script>.</li>
 </ol>
 
-
-
-<h5 id="51-motivation">5.1 Motivation</h5>
+<h3 id="51-motivation">5.1 Motivation</h3>
 
 <p>We motivate our feature by the following:</p>
 
 <ul>
 <li>Visualize the change in species concentration over time.</li>
 <li>Identify time for each reaction to reach equilibrium as well as the time when the overall chemical system achieves equilibrium (i.e., reaction completion).</li>
-<li>Get the concentrations at some end time (<script type="math/tex" id="MathJax-Element-661">t_{end}</script>) for each specie.</li>
+<li>Get the concentrations at some end time (<script type="math/tex" id="MathJax-Element-774">t_{end}</script>) for each specie.</li>
 </ul>
 
 <p>For the end-user, it may be useful to learn about the concentration of the various species at any given point in time (as opposed to just the reaction rates). Additionally, visualization of the gradient of change in concentration may help the user make a decision about an experiment design in e.g., time to cut off a titration experiment or a batch chemical synthesis.</p>
 
 <p>In the future, the library could be enhanced by relaxing the condition of fixed temperature to further enable the user to get insights on more complex systems.</p>
 
+<h3 id="52-implementation-details">5.2 Implementation Details</h3>
 
+<p>In the next section, we discuss the functionality of the <code>chemkin</code> ODE solver as well as new methods that realize the 3  additional features listed above (i.e. 1 - Calculate the concentrations of each species at a given <script type="math/tex" id="MathJax-Element-775">t_{end}</script>; 2- Calculate the time to reach equilibrium; and 3 - Plot time evolution of species concentration and time to equilibrium.</p>
 
-<h5 id="52-implementation-details">5.2 Implementation Details</h5>
-
-<p>In the next section, we discuss the functionality of the <code>chemkin</code> ODE solver as well as new methods that realize the 3  additional features listed above (i.e. 1 - Calculate the concentrations of each species at a given <script type="math/tex" id="MathJax-Element-766">t_{end}</script>; 2- Calculate the time to reach equilibrium; and 3 - Plot time evolution of species concentration and time to equilibrium.</p>
-
-<h5 id="521-odeintsolver">5.2.1 <code>ODE_int_solver</code></h5>
+<h4 id="521-odeintsolver">5.2.1 <code>ODE_int_solver</code></h4>
 
 <p>The class <code>ODE_int_solver</code> is contained in the <code>ODEint_solver.py</code> module in the <code>solver</code> package. The <code>ODE_int_solver</code> class is the workhorse to solve concentration of species over time as well as time to reach the equilibrium. </p>
 
@@ -1343,7 +1339,7 @@ evolution  is defined to reach equilibrium once <code>np.abs(bw - fw) &lt; speci
 
 <p><strong>Note</strong> In our implementation, the methods <code>species_concentration()</code>, <code>species_concentration_evolution()</code>, and <code>time_to_equilibrium()</code> from the <code>RxnBase</code> class create an instance of the <code>ODE_int_solver</code> object in order to solve for concentration time evolution and equilibrium, respectively. These methods are discussed in the next section.</p>
 
-<h5 id="522-added-methods-in-rxnbase-class">5.2.2 Added methods in <code>RxnBase</code> class</h5>
+<h4 id="522-added-methods-in-rxnbase-class">5.2.2 Added methods in <code>RxnBase</code> class</h4>
 
 <ul>
 <li><p><code>species_concentration(self, T, end_t, n_steps=101)</code>: Returns a list of species concentrations at temperature = T and end time = end_t (n_steps specifies the number of time steps for the ODE solver)</p></li>
@@ -1351,7 +1347,7 @@ evolution  is defined to reach equilibrium once <code>np.abs(bw - fw) &lt; speci
 <li><p><code>time_to_equilibrium(self, T, n_steps=101)</code>: Returns the list of time to equilibrium of all the reactions and the time to equilibrium of the overall system at temperature = T  (n_steps specifies the number of time steps for the ODE solver)</p></li>
 </ul>
 
-<h5 id="522-viz-package">5.2.2  <code>viz</code>  package</h5>
+<h4 id="522-viz-package">5.2.2  <code>viz</code>  package</h4>
 
 <p>The <code>viz</code> package contains the <code>summary</code> module allows various visualizations of kinetic parameters of interest.</p>
 
