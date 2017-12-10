@@ -107,12 +107,13 @@ class RxnBase():
         sol, _, _ = solver.solve(time_steps)
         return sol
 
-    def time_to_equilibrium(self, T, end_t, n_steps=101):
+    def time_to_equilibrium(self, T, n_steps=101):
         """ Return the list of time to equilibrium of all the reactions and the time to equilibrium of the overall system
         """
+        end_t = 1e10
         time_steps = np.linspace(0, end_t, n_steps)
         solver = ODE_int_solver(T, self)
         _, critical_t, overall_critical_t = solver.solve(time_steps)
-        return critical_t, overall_critical_t
+        return end_t, critical_t, overall_critical_t
 
 

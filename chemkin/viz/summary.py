@@ -138,9 +138,8 @@ def print_time_to_equilibrium(parsed_data_list, xi, n_steps=101):
 			print('--------------------------------\n')
 			continue
 
-		end_t = 1e10
+		end_t, critical_t, overall_critical_t = ElementaryRxn(ki, b_ki, xi, sys_vi_p, sys_vi_dp).time_to_equilibrium(T, n_steps)
 		time_steps = np.linspace(0, end_t, n_steps)
-		critical_t, overall_critical_t = ElementaryRxn(ki, b_ki, xi, sys_vi_p, sys_vi_dp).time_to_equilibrium(T, end_t, n_steps)
 
 		print('------At Temperature', T, 'K------')
 		print('Time to Equilibrium (end_t = {})'.format(end_t))
@@ -179,9 +178,8 @@ def plot_time_to_equilibrium(parsed_data_list, xi, n_steps=101):
 			print('--------------------------------\n')
 			continue
 
-		end_t = 1e10
+		end_t, critical_t, overall_critical_t = ElementaryRxn(ki, b_ki, xi, sys_vi_p, sys_vi_dp).time_to_equilibrium(T, n_steps)
 		time_steps = np.linspace(0, end_t, n_steps)
-		critical_t, overall_critical_t = ElementaryRxn(ki, b_ki, xi, sys_vi_p, sys_vi_dp).time_to_equilibrium(T, end_t, n_steps)
 		
 		# Plot Log-scale Time to Equilibrium
 		f2, ax2 = plt.subplots(1, 1)
