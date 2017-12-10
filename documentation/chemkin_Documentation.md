@@ -1,4 +1,4 @@
----
+﻿---
 output:
   html_document: default
   pdf_document: default
@@ -510,11 +510,11 @@ reaction1 = RxnBase(ki=[10, 10], b_ki=[20, 20], xi=[1.0, 2.0, 1.0], vi_p=[[1.0, 
 
 - `reaction_rate()`: Returns a list of reaction rates for the system (Not implemented in the base class)
 
-- `species_concentration(self, T, end_t, n_steps=101)`: Returns a list of species concentrations at temperature = T and end time = end_t
+- `species_concentration(self, T, end_t, n_steps=101)`: Returns a list of species concentrations at temperature = T and end time = end_t (n_steps specifies the number of time steps for the ODE solver)
 
-- `species_concentration_evolution(self, T, end_t, n_steps=101)`:  Returns a matrix of species concentration evolution at temperature = T and from start to end_t
+- `species_concentration_evolution(self, T, end_t, n_steps=101)`:  Returns a matrix of species concentration evolution at temperature = T and from start to end_t  (n_steps specifies the number of time steps for the ODE solver)
 
-- `time_to_equilibrium(self, T, n_steps=101)`: Returns the list of time to equilibrium of all the reactions and the time to equilibrium of the overall system at temperature = T
+- `time_to_equilibrium(self, T, n_steps=101)`: Returns the list of time to equilibrium of all the reactions and the time to equilibrium of the overall system at temperature = T  (n_steps specifies the number of time steps for the ODE solver)
 
 #### 3.3.3 `elementary_rxn` module
 
@@ -570,6 +570,27 @@ $$\begin{aligned}
 #### 3.3.4 `non_elementary_rxn` module
 
 The implementation for non-elementary reactions is TBD.
+
+### 3.4. Visualizing kinetic parameters of interest
+The `viz` package contains the `summary` module allows various visualizations of kinetic parameters of interest.
+
+#### 3.4.1. `summary` module
+The methods in the `summary` module is roughly divided into 2 high-level functions: 1) printing kinetic parameters of interest in prettified tabular format; and 2) plotting kinetic parameters of interest 
+
+For printing tables of kinetic parameters:
+
+- `print_reaction_rate(parsed_data_list, xi)`: Takes in parsed reaction data from the output of `XMLparser` object's `parsed_data_list(Ti)` method and species concentrations `xi`. The method prints reactions rates in tabular format. 
+
+- `print_species_concentration(parsed_data_list, xi, n_steps=101, end_t=1e-12)`: Takes in parsed reaction data from the output of `XMLparser` object's `parsed_data_list(Ti)` method, species concentrations `xi`, and an end-time `end_t`. User can also specify `n_steps`, which the number of time steps the ODE solver uses to integrate differential equations. The method prints species concentration at `end_t` in tabular format. 
+
+- `print_time_to_equilibrium(parsed_data_list, xi, n_steps=101)`: Takes in parsed reaction data from the output of `XMLparser` object's `parsed_data_list(Ti)` method and species concentrations `xi`. User can also specify `n_steps`, which the number of time steps the ODE solver uses to integrate differential equations. The method prints time to reach equilibrium for each reaction in the system. 
+
+For plotting kinetic parameters:
+
+- `plot_species_concentration(parsed_data_list, xi, n_steps=101, end_t=1e-12)`: Takes in parsed reaction data from the output of `XMLparser` object's `parsed_data_list(Ti)` method, species concentrations `xi`, and an end-time `end_t`. User can also specify `n_steps`, which the number of time steps the ODE solver uses to integrate differential equations. The method saves the line plot to the `viz/examples` directory. 
+
+- `plot_time_to_equilibrium(parsed_data_list, xi, n_steps=101)`: Takes in parsed reaction data from the output of `XMLparser` object's `parsed_data_list(Ti)` method and species concentrations `xi`. User can also specify `n_steps`, which the number of time steps the ODE solver uses to integrate differential equations. The method saves the bar chart to the `viz/examples` directory. 
+
 
 ## 4. Examples
 
@@ -1019,7 +1040,7 @@ summary.plot_time_to_equilibrium(parsed_data_list, xi)
 
 The demo code for this example can be found in the library GitHub repo in the module `demo_ODEsolver.py` [here](https://github.com/G12-cs207-FinalProject/cs207-FinalProject).
 
-### 5. New Feature
+## 5. New Feature
 
 Our new implemented feature is a differential equation solver that calculates species concentrations as a function of time as well as determines the time for each reaction to reach an equilibrium. 
 
@@ -1031,7 +1052,7 @@ We implemented a numerical iterative solver of an Ordinary Differential Equation
   2. Given reaction data, output the time to reach equilibrium (in the case of reversible elementary reactions) or the time for the reaction to reach completion (in the case of irreversible elementary reactions).
   3. Given an end-time ($t_{end}$), function plots the time evolution of species concentrations from $t_0$ to $t_{end}$.
 
-##### 5.1 Motivation
+### 5.1 Motivation
 
 We motivate our feature by the following:
 
@@ -1043,13 +1064,13 @@ For the end-user, it may be useful to learn about the concentration of the vario
 
 In the future, the library could be enhanced by relaxing the condition of fixed temperature to further enable the user to get insights on more complex systems.
 
-##### 5.2 Implementation Details
+### 5.2 Implementation Details
 
-In the next section, we discuss the functionality of the ``chemkin`` ODE solver.
+In the next section, we discuss the functionality of the ``chemkin`` ODE solver as well as new methods that realize the 3  additional features listed above (i.e. 1 - Calculate the concentrations of each species at a given $t_{end}$; 2- Calculate the time to reach equilibrium; and 3 - Plot time evolution of species concentration and time to equilibrium.
 
-##### 5.2.1 ``ODE_int_solver``
+#### 5.2.1 ``ODE_int_solver``
 
-The class ``ODE_int_solver`` is contained in the ``ODEint_solver.py`` module. The ``ODE_int_solver`` class is the workhorse to solve concentration of species over time as well as time to reach the equilibrium. 
+The class ``ODE_int_solver`` is contained in the ``ODEint_solver.py`` module in the `solver` package. The ``ODE_int_solver`` class is the workhorse to solve concentration of species over time as well as time to reach the equilibrium. 
 
 Attributes of ``ODE_int_solver``:
 
@@ -1062,8 +1083,9 @@ Attributes of ``ODE_int_solver``:
   - ``overall_critical_t``: float, stores time at which overall reaction reaches equilibrium
   - ``max_t``: float, maximum time allowed for the solver
   
+`ODE_int_solver` objects have the following method:
 
-- ``solve()`` method: 
+- ``solve(time_int)`` method: 
     - Input: the time interval (a list of floats) over which the ``odeint`` numerical integrator will iteratively solve for the concentration of reaction species over time.
     - Output: 
         1) sol: the list of lists (type: numpy array) for concentrations of each specie over the ``time_int`` time interval.
@@ -1076,6 +1098,32 @@ Attributes of ``ODE_int_solver``:
     
     - The solver initializes with list of starting species concentrations stored as the attribute ``xi`` of the ``ElementaryRxn`` object. Then, in each iteration, the solver numerically integrates the concentration ``xi`` attribute of the passed ``ElementaryRxn`` object  via the ``rxn_rate()`` function. Finally, the new reaction rates of the ``ElementaryRxn`` based on updated concentrations are calculated via ``ElementaryRxn`` object method ``reaction_rate``.
     
-**Note** In our implementation, the methods ``species_concentration()``, ``species_concentration_evolution()``, and ``time_to_equilibrium()`` from the ``ElementaryRxn`` class create an instance of the ``ODE_int_solver`` object in order to solve for concentration time evolution and equilibrium, respectively.
+**Note** In our implementation, the methods ``species_concentration()``, ``species_concentration_evolution()``, and ``time_to_equilibrium()`` from the ``RxnBase`` class create an instance of the ``ODE_int_solver`` object in order to solve for concentration time evolution and equilibrium, respectively. These methods are discussed in the next section.
 
+#### 5.2.2 Added methods in ``RxnBase`` class
+
+- `species_concentration(self, T, end_t, n_steps=101)`: Returns a list of species concentrations at temperature = T and end time = end_t (n_steps specifies the number of time steps for the ODE solver)
+
+- `species_concentration_evolution(self, T, end_t, n_steps=101)`:  Returns a matrix of species concentration evolution at temperature = T and from start to end_t  (n_steps specifies the number of time steps for the ODE solver)
+
+- `time_to_equilibrium(self, T, n_steps=101)`: Returns the list of time to equilibrium of all the reactions and the time to equilibrium of the overall system at temperature = T  (n_steps specifies the number of time steps for the ODE solver)
+
+#### 5.2.2  ``viz``  package
+The `viz` package contains the `summary` module allows various visualizations of kinetic parameters of interest.
+
+The methods in the `summary` module is roughly divided into 2 high-level functions: 1) printing kinetic parameters of interest in prettified tabular format; and 2) plotting kinetic parameters of interest 
+
+For printing tables of kinetic parameters:
+
+- `print_reaction_rate(parsed_data_list, xi)`: Takes in parsed reaction data from the output of `XMLparser` object's `parsed_data_list(Ti)` method and species concentrations `xi`. The method prints reactions rates in tabular format. 
+
+- `print_species_concentration(parsed_data_list, xi, n_steps=101, end_t=1e-12)`: Takes in parsed reaction data from the output of `XMLparser` object's `parsed_data_list(Ti)` method, species concentrations `xi`, and an end-time `end_t`. User can also specify `n_steps`, which the number of time steps the ODE solver uses to integrate differential equations. The method prints species concentration at `end_t` in tabular format. 
+
+- `print_time_to_equilibrium(parsed_data_list, xi, n_steps=101)`: Takes in parsed reaction data from the output of `XMLparser` object's `parsed_data_list(Ti)` method and species concentrations `xi`. User can also specify `n_steps`, which the number of time steps the ODE solver uses to integrate differential equations. The method prints time to reach equilibrium for each reaction in the system. 
+
+For plotting kinetic parameters:
+
+- `plot_species_concentration(parsed_data_list, xi, n_steps=101, end_t=1e-12)`: Takes in parsed reaction data from the output of `XMLparser` object's `parsed_data_list(Ti)` method, species concentrations `xi`, and an end-time `end_t`. User can also specify `n_steps`, which the number of time steps the ODE solver uses to integrate differential equations. The method saves the line plot to the `viz/examples` directory. 
+
+- `plot_time_to_equilibrium(parsed_data_list, xi, n_steps=101)`: Takes in parsed reaction data from the output of `XMLparser` object's `parsed_data_list(Ti)` method and species concentrations `xi`. User can also specify `n_steps`, which the number of time steps the ODE solver uses to integrate differential equations. The method saves the bar chart to the `viz/examples` directory. 
 
