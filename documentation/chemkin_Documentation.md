@@ -189,8 +189,8 @@ Note: A complete table of notation of **reversible elementary** reacion
 |$S_{i}$ | Entropy of species $i$ |
 |$H_{i}$ | Enthalpy of species $i$ |
 |$C_{p,i}$| Specific heat at constant pressure of species $i$|
-|T | Temperature|
-|R | Ideal gas constant
+|$T$| Temperature|
+|$R$| Ideal gas constant
 
 
 ### 1.2 The `chemkin` Library
@@ -501,7 +501,7 @@ The `base_rxn` module contains a single `RxnBase` class, from which the subclass
 **Note** These attributes are initialized when `RxnBase` objects are created. For example,
 
 ```
-reaction1 = RxnBase(ki=[10, 10], b_ki=[20, 20], xi=[1.0, 2.0, 1.0], vi_p=[[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]], vi_dp=[[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]]
+reaction1 = RxnBase(ki=[10, 10], b_ki=[20, 20], xi=[1.0, 2.0, 1.0], vi_p=[[1.0, 2.0, 0.0], [2.0, 0.0, 2.0]], vi_dp=[[0.0, 0.0, 2.0], [0.0, 1.0, 1.0]])
 ```
 
 `RxnBase` objects have the following methods:
