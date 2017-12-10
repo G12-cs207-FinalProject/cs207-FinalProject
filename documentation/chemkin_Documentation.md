@@ -996,7 +996,7 @@ parsed_data_list = xml_parser.parsed_data_list(Ti)
 
 summary.plot_species_concentration(parsed_data_list, xi)
 ```
-- See the expected image [here](https://github.com/G12-cs207-FinalProject/cs207-FinalProject/blob/master/chemkin/viz/img/evolution_900K.png)
+- See the expected image [here](https://github.com/G12-cs207-FinalProject/cs207-FinalProject/blob/master/chemkin/viz/examples/evolution_900K.png)
 
 
 #### 4.2.4 Plot Time to Equilibrium
@@ -1015,7 +1015,7 @@ summary.plot_time_to_equilibrium(parsed_data_list, xi)
 
 ```
 
-- See the expected image [here](https://github.com/G12-cs207-FinalProject/cs207-FinalProject/blob/master/chemkin/viz/img/Time_to_Equilibrium_900K.png)
+- See the expected image [here](https://github.com/G12-cs207-FinalProject/cs207-FinalProject/blob/master/chemkin/viz/examples/Time_to_Equilibrium_900K.png)
 
 The demo code for this example can be found in the library GitHub repo in the module `demo_ODEsolver.py` [here](https://github.com/G12-cs207-FinalProject/cs207-FinalProject).
 
