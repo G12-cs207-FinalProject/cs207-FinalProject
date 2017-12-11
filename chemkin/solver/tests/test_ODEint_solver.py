@@ -1,30 +1,13 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
-Created on Thu Dec  7 16:16:40 2017
-
-@author: filipmichalsky
+Tests for the ODE Solver ODEint_solver.py module
 """
-#export PYTHONPATH="${PYTHONPATH}:/my/other/path"
 
-#USE this
 import sys
 import numpy as np
-#print(sys.path)
 from chemkin import pckg_xml_path
 from chemkin.preprocessing.parse_xml import XmlParser
 from chemkin.solver.ODEint_solver import ODE_int_solver
 from chemkin.reaction.elementary_rxn import ElementaryRxn
-
-##########
-#had to hack to make it work in my dir
-#Ultimate hack is adding parent directory path to PYTHONPATH (only works in shell so far)
-#import sys, os.path
-#sys.path.append(os.path.abspath('../'))
-
-#import ODEint_solver
-#sys.path.remove(os.path.abspath('../'))
-###############
 
 def test_ODE_solver_functionality():
     

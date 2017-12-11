@@ -66,15 +66,21 @@ class ODE_int_solver():
                     return np.zeros((n_species,))
 
             if i != 0:
+                # If any of the reactions had the delta of backwards progress rates
+                # and forward progress rates fall below a certain threshold, record the equilibrium time
                 for j, (bw, fw) in enumerate(zip(self.rxn.b_wi, self.rxn.f_wi)):
                     if np.abs(bw - fw) < self.species_equil_thresh:
                         if self.critical_t[j] == -100:
                             self.critical_t[j] = t
-
+                
+                # If the norm of all of the deltas of all backwards progress rates
+                # and forward progress rates falls below a threshold, record systems equilibrium time
                 if np.linalg.norm(self.rxn.b_wi - self.rxn.f_wi) < self.overall_equil_thresh:
                     if self.overall_critical_t == -100:
                         self.overall_critical_t = t
             i += 1
+            
+            #update reaction rate and return it
             return self.rxn.reaction_rate()
 
         sol = odeint(func=rxn_rate, y0=self.rxn.xi, t=time_int, mxstep=5000000)
