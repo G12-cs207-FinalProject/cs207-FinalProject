@@ -1,8 +1,4 @@
----
-output:
-  pdf_document: default
-  html_document: default
----
+
 [![Build Status](https://travis-ci.org/G12-cs207-FinalProject/cs207-FinalProject.svg?branch=master)](https://travis-ci.org/G12-cs207-FinalProject/cs207-FinalProject)
 
 [![Coverage Status](https://coveralls.io/repos/github/G12-cs207-FinalProject/cs207-FinalProject/badge.svg?branch=master)](https://coveralls.io/github/G12-cs207-FinalProject/cs207-FinalProject?branch=master)
